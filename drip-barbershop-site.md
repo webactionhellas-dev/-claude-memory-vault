@@ -1,0 +1,33 @@
+---
+name: drip-barbershop-site
+description: "Drip Barbershop (Kifisia) standalone HTML site — optimized build, tiffany-smoke design, fixes applied"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 9e727f81-58d3-422f-b434-bff5d2c8d793
+---
+
+Single-file marketing site for **Drip Barbershop** (Kifisia, Athens). Edgy "tiffany ink on black" theme: WebGL2 smoke shader behind the hero, falling tiffany water-drips, "STAY DRIPPING" headline, bilingual EN/EL, Setmore booking links.
+
+**Files (C:\Users\mikef\Downloads):**
+- `drip-barbershop-standalone.html` — original (8.7 MB, JPEG base64).
+- `drip-barbershop-optimized.html` — **the working deliverable** (~2.2 MB).
+- Conversion/patch tooling in `C:\Users\mikef\drip-fix` (sharp installed; convert.mjs + patch*.mjs).
+
+**Key facts when editing the optimized file:**
+- It is **CRLF** and has multi-MB single lines — Read/Edit tools choke on it; patch via Node exact-string/regex scripts instead.
+- Images live in `window.__EMB` as a `var E=[...]` dedup array referenced by index; all WebP (q78, capped 1200px).
+- Photo placeholders are `.ph[data-photo]` filled by JS `loadPhotos()`.
+- Nav active "pill" = two-row clip-path reveal (`#navTabsClip` over `#navTabsBase`); positioned in `updateTabs()` via getBoundingClientRect.
+
+**Fixes/upgrades already done:** WebP+dedup (8.7→2.2MB); iOS smoothness (dropped `backdrop-filter` on `@media(hover:none)`, throttled smoke shader ~30fps); barber photo edge-line removed (`.ph.has-img` border transparent); hero color-seam fixed (hero pulled under nav, `margin-top:-nav-h` + `min-height:100vh` so scrim is continuous); nav pill centering; lighter hero scrim + meltier/larger drips (14 of them). "Cool" layer: film grain overlay + desktop photo grayscale→colour hover reveal (both kept). Tried but REMOVED at user request: tiffany sheen sweep on "DRIPPING", and cursor-reactive smoke/logo parallax — user dislikes the headline shine and smoke moving with the cursor (the ambient smoke-shader swirl itself is fine, keep it).
+
+**Mobile-responsiveness pass (2026-06-19)** on `C:\Users\mikef\Downloads\dripbarbershop (1) (1).html` (an evolved single-file build, UTF-8 BOM + CRLF, 2.5MB base64 on one line — patch via Node, not Edit). Changes, all in the `<style>` block: hero-logo dark outline reworked from heavy/blurry → sharp even 1px outline at rgba(0,0,0,.2) (no blur) + soft 10px shadow; added `max-width:80vw` so the wordmark never kisses screen edges; mobile/tablet hero `padding-top` raised (clamp 82/13vh/104 and 92/11vh/120) so content clears the fixed nav instead of tucking under it; new `@media(max-width:620/480/380)` block — hides nav `.lang` on phones (kept in hamburger) but keeps Book Now CTA, shrinks nav logo (34→30px), stacks hero/CTA buttons full-width (max 340px centered), tighter `.sec-head`/`.values`/`.treat-cards` rhythm, `.price-row` wrap. Verified via preview_eval at 320/375/768: zero horizontal scroll (even all SPA views force-shown), all grids → 1 col. Logo is already a transparent PNG (canvas luminance→alpha in `makeLogoTransparent`). Backup: `dripbarbershop_backup_20260618_235919.html`.
+
+**Hero frame overlay (2026-06-19)** on `dripbarbershop (1) (1).html` — went through TWO iterations:
+- v1 (REVERTED, user disliked): a frame wrapped just around the logo (`.hero-logo-wrap`), with runtime canvas black-removal (`makeFrameTransparent`). User wanted it bigger/full-hero instead, and gave a cleaner image.
+- **v2 (current):** full-bleed cyan frame stretched edge-to-edge over the WHOLE hero. Source `Downloads/bb416908-2789-4847-b8e5-80727e225805.png` (1536×1024, **already a transparent RGBA PNG** — no runtime processing). Recoloured to brand tiffany with sharp (flat-fill RGB=(21,222,213), keep original alpha — alpha carries all the glow/halftone), → `frame-tiffany.webp` (~190KB, kept at `drip-fix/`), embedded base64 as `<img class="hero-frame">` placed as a child of `.hero` (after `.drips`, before `.hero-in-wrap`). CSS: `.hero-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:2;opacity:0→frameFade}` (object-fit:fill = touches all 4 edges on any aspect; content z-index:3 stays on top & readable). **Also made the hero full screen height on every device** so it ends exactly at the screen bottom: changed the ≤760 and 761–1024 `.hero` overrides from `min-height:0`+padding back to `min-height:100svh;align-items:center;padding-top:var(--nav-h)` (this UNDOES the earlier "trim mobile hero dead-space" change — hero is now 100svh everywhere). Verified: hero fills viewport top→bottom at 375 (812) & desktop (954), frame inset 0 all sides, tiffany colour, content centred & clears nav, no h-scroll. Restore point: `dripbarbershop_prebframe_003645.html`.
+
+**Vercel deploy-ready build (2026-07-11)** — from the finalized `drip omilos/dripbarbershop.html` (2.92MB, inside `Desktop/wetransfer_drip-omilos_2026-07-10_1419.zip`). Un-inlined every embedded image losslessly for speed: **output folder `C:\Users\mikef\Downloads\drip-barbershop-vercel`** = `index.html` (2.92MB→**132KB**) + `assets/` (26 content-hashed WebP, ~2.0MB) + `vercel.json` (immutable cache on `/assets/*`). Parser found **32 data URIs** (naive `grep 'data:'` under-counts to 9 — file is minified onto few lines; always parse). 31 base64 WebP externalized (deduped to 26 unique by sha1), the one 267-byte url-encoded SVG grain texture kept inline. Losslessness **proven by byte-exact round-trip**: re-inlining assets reproduces the original file's exact SHA-256. Loader (`loadPhotos()`) always uses `__EMB[name]` when present, so externalizing to `assets/…` URLs causes **zero `/photos/` 404s**; verified in-browser: 3 logos + 17/17 gallery slots render, no broken images. Deploy = drag folder to vercel.com/new, framework **Other**, rename nothing (index.html already at root). Build scripts in scratchpad. **DEPLOYED 2026-07-11** to **https://drip-barbershop-vercel.vercel.app** (immutable URL `drip-barbershop-vercel-j98d27j8h-webactionhellascom.vercel.app`), Vercel team **webactionhellascom** (personal-account scope is CLI-refused: "You cannot set your Personal Account as the scope"), project `drip-barbershop-vercel`, via authenticated Vercel CLI (MCP inline-deploy can't carry 2MB binary WebP within context limits — use CLI). Verified live: 26/26 assets 200, immutable cache header present, HTML `max-age=0,must-revalidate`. Custom domain dripbarbershop.gr NOT attached (still gated). Open item: Mike may want it moved to personal account (dashboard-only move).
+
+Related: [[preview-screenshot-timeout]] (verify via preview_eval, not screenshots).
