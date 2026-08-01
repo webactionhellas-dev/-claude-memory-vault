@@ -1,0 +1,5 @@
+name: vercel-deploy-diagnoser-env
+config:
+  type: cloud
+  networking:
+    type: unrestricted

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mykonos-prestige",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".preview-dev.mjs"],
+      "port": 3030
+    }
+  ]
+}

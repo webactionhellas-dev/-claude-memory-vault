@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "singlefile",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5199", "--directory", "C:/Users/mikef/Downloads"],
+      "port": 5199
+    },
+    {
+      "name": "distpreview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "preview", "--outDir", "dist_new", "--port", "5377", "--strictPort"],
+      "cwd": "C:\\Users\\mikef\\web-action-site",
+      "port": 5377
+    }
+  ]
+}

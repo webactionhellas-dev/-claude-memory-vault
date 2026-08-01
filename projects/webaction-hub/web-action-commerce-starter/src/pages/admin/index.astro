@@ -1,0 +1,96 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import { supabaseServer } from '@/lib/supabase';
+import { supabaseAdmin, adminReady } from '@/lib/supabase-admin';
+import { money } from '@/lib/money';
+
+export const prerender = false;
+
+const supabase = supabaseServer(Astro.cookies, Astro.request);
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) return Astro.redirect('/login?next=/admin');
+
+// Only admins (profiles.is_admin = true) get in.
+const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
+const isAdmin = !!profile?.is_admin;
+
+let orders: any[] = [];
+if (isAdmin && adminReady()) {
+  const { data } = await supabaseAdmin
+    .from('orders')
+    .select('id,email,status,total_cents,created_at, order_items(name,size,quantity)')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  orders = data ?? [];
+}
+
+const STATUSES = ['pending', 'paid', 'fulfilled', 'cancelled', 'refunded'];
+const revenue = orders.filter((o) => ['paid', 'fulfilled'].includes(o.status)).reduce((s, o) => s + (o.total_cents ?? 0), 0);
+---
+
+<BaseLayout title="Admin · Orders · ACME" noindex>
+  <AdminNav active="orders" email={user.email} />
+  <section class="wrap py-10">
+    <h1 class="font-display text-2xl font-900 tracking-tight text-ink">Orders</h1>
+
+    {!isAdmin && (
+      <div class="mt-8 rounded-2xl border border-line p-10 text-center">
+        <p class="text-muted">You don't have admin access.</p>
+        <p class="mt-2 text-sm text-faint">
+          Grant it by setting <code class="text-accent-soft">profiles.is_admin = true</code> for your user in Supabase.
+        </p>
+      </div>
+    )}
+
+    {isAdmin && (
+      <>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Orders</p><p class="mt-1 font-display text-2xl font-800 text-ink">{orders.length}</p></div>
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Paid revenue</p><p class="mt-1 font-display text-2xl font-800 text-ink">{money(revenue / 100)}</p></div>
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Pending</p><p class="mt-1 font-display text-2xl font-800 text-ink">{orders.filter((o) => o.status === 'pending').length}</p></div>
+        </div>
+
+        <div class="mt-8 overflow-x-auto rounded-2xl border border-line">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-line text-xs uppercase tracking-wide text-faint">
+              <tr><th class="p-4">Order</th><th class="p-4">Date</th><th class="p-4">Customer</th><th class="p-4">Items</th><th class="p-4">Total</th><th class="p-4">Status</th></tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr class="border-b border-line last:border-0">
+                  <td class="p-4 font-600 text-ink">#{String(o.id).slice(0, 8).toUpperCase()}</td>
+                  <td class="p-4 text-muted">{new Date(o.created_at).toLocaleDateString()}</td>
+                  <td class="p-4 text-muted">{o.email}</td>
+                  <td class="p-4 text-muted">{(o.order_items ?? []).reduce((n: number, it: any) => n + it.quantity, 0)}</td>
+                  <td class="p-4 font-700 text-ink">{money((o.total_cents ?? 0) / 100)}</td>
+                  <td class="p-4">
+                    <select data-order-status data-id={o.id} class="rounded-lg border border-line bg-raised px-2 py-1 text-ink focus:border-accent focus:outline-none">
+                      {STATUSES.map((s) => <option value={s} selected={s === o.status}>{s}</option>)}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+  </section>
+
+  <script>
+    document.querySelectorAll('[data-order-status]').forEach((el) => {
+      el.addEventListener('change', async (e) => {
+        const sel = e.currentTarget as HTMLSelectElement;
+        sel.disabled = true;
+        const res = await fetch('/api/admin/order-status', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ id: sel.dataset.id, status: sel.value }),
+        });
+        sel.disabled = false;
+        if (!res.ok) alert('Could not update status.');
+      });
+    });
+  </script>
+</BaseLayout>

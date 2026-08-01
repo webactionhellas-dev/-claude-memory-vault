@@ -1,0 +1,195 @@
+/* ============================================================
+   CLOUDSKIN, site config & taxonomy
+   Kept SEPARATE from products.js (which the Shopify sync
+   overwrites) and enriched by curate.js. Nav tree, collection
+   resolvers, color map, announcement + footer data live here.
+   All human-readable labels resolve through CLOUDSKIN.t() so the
+   whole tree is localized (see js/i18n.js + js/i18n-strings.js).
+   Currency + money() are provided by i18n.js (region-aware).
+   ============================================================ */
+window.CLOUDSKIN = window.CLOUDSKIN || {};
+const t = CLOUDSKIN.t || ((k) => k);   // i18n loads first; identity fallback
+
+/* ---- color name → swatch hex (palette: white · black · cream only) ---- */
+CLOUDSKIN.colorHex = {
+  "Black": "#1E1E1E", "White": "#F7F7F7", "White Mist": "#E7E4DC", "Cream": "#efe9df", "Ivory": "#efe9df"
+};
+CLOUDSKIN.hexFor = (name) => CLOUDSKIN.colorHex[name] || "#efe9df";
+
+/* ---- content-readiness flag ----
+   content.js flips this to true once the owner's Supabase overrides (product flags +
+   Studio photos) are merged, or immediately when Supabase is not configured. The home
+   rails and the collection grid hold their FIRST paint until this is ready, so the
+   shopper sees the correct, final product list appear once, never the static-default
+   set reshuffling into the override-applied set ("flash"). */
+CLOUDSKIN.contentReady = false;
+
+/* ---- products hidden from every shopper-facing surface ----
+   Rails, collection grids, search, Complete the Look and "pairs great with" all read
+   window.CLOUDSKIN_PRODUCTS; this predicate removes products that must never be
+   browseable or suggested. The €1 checkout-test product stays reachable by direct PDP
+   link (product.html?handle=...) for payment testing and is still add-to-bag-able for
+   that test, but it is never listed as a shopper-visible or recommended product. */
+CLOUDSKIN.HIDDEN_HANDLES = { "zz-test-payment-check-delete-after": 1 };
+/* p._hidden is the owner's per-product hide toggle (key product.<h>.hidden, applied by
+   content.js). The static HIDDEN_HANDLES list stays for the built-in test product. */
+CLOUDSKIN.isShopVisible = (p) => !!p && !CLOUDSKIN.HIDDEN_HANDLES[p.handle] && p.category !== "Test" && !p._hidden;
+CLOUDSKIN.shopProducts = () => (window.CLOUDSKIN_PRODUCTS || []).filter(CLOUDSKIN.isShopVisible);
+/* Trending is owner-curated by REMOVAL: every product is Trending by default (matching the
+   full-catalog rail the site always showed), and the owner takes a piece OUT of Trending by
+   setting product.<h>.trending === '0' (-> p.trending === false, applied by content.js). So a
+   product's Trending state on every surface equals its Trending toggle in the editor. */
+CLOUDSKIN.isTrending = (p) => !!p && p.trending !== false;
+
+/* ---- free-shipping threshold: EUR 200 base (Larissa, 2026-07-19). The custom Stripe
+   checkout (js/checkout.js) charges the customer's selected currency, so the banner shows
+   this threshold converted into that currency via C.money. The cart still qualifies against
+   the EUR base (subtotals are EUR-base), so what the banner shows and what qualifies stay
+   consistent. Under the threshold shipping is "calculated at checkout"; at or above it,
+   shipping is complimentary. ---- */
+CLOUDSKIN.FREESHIP = 200;                          // EUR base, the one and only threshold
+/* display string for the announcement bar, shown in the visitor's active currency via
+   C.money (i18n.js loads first, so it exists here). Falls back to EUR only if not ready. */
+CLOUDSKIN.freeShipDisplay = () => (CLOUDSKIN.money ? CLOUDSKIN.money(CLOUDSKIN.FREESHIP) : "€" + CLOUDSKIN.FREESHIP);
+/* the same threshold in the EUR base, for the cart's subtotal comparison (qualifies at the EUR base) */
+CLOUDSKIN.freeShipEur = () => CLOUDSKIN.FREESHIP;
+
+/* ---- announcement bar (rotates): shipping · duties · secure delivery.
+   The threshold is shown in the visitor's active currency. ---- */
+CLOUDSKIN.announcements = [
+  t("ann.1", { amount: CLOUDSKIN.freeShipDisplay() }),
+  t("ann.2"),
+  t("ann.3")
+];
+
+/* ---- primary nav, Alo-style mega menus, built from the REAL catalog ---- */
+CLOUDSKIN.nav = [
+  {
+    label: t("nav.women"), slug: "women",
+    columns: [
+      { head: t("nav.categories"), links: [
+        [t("nav.newArrivals"), "collection.html?c=new&gender=Women"],
+        [t("nav.bestSellers"), "collection.html?c=bestsellers&gender=Women"],
+        [t("nav.collections"), "collection.html?c=collection&gender=Women"],
+        [t("nav.shopAllWomen"), "collection.html?c=women&gender=Women"]
+      ] },
+      { head: t("nav.shopByCategory"), separate: true, links: [
+        [t("nav.tops"), "collection.html?c=tops&gender=Women"],
+        [t("nav.bottoms"), "collection.html?c=bottoms&gender=Women"],
+        [t("nav.dresses"), "collection.html?c=dresses&gender=Women"]
+      ] }
+    ],
+    feature: { href: "collection.html?c=women", img: "img/shoot/tennis-night-white.jpg", caption: t("feat.courtEdit") }
+  },
+  {
+    label: t("nav.men"), slug: "men",
+    columns: [
+      { head: t("nav.categories"), links: [
+        [t("nav.newArrivals"), "collection.html?c=new&gender=Men"],
+        [t("nav.bestSellers"), "collection.html?c=bestsellers&gender=Men"],
+        [t("nav.collections"), "collection.html?c=collection&gender=Men"],
+        [t("nav.shopAllMen"), "collection.html?c=men&gender=Men"]
+      ] },
+      { head: t("nav.shopByCategory"), separate: true, links: [
+        [t("nav.shirtsTanks"), "collection.html?c=tops&gender=Men"],
+        [t("nav.bottoms"), "collection.html?c=bottoms&gender=Men"]
+      ] }
+    ],
+    feature: { href: "collection.html?c=men", img: "img/instagram/men-padel-swing.jpg", caption: t("feat.courtReady") }
+  },
+  { label: t("nav.trending"), slug: "trending", columns: [], feature: null },
+  // Our Story: shown in the top nav (desktop + mobile) next to Trending - direct link, no mega-menu
+  { label: t("nav.ourStory"), slug: "about", href: "about.html", columns: [], feature: null }
+];
+
+/* ---- collection definitions: slug → {title, subtitle, predicate} ---- */
+const isMen = p => p.gender === "Men" || p.gender === "Unisex";
+CLOUDSKIN.collections = {
+  "collection":    { title: t("col.collection.t"), subtitle: t("col.collection.s"), test: () => true },
+  "women":         { title: t("col.women.t"),      subtitle: t("col.women.s"),      test: p => p.gender === "Women" || p.gender === "Unisex" },
+  "men":           { title: t("col.men.t"),        subtitle: t("col.men.s"),        test: isMen,
+                     only: p => p.gender === "Men" || p.gender === "Unisex" },
+  "tops":          { title: t("col.tops.t"),       subtitle: t("col.tops.s"),       test: p => ["Tops", "Bras", "Layers"].includes(p.category) },
+  "bottoms":       { title: t("col.bottoms.t"),    subtitle: t("col.bottoms.s"),    test: p => ["Skirts", "Shorts", "Bottoms", "Leggings", "Pants"].includes(p.category) },
+  "dresses":       { title: t("col.dresses.t"),    subtitle: t("col.dresses.s"),    test: p => p.category === "Dresses" },
+  "skirts":        { title: t("col.skirts.t"),     subtitle: t("col.skirts.s"),     test: p => p.category === "Skirts" },
+  "bras":          { title: t("col.bras.t"),       subtitle: t("col.bras.s"),       test: p => p.category === "Bras" },
+  "layers":        { title: t("col.layers.t"),     subtitle: t("col.layers.s"),     test: p => p.category === "Layers" },
+  "shorts":        { title: t("col.shorts.t"),     subtitle: t("col.shorts.s"),     test: p => p.category === "Shorts" },
+  "tennis":        { title: t("col.tennis.t"),     subtitle: t("col.tennis.s"),     test: p => (p.activities || []).includes("Tennis") },
+  "padel":         { title: t("col.padel.t"),      subtitle: t("col.padel.s"),      test: p => (p.activities || []).includes("Padel") },
+  "studio":        { title: t("col.studio.t"),     subtitle: t("col.studio.s"),     test: p => (p.activities || []).includes("Studio") },
+  "train":         { title: t("col.train.t"),      subtitle: t("col.train.s"),      test: p => (p.activities || []).includes("Train") },
+  "new":           { title: t("col.new.t"),         subtitle: t("col.new.s"),        test: p => p.isNew || p.badge === "New" },
+  "bestsellers":   { title: t("col.bestsellers.t"), subtitle: t("col.bestsellers.s"), test: p => p.bestSeller || p.badge === "Best Seller" },
+  "trending":      { title: t("col.trending.t"),   subtitle: t("col.trending.s"),   test: p => CLOUDSKIN.isTrending(p) }
+};
+
+/* resolve a collection slug + optional query facets → filtered products */
+CLOUDSKIN.resolveCollection = (slug, params = {}) => {
+  const def = CLOUDSKIN.collections[slug] || {
+    title: t("col.collection.t"), subtitle: "", test: () => true
+  };
+  let items = CLOUDSKIN.shopProducts().filter(def.test);
+  if (params.color)    items = items.filter(p => (p.colors || [p.color]).includes(params.color));
+  if (params.activity) items = items.filter(p => (p.activities || []).includes(params.activity));
+  if (params.gender)   items = items.filter(p => p.gender === params.gender);
+  if (params.category) items = items.filter(p => p.category === params.category);
+  if (params.support)  items = items.filter(p => p.support === params.support);
+  return { def, items };
+};
+
+/* ---- per-collection hero image (activity/edit pages lead with their matching shoot frame) ---- */
+CLOUDSKIN.collectionHero = {
+  "collection":    { img: "img/shoot/padel-serve-black.jpg",     pos: "center 20%" },
+  "women":         { img: "img/shoot/campaign-white-pool.jpg",   pos: "center 32%" },
+  "men":           { img: "img/instagram/men-padel-serve.jpg",  pos: "center 28%" },
+  "tops":          { img: "img/shoot/padel-serve-white.jpg",     pos: "center 22%" },
+  "bottoms":       { img: "img/shoot/villa-black-skirt.jpg",     pos: "center 30%" },
+  "skirts":        { img: "img/shoot/villa-black-skirt.jpg",     pos: "center 30%" },
+  "dresses":       { img: "img/shoot/villa-pool-black-dress.jpg", pos: "center 32%" },
+  "bras":          { img: "img/shoot/campaign-black-visor.jpg",  pos: "center 28%" },
+  "layers":        { img: "img/shoot/villa-white-jacket.jpg",    pos: "center 30%" },
+  "tennis":        { img: "img/shoot/tennis-night-white.jpg",    pos: "center 26%" },
+  "padel":         { img: "img/shoot/padel-trio.jpg",            pos: "center 28%" },
+  "studio":        { img: "img/shoot/villa-yoga-white.jpg",      pos: "center 40%" },
+  "train":         { img: "img/shoot/padel-serve-white.jpg",     pos: "center 22%" },
+  "shorts":        { img: "img/shoot/padel-serve-black.jpg",     pos: "center 24%" },
+  "trending":      { img: "img/shoot/tennis-night-black.jpg",    pos: "center 30%" },
+  "new":           { img: "img/shoot/villa-white-skirt-stairs.jpg", pos: "center 20%" },
+  "bestsellers":   { img: "img/shoot/villa-scooter-quarterzip.jpg",  pos: "center 26%" }
+};
+
+/* ---- footer data ---- */
+CLOUDSKIN.footer = {
+  // link target: "legal:KEY" opens the info modal (see js/legal.js), "cart" opens the bag, else a normal href.
+  columns: [
+    { head: t("foot.shop"), links: [
+      [t("nav.women"), "collection.html?c=women"],
+      [t("nav.men"), "collection.html?c=men"],
+      [t("nav.trending"), "collection.html?c=trending"]
+    ] },
+    { head: t("foot.customerService"), links: [
+      [t("foot.track"), "account.html"],
+      [t("foot.shipping"), "legal:shipping"],
+      [t("foot.returns"), "legal:returns"],
+      [t("foot.privacy"), "legal:privacy"],
+      [t("foot.terms"), "legal:terms"],
+      [t("foot.faq"), "legal:faq"],
+      [t("foot.sizeGuide"), "legal:sizeguide"]
+    ] },
+    { head: t("foot.theHouse"), links: [
+      [t("nav.ourStory"), "about.html"],
+      [t("foot.contact"), "legal:contact"],
+      [t("foot.account"), "login.html"],
+      [t("foot.cart"), "cart"],
+      [t("foot.collab"), "legal:collab"]
+    ] }
+  ],
+  newsletter: { head: t("foot.nlHead"), copy: t("foot.nlCopy") },
+  socials: [
+    ["Instagram", "https://www.instagram.com/cloudskin.active"],
+    ["TikTok", "https://www.tiktok.com/@cloudskin.active"],
+    ["Facebook", "https://www.facebook.com/people/Cloudskin/61590555028212/"]
+  ]
+};

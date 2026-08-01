@@ -1,0 +1,216 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CartDrawer from '@/components/CartDrawer.astro';
+import QuickView from '@/components/QuickView.astro';
+import SearchOverlay from '@/components/SearchOverlay.astro';
+import CookieConsent from '@/components/CookieConsent.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'ACME · Luxury Products & Streetwear, Your City',
+  description = "Discover ACME's exclusive collection of luxury products and streetwear. Acme brings you the best in fashion, kicks, and cuts. Shop now for the ultimate lifestyle experience!",
+  image = '/og.jpg',
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const fullTitle = title.includes('ACME') ? title : `${title} · ACME`;
+// Absolute URL for the share image (social scrapers require it).
+const ogImage = new URL(image, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Language: runs BEFORE the body paints. Greek is the rendered default
+         (shows instantly). For English, each translatable element is swapped the
+         moment it's parsed in (via a MutationObserver) and revealed immediately —
+         so English visitors see English titles/text with no Greek flash and no
+         delay, even on the long shop page. -->
+    <script is:inline>
+      (function () {
+        var lang = 'el';
+        try { lang = localStorage.getItem('acme-lang') || 'el'; } catch (e) {}
+        document.documentElement.dataset.lang = lang;
+        if (lang !== 'en') return;
+        function swap(el) {
+          if (el.dataset && el.dataset.en !== undefined && el.dataset.el === undefined) {
+            el.dataset.el = el.textContent;
+            el.textContent = el.dataset.en;
+          }
+        }
+        var obs = new MutationObserver(function (muts) {
+          for (var i = 0; i < muts.length; i++) {
+            var nodes = muts[i].addedNodes;
+            for (var j = 0; j < nodes.length; j++) {
+              var n = nodes[j];
+              if (n.nodeType !== 1) continue;
+              swap(n);
+              var found = n.querySelectorAll && n.querySelectorAll('[data-en]');
+              if (found) for (var k = 0; k < found.length; k++) swap(found[k]);
+            }
+          }
+        });
+        obs.observe(document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('DOMContentLoaded', function () { obs.disconnect(); });
+      })();
+    </script>
+    <style is:inline>
+      /* Hide a translatable element only until it's swapped to English (data-el
+         set on swap) — reveals progressively, no Greek flash. The :not([data-lang-ready])
+         is a hard fallback: once the page is ready everything is shown regardless,
+         so nothing can ever stay stuck hidden. */
+      html[data-lang="en"]:not([data-lang-ready]) [data-en]:not([data-el]) { visibility: hidden; }
+    </style>
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-64.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0a0a0b" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <!-- Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Acme Exclusive O.E" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Fonts: preconnect + single combined request, swap to avoid blocking -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+    />
+
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen flex flex-col antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-noir"
+      >Skip to content</a
+    >
+
+    <Header />
+
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Global islands (lazy, vanilla, near-zero JS) -->
+    <CartDrawer />
+    <QuickView />
+    <SearchOverlay />
+    <CookieConsent />
+
+
+    <!-- Language runtime: default Greek, EN/GR toggle, persisted -->
+    <script is:inline>
+      (function () {
+        const KEY = 'acme-lang';
+        const JS = {
+          size: { el: 'Νούμερο', en: 'Size' },
+          shipAddPre: { el: 'Προσθέστε', en: 'Add' },
+          shipAddPost: { el: 'για δωρεάν παγκόσμια express αποστολή', en: 'for free worldwide express shipping' },
+          shipUnlocked: { el: '✓ Ξεκλειδώσατε δωρεάν παγκόσμια express αποστολή', en: '✓ Free worldwide express shipping unlocked' },
+          selectSize: { el: 'Επιλέξτε νούμερο (EU)', en: 'Select size (EU)' },
+          sizeGuide: { el: 'Οδηγός μεγεθών', en: 'Size guide' },
+          addBag: { el: 'Προσθήκη στην Τσάντα', en: 'Add to Bag' },
+          viewDetails: { el: 'Δείτε πλήρεις λεπτομέρειες', en: 'View full details' },
+          loading: { el: 'Φόρτωση…', en: 'Loading…' },
+          loadError: { el: 'Αδυναμία φόρτωσης προϊόντος.', en: 'Could not load product.' },
+          searchHint: { el: 'Ξεκινήστε να πληκτρολογείτε για το επόμενο ζευγάρι σας.', en: 'Start typing to find your next pair.' },
+          noMatchPre: { el: 'Κανένα αποτέλεσμα για', en: 'No matches for' },
+          seeAllPre: { el: 'Δείτε όλα τα αποτελέσματα για', en: 'See all results for' },
+          remove: { el: 'Αφαίρεση', en: 'Remove' },
+        };
+        const getLang = () => localStorage.getItem(KEY) || 'el';
+        function apply(lang) {
+          document.documentElement.lang = lang;
+          document.documentElement.dataset.lang = lang;
+          document.querySelectorAll('[data-en]').forEach((el) => {
+            if (el.dataset.el === undefined) el.dataset.el = el.textContent;
+            el.textContent = lang === 'en' ? el.dataset.en : el.dataset.el;
+          });
+          document.querySelectorAll('[data-en-html]').forEach((el) => {
+            if (el.dataset.elHtml === undefined) el.dataset.elHtml = el.innerHTML;
+            el.innerHTML = lang === 'en' ? el.dataset.enHtml : el.dataset.elHtml;
+          });
+          document.querySelectorAll('[data-en-ph]').forEach((el) => {
+            if (el.dataset.elPh === undefined) el.dataset.elPh = el.getAttribute('placeholder') || '';
+            el.setAttribute('placeholder', lang === 'en' ? el.dataset.enPh : el.dataset.elPh);
+          });
+          document.querySelectorAll('[data-lang-label]').forEach((el) => {
+            el.textContent = lang === 'en' ? 'EL' : 'EN';
+          });
+          window.__LANG__ = lang;
+          window.dispatchEvent(new CustomEvent('lang:change', { detail: lang }));
+        }
+        window.__LANG__ = getLang();
+        window.setLang = (l) => { localStorage.setItem(KEY, l); apply(l); };
+        window.__t = (key) => { const e = JS[key]; return e ? e[window.__LANG__ || 'el'] : key; };
+        const init = () => {
+          apply(getLang());
+          // text is now in the correct language → reveal it (clears the EN gate)
+          document.documentElement.setAttribute('data-lang-ready', '');
+          document.querySelectorAll('[data-lang-toggle]').forEach((b) =>
+            b.addEventListener('click', () => window.setLang((window.__LANG__ || 'el') === 'en' ? 'el' : 'en')),
+          );
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+        else init();
+      })();
+    </script>
+
+    <!-- Cursor-reactive shine on buttons -->
+    <script is:inline>
+      document.addEventListener('pointermove', (e) => {
+        const btn = e.target instanceof Element ? e.target.closest('.btn, .qv-btn') : null;
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty('--mx', e.clientX - r.left + 'px');
+        btn.style.setProperty('--my', e.clientY - r.top + 'px');
+      }, { passive: true });
+    </script>
+
+    <!-- Scroll reveal: progressive enhancement -->
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

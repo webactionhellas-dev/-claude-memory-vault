@@ -1,0 +1,8 @@
+serve.mjs
+.serve.log
+scripts/
+supabase/
+tests/
+blog/i18n-cache/
+.env
+.env.local

@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Web Action (W&A) — a web & app development studio in Athens, Greece." />
+<title>Web Action · Web &amp; App Development</title>
+<link rel="icon" href="__LOGO_DATA__" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#000; --fg:#f7f9fc; --primary:#3366ff; --accent:#70b5ff;
+    --muted:#a3a3a3; --card:#0d0d10; --border:#2a2a2e;
+    --animation-iteration:infinite;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Jost',system-ui,sans-serif;background:var(--bg);color:var(--fg);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  section[id]{scroll-margin-top:5.5rem}
+  a{color:inherit;text-decoration:none}
+  .display{font-family:'Sora',system-ui,sans-serif}
+  ::selection{background:rgba(51,102,255,.35);color:#fff}
+  ::-webkit-scrollbar{width:11px}::-webkit-scrollbar-track{background:#000}
+  ::-webkit-scrollbar-thumb{background:#39393d;border-radius:99px;border:3px solid #000}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .blue-grad{background:linear-gradient(100deg,#3366ff,#5b8cff 45%,#8fb6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.7rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--primary)}
+  .eyebrow::before{content:"";width:2rem;height:1px;background:rgba(51,102,255,.6)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:999px;
+    font-weight:500;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;padding:.85rem 2rem;cursor:pointer;
+    transition:all .3s;border:1px solid transparent}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 30px -10px rgba(51,102,255,.8)}
+  .btn-primary:hover{background:#4d7bff;box-shadow:0 16px 50px -10px rgba(51,102,255,.95)}
+  .btn-outline{border-color:var(--border);background:rgba(255,255,255,.05);color:var(--fg)}
+  .btn-outline:hover{border-color:rgba(51,102,255,.7);background:rgba(51,102,255,.12)}
+
+  /* NAV */
+  header{position:fixed;inset:0 0 auto 0;z-index:50;transition:all .4s;border-bottom:1px solid transparent}
+  header.scrolled{background:rgba(0,0,0,.7);backdrop-filter:blur(16px);border-bottom-color:var(--border)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:80px;max-width:1180px;margin:0 auto;padding:0 24px}
+  nav .logo{height:38px;width:auto}
+  .navlinks{display:flex;align-items:center;gap:2.2rem;list-style:none}
+  .navlinks a{font-size:.8rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,249,252,.65);position:relative;transition:color .2s}
+  .navlinks a:hover{color:#fff}
+  .navlinks a::after{content:"";position:absolute;left:0;bottom:-6px;width:100%;height:1px;background:var(--primary);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+  .navlinks a:hover::after{transform:scaleX(1)}
+  .nav-right{display:flex;align-items:center;gap:.8rem}
+  .lang{display:flex;align-items:center;gap:.4rem;border:1px solid var(--border);border-radius:999px;padding:.5rem .8rem;
+    font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,249,252,.7);background:none;cursor:pointer;transition:all .2s}
+  .lang:hover{border-color:rgba(51,102,255,.7);color:#fff}
+  .lang svg{width:14px;height:14px;color:var(--primary)}
+  .menu-btn{display:none;background:none;border:none;color:#fff;cursor:pointer}
+  .mobile{display:none;border-top:1px solid var(--border);background:rgba(0,0,0,.96);backdrop-filter:blur(16px)}
+  .mobile ul{list-style:none;padding:.5rem 24px 1rem}
+  .mobile a{display:block;padding:.8rem 0;font-size:.85rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,249,252,.8)}
+  @media(max-width:900px){.navlinks{display:none}.menu-btn{display:block}.mobile.open{display:block}}
+
+  /* HERO */
+  .hero{position:relative;min-height:100svh;width:100%;overflow:hidden;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .cosmic{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 118%,rgba(51,102,255,.18),#000 55%),#000}
+  .star-canvas{position:absolute;inset:0;width:100%;height:100%}
+  .stars{width:1px;height:1px;animation:animStar 60s linear var(--animation-iteration)}
+  .stars2{width:2px;height:2px;animation:animStar 120s linear var(--animation-iteration)}
+  .stars3{width:3px;height:3px;animation:animStar 180s linear var(--animation-iteration)}
+  .stars::after,.stars2::after,.stars3::after{content:" ";position:absolute;top:2000px;width:inherit;height:inherit;background:transparent;box-shadow:inherit;border-radius:50%}
+  @keyframes animStar{from{transform:translateY(0)}to{transform:translateY(-2000px)}}
+  .earth{position:absolute;z-index:2;left:0;right:0;bottom:0;width:100%;height:82vh;
+    background-image:url('__EARTH_DATA__');background-size:cover;background-position:center 42%;background-repeat:no-repeat}
+  .hero-vignette{position:absolute;inset:0;z-index:10;pointer-events:none;
+    background:radial-gradient(42% 30% at 50% 38%,rgba(0,0,0,.4) 0%,transparent 75%)}
+  .horizon{position:absolute;z-index:1;left:50%;top:31vh;transform:translate(-50%,-50%);width:150vw;height:380px;pointer-events:none}
+  .horizon .glow{position:absolute;inset:0;background:radial-gradient(ellipse 55% 100% at 50% 50%,rgba(70,140,255,.55),rgba(70,140,255,.18) 38%,transparent 70%);filter:blur(36px)}
+  @media(max-width:640px){.horizon{top:27vh}}
+  .hero-content{position:relative;z-index:20;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px 26vh}
+  .hero-logo{width:min(82vw,440px);filter:drop-shadow(0 10px 50px rgba(51,102,255,.45));opacity:0;animation:fadeUp 1s .25s forwards}
+  .tagline{margin-top:1.8rem;display:flex;align-items:center;gap:.9rem}
+  .tagline span.w{font-size:.72rem;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:rgba(247,249,252,.75);opacity:0;animation:fadeUp .7s forwards}
+  .tagline .dot{color:rgba(51,102,255,.7)}
+  .hero-cta{margin-top:2.6rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp .8s .9s forwards}
+  .scroll-cue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:.3rem;
+    font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(247,249,252,.45);opacity:0;animation:fadeUp 1s 1.4s forwards}
+  .scroll-cue svg{width:16px;height:16px;animation:bounce 1.6s infinite}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @media(max-width:640px){.hero-cta{flex-direction:column;width:100%;max-width:320px}.hero-cta .btn{width:100%}}
+
+  /* MARQUEE */
+  .marquee{position:relative;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:#000;padding:1.2rem 0}
+  .marquee-track{display:flex;width:max-content;gap:2rem;animation:scroll 30s linear infinite}
+  .marquee-track span{font-family:'Sora';font-size:1.2rem;font-weight:600;color:rgba(247,249,252,.28);display:flex;align-items:center;gap:2rem;white-space:nowrap}
+  .marquee-track .star{color:rgba(51,102,255,.6)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* BEAMS (animated background behind the content sections) */
+  .beams{position:relative;overflow:hidden;background:#000}
+  .beams-canvas{position:absolute;inset:0;pointer-events:none;filter:blur(15px)}
+  .beams-content{position:relative;z-index:10}
+  /* scroll-scrubbed video */
+  .scrollvid{position:relative;border-top:1px solid var(--border);background:#000}
+  .scrollvid-track{position:relative;height:300vh}
+  .scrollvid-sticky{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4rem;padding:0 1rem}
+  .scrollvid-frame{position:relative;width:100%;max-width:min(94vw,1320px,calc(62svh * 2.05));border-radius:1.25rem;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#000;box-shadow:0 30px 70px -20px rgba(0,0,0,.7)}
+  .scrollvid-frame::before{content:"";position:absolute;inset:-2rem;z-index:-1;background:radial-gradient(50% 50% at 50% 50%,rgba(51,102,255,.22),transparent 70%);filter:blur(42px)}
+  .scrollvid-frame::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;pointer-events:none;background:linear-gradient(to top,#000 0%,#000 62%,transparent 100%)}
+  .scrollvid-frame{z-index:1}
+  .scrollvid-frame canvas{display:block;width:100%}
+  .scrollvid-hint{position:relative;z-index:1;font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(247,249,252,.4)}
+  /* code -> website showcase */
+  .showcase2{position:relative;overflow:hidden;border-top:1px solid var(--border);background:#000;padding:6rem 0}
+  .show-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.25rem;margin-top:3rem}
+  .show-shot{position:relative;border-radius:1rem;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 60px -25px rgba(0,0,0,.7)}
+  .show-shot-accent{border-color:rgba(51,102,255,.28)}
+  .show-shot img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;transition:transform .7s}
+  .show-shot:hover img{transform:scale(1.03)}
+  .show-tag{position:absolute;left:1rem;top:1rem;z-index:2;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.6);backdrop-filter:blur(6px);border-radius:999px;padding:.35rem .8rem;font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,249,252,.85)}
+  .show-tag.accent{border-color:rgba(51,102,255,.3);background:rgba(51,102,255,.15)}
+  .show-arrow{display:flex;justify-content:center;align-items:center;width:3rem;height:3rem;margin:0 auto;border-radius:999px;border:1px solid rgba(51,102,255,.4);background:rgba(51,102,255,.1);color:#3366ff}
+  .show-lines{position:relative;z-index:1;margin-top:3rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem 1.5rem;font-family:'Sora',sans-serif;font-weight:600;font-size:1.4rem;color:rgba(247,249,252,.85)}
+  .show-lines .sep{width:1px;height:1.3rem;background:var(--border)}
+  @media(max-width:860px){.show-grid{grid-template-columns:1fr;gap:1.5rem}.show-arrow{transform:rotate(90deg)}}
+  @media(max-width:640px){.show-lines{font-size:1.1rem}.show-lines .sep{display:none}}
+  .scrollvid-line{position:relative;z-index:1;display:flex;align-items:center;gap:1rem;font-family:'Sora',sans-serif;font-weight:600;font-size:1.5rem;letter-spacing:-.01em;color:rgba(247,249,252,.85)}
+  .scrollvid-line .rule{display:inline-block;width:3rem;height:1px;background:rgba(51,102,255,.5)}
+  @media(max-width:640px){.scrollvid-line{font-size:1.15rem}.scrollvid-line .rule{width:2rem}}
+  /* animated flowing paths behind the video */
+  .bg-paths{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;color:#3366ff;opacity:.7}
+  .bg-paths svg{width:100%;height:100%}
+  .bg-paths path{fill:none;stroke:currentColor;stroke-dasharray:0.35 0.65;animation:pathflow linear infinite}
+  @keyframes pathflow{from{stroke-dashoffset:0}to{stroke-dashoffset:-1}}
+
+  /* SECTIONS */
+  section{padding:6rem 0}
+  .sec-head{max-width:640px;margin-bottom:3.5rem}
+  .sec-head h2{font-family:'Sora';font-size:clamp(2rem,4.5vw,3rem);font-weight:700;line-height:1.05;margin-top:1.2rem;letter-spacing:-.01em}
+  .services-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:24px;overflow:hidden}
+  @media(max-width:760px){.services-grid{grid-template-columns:1fr}}
+  .svc{background:rgba(0,0,0,.85);padding:2.4rem;transition:background .3s}
+  .svc:hover{background:var(--card)}
+  .svc .ico{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:rgba(51,102,255,.1);border-radius:14px;color:var(--primary);transition:all .3s}
+  .svc:hover .ico{transform:translateY(-4px);border-color:rgba(51,102,255,.6);background:rgba(51,102,255,.2)}
+  .svc h3{font-family:'Sora';font-size:1.5rem;font-weight:700;margin:1.4rem 0 .6rem}
+  .svc p{font-weight:300;font-size:.92rem;line-height:1.6;color:rgba(247,249,252,.6)}
+
+  .studio{border-top:1px solid var(--border);background:rgba(255,255,255,.015);position:relative}
+  .studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+  @media(max-width:860px){.studio-grid{grid-template-columns:1fr}}
+  .studio h2{font-family:'Sora';font-size:clamp(2rem,4.5vw,3rem);font-weight:700;line-height:1.05;margin-top:1.2rem}
+  .studio p.body{margin-top:1.4rem;font-weight:300;font-size:1.05rem;line-height:1.7;color:rgba(247,249,252,.7);max-width:34rem}
+  .points{margin-top:2rem;list-style:none;display:flex;flex-direction:column;gap:.8rem}
+  .points li{display:flex;align-items:center;gap:.8rem;color:rgba(247,249,252,.85)}
+  .points .chk{width:24px;height:24px;border-radius:999px;background:rgba(51,102,255,.15);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .studio-img{border-radius:24px;overflow:hidden;border:1px solid var(--border);position:relative}
+  .studio-img::before{content:"";position:absolute;inset:-12px;background:rgba(51,102,255,.1);filter:blur(40px);z-index:-1}
+  .studio-img img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+
+  .contact{border-top:1px solid var(--border);position:relative}
+  .contact::before{content:"";position:absolute;inset:0;background:radial-gradient(circle 700px at 50% 0%,rgba(51,102,255,.14),transparent);z-index:-1}
+  .contact-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:3rem}
+  @media(max-width:860px){.contact-grid{grid-template-columns:1fr}}
+  .cinfo{display:flex;flex-direction:column;gap:1.8rem}
+  .cinfo .row{display:flex;align-items:flex-start;gap:1rem}
+  .cinfo .ico{width:44px;height:44px;border:1px solid var(--border);background:rgba(51,102,255,.1);border-radius:12px;color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cinfo .lbl{font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(247,249,252,.5)}
+  .cinfo .val{font-family:'Sora';font-size:1.25rem;font-weight:600}
+  .cinfo a.val:hover{color:var(--primary)}
+  form{border:1px solid var(--border);background:rgba(13,13,16,.4);border-radius:24px;padding:2rem}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  @media(max-width:520px){.frow{grid-template-columns:1fr}}
+  label{display:block;font-size:.7rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(247,249,252,.55);margin-bottom:.5rem;margin-top:1.2rem}
+  input,textarea{width:100%;border:1px solid var(--border);background:rgba(0,0,0,.5);border-radius:12px;padding:.8rem 1rem;color:#fff;font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+  input::placeholder,textarea::placeholder{color:rgba(247,249,252,.35)}
+  input:focus,textarea:focus{border-color:rgba(51,102,255,.7)}
+  form .btn{width:100%;margin-top:1.6rem}
+
+  footer{border-top:1px solid var(--border);background:#000;position:relative}
+  footer::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(51,102,255,.5),transparent)}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1.2fr;gap:3rem;padding:4rem 0}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr;gap:2rem}}
+  footer .logo{height:42px;margin-bottom:1.2rem}
+  footer p.tag{max-width:20rem;font-weight:300;font-size:.88rem;line-height:1.6;color:rgba(247,249,252,.55)}
+  footer h4{font-size:.7rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:rgba(247,249,252,.45);margin-bottom:1rem}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+  footer ul a{font-size:.9rem;color:rgba(247,249,252,.7);transition:color .2s}
+  footer ul a:hover{color:var(--primary)}
+  footer .ci{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:rgba(247,249,252,.7);margin-bottom:.7rem;transition:color .2s}
+  footer .ci:hover{color:var(--primary)}
+  footer .ci svg{width:16px;height:16px;color:var(--primary)}
+  .foot-bottom{border-top:1px solid var(--border);padding:1.6rem 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.75rem;color:rgba(247,249,252,.4)}
+  .foot-bottom .upper{text-transform:uppercase;letter-spacing:.2em}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(36px) scale(.98);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+  /* hero scroll-out veil + content fade (driven by JS) */
+  .hero-veil{position:absolute;inset:0;z-index:30;background:#000;opacity:0;pointer-events:none}
+  /* drifting cloud / atmosphere layer over the planet */
+  .hero-fog{position:absolute;left:0;right:0;bottom:0;z-index:12;height:52vh;overflow:hidden;pointer-events:none}
+  .hero-fog .wa-fog{position:absolute;border-radius:9999px;filter:blur(60px);mix-blend-mode:screen}
+  .hero-fog .wa-fog-a{bottom:-8%;left:6%;width:46vw;height:30vh;background:radial-gradient(ellipse,rgba(120,165,255,.22),transparent 70%);animation:waFogA 26s ease-in-out infinite}
+  .hero-fog .wa-fog-b{bottom:-12%;left:36%;width:52vw;height:34vh;background:radial-gradient(ellipse,rgba(150,190,255,.18),transparent 70%);animation:waFogB 32s ease-in-out infinite}
+  .hero-fog .wa-fog-c{bottom:-6%;right:4%;width:44vw;height:28vh;background:radial-gradient(ellipse,rgba(100,150,255,.2),transparent 70%);animation:waFogC 29s ease-in-out infinite}
+  .hero-fog .fade{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 32%,rgba(0,0,0,.55) 76%,#000 100%)}
+  @keyframes waFogA{0%,100%{transform:translateX(0) scale(1);opacity:.45}50%{transform:translateX(7%) scale(1.12);opacity:.85}}
+  @keyframes waFogB{0%,100%{transform:translateX(0) scale(1.05);opacity:.4}50%{transform:translateX(-6%) scale(1.15);opacity:.75}}
+  @keyframes waFogC{0%,100%{transform:translateX(0) scale(1.08);opacity:.45}50%{transform:translateX(5%) scale(1);opacity:.8}}
+  .hero-content,.cosmic{will-change:transform,opacity}
+  /* "light up" glow at the top of the content as it scrolls in */
+  .svc-glow{position:absolute;left:0;right:0;top:-7rem;height:18rem;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.4s ease;background:radial-gradient(50% 100% at 50% 0%,rgba(51,102,255,.28),transparent 70%)}
+  .svc-glow.in{opacity:1}
+
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <nav>
+    <a href="#top" aria-label="Web Action"><img class="logo" src="__LOGO_DATA__" alt="Web Action" /></a>
+    <ul class="navlinks">
+      <li><a href="#services" data-i18n="nav.services">Services</a></li>
+      <li><a href="#studio" data-i18n="nav.studio">Studio</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang" id="langBtn" aria-label="Switch language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+        <span id="langLabel">ΕΛ</span>
+      </button>
+      <a href="#contact" class="btn btn-primary" data-i18n="nav.start" style="padding:.6rem 1.3rem">Start a project</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile" id="mobile">
+    <ul>
+      <li><a href="#services" data-i18n="nav.services">Services</a></li>
+      <li><a href="#studio" data-i18n="nav.studio">Studio</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="cosmic">
+    <canvas class="star-canvas" id="starCanvas"></canvas>
+    <div class="horizon"><div class="glow"></div></div>
+    <div class="earth"></div>
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-veil" id="heroVeil"></div>
+  <div class="hero-fog"><div class="wa-fog wa-fog-a"></div><div class="wa-fog wa-fog-b"></div><div class="wa-fog wa-fog-c"></div><div class="fade"></div></div>
+  <div class="hero-content">
+    <img class="hero-logo" src="__LOGO_DATA__" alt="Web Action — Web & App Development" />
+    <div class="tagline" id="tagline"></div>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary" data-i18n="hero.ctaPrimary">Start a project</a>
+      <a href="#services" class="btn btn-outline" data-i18n="hero.ctaSecondary">View services</a>
+    </div>
+  </div>
+  <a href="#services" class="scroll-cue">
+    <span data-i18n="hero.scroll">Scroll</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </a>
+</section>
+
+<div class="beams" id="beams">
+<canvas class="beams-canvas" id="beamsCanvas"></canvas>
+<div class="beams-content">
+
+<section id="services" class="wrap">
+  <div class="svc-glow"></div>
+  <div class="sec-head reveal">
+    <span class="eyebrow" data-i18n="services.eyebrow">What we do</span>
+    <h2 data-i18n="services.heading">A full studio for everything you ship on the web.</h2>
+  </div>
+  <div class="services-grid">
+    <article class="svc reveal">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div>
+      <h3 data-i18n="s1.title">Web Design</h3>
+      <p data-i18n="s1.blurb">Distinctive, on-brand interfaces designed pixel by pixel — never templated.</p>
+    </article>
+    <article class="svc reveal">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <h3 data-i18n="s2.title">Web Development</h3>
+      <p data-i18n="s2.blurb">Hand-coded, lightning-fast websites on a modern, maintainable stack.</p>
+    </article>
+    <article class="svc reveal">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></div>
+      <h3 data-i18n="s3.title">Mobile Apps</h3>
+      <p data-i18n="s3.blurb">Native-feeling cross-platform apps your users will actually keep.</p>
+    </article>
+    <article class="svc reveal">
+      <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+      <h3 data-i18n="s4.title">E-commerce</h3>
+      <p data-i18n="s4.blurb">Storefronts engineered to convert — from first impression to checkout.</p>
+    </article>
+  </div>
+</section>
+
+</div><!-- /beams-content -->
+</div><!-- /beams (services) -->
+
+<!-- showcase: code -> finished website -->
+<section id="showcase" class="showcase2">
+  <div class="bg-paths" id="bgPaths"></div>
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="showcase.eyebrow">See it live</span>
+      <h2 data-i18n="showcase.heading">From raw code to a living website.</h2>
+      <p style="margin-top:1.2rem;color:rgba(247,249,252,.65);font-weight:300;font-size:1.05rem" data-i18n="showcase.body">Every Web Action build starts as hand-written code and ends as a fast, distinctive site.</p>
+    </div>
+    <div class="show-grid">
+      <figure class="show-shot reveal">
+        <span class="show-tag">01 · <span data-i18n="showcase.codeLabel">The code</span></span>
+        <img src="__SHOWCODE_DATA__" alt="Web Action code in the editor" loading="lazy" />
+      </figure>
+      <div class="show-arrow reveal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      <figure class="show-shot show-shot-accent reveal">
+        <span class="show-tag accent">02 · <span data-i18n="showcase.siteLabel">The result</span></span>
+        <img src="__SHOWSITE_DATA__" alt="The finished Web Action website" loading="lazy" />
+      </figure>
+    </div>
+    <div class="show-lines reveal">
+      <span data-i18n="showcase.topLine">No templates.</span>
+      <span class="sep"></span>
+      <span data-i18n="showcase.bottomLine">Code, written by hand.</span>
+    </div>
+  </div>
+</section>
+
+<div class="beams">
+<canvas class="beams-canvas"></canvas>
+<div class="beams-content">
+
+<section id="studio" class="studio">
+  <div class="wrap studio-grid">
+    <div class="reveal">
+      <span class="eyebrow" data-i18n="studio.eyebrow">The Studio</span>
+      <h2 data-i18n="studio.heading">A small studio with a serious obsession for the web.</h2>
+      <p class="body" data-i18n="studio.body">Web Action (W&amp;A) is a web &amp; app development studio based in Athens, Greece. We pair sharp design with rigorous engineering to build digital products that move brands forward.</p>
+      <ul class="points">
+        <li><span class="chk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span data-i18n="p1">Hand-built, never templated</span></li>
+        <li><span class="chk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span data-i18n="p2">Performance as a first principle</span></li>
+        <li><span class="chk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span data-i18n="p3">Clear, honest communication</span></li>
+      </ul>
+    </div>
+    <div class="studio-img reveal">
+      <img src="__STUDIO_DATA__" alt="The Web Action logo shown on a laptop" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="contact.eyebrow">Contact</span>
+      <h2 data-i18n="contact.title">Let’s start something worth shipping.</h2>
+      <p class="body" style="margin-top:1.2rem;color:rgba(247,249,252,.65);font-weight:300;font-size:1.05rem" data-i18n="contact.intro">Tell us a little about your project. We reply within one business day.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="cinfo reveal">
+        <div class="row">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div>
+          <div><div class="lbl" data-i18n="contact.emailLabel">Email</div><a class="val" href="mailto:webactionhellas@gmail.com">webactionhellas@gmail.com</a></div>
+        </div>
+        <div class="row">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+          <div><div class="lbl">Instagram</div><a class="val" href="https://www.instagram.com/webactionhellas/" target="_blank" rel="noreferrer">@webactionhellas</a></div>
+        </div>
+        <div class="row">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><div class="lbl" data-i18n="contact.locationLabel">Studio</div><div class="val" data-i18n="contact.location">Athens, Greece</div></div>
+        </div>
+      </div>
+      <form class="reveal" id="cform">
+        <div class="frow">
+          <div><label data-i18n="contact.name">Name</label><input name="name" required data-ph="contact.namePh" placeholder="Your name" /></div>
+          <div><label data-i18n="contact.email">Email</label><input name="email" type="email" required data-ph="contact.emailPh" placeholder="you@company.com" /></div>
+        </div>
+        <label data-i18n="contact.company">Company</label><input name="company" data-ph="contact.companyPh" placeholder="Company / brand" />
+        <label data-i18n="contact.message">Project details</label><textarea name="message" rows="4" required data-ph="contact.messagePh" placeholder="Tell us about your goals, timeline and anything else…"></textarea>
+        <button type="submit" class="btn btn-primary" data-i18n="contact.send">Send message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</div><!-- /beams-content -->
+</div><!-- /beams -->
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="logo" src="__LOGO_DATA__" alt="Web Action" />
+        <p class="tag" data-i18n="footer.tagline">A design &amp; development studio building websites and apps that move brands forward.</p>
+      </div>
+      <div>
+        <h4 data-i18n="footer.explore">Explore</h4>
+        <ul>
+          <li><a href="#services" data-i18n="nav.services">Services</a></li>
+          <li><a href="#studio" data-i18n="nav.studio">Studio</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="footer.touch">Get in touch</h4>
+        <a class="ci" href="mailto:webactionhellas@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>webactionhellas@gmail.com</a>
+        <a class="ci" href="https://www.instagram.com/webactionhellas/" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>@webactionhellas</a>
+        <a class="ci" href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="contact.location">Athens, Greece</span></a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr"></span> Web Action — W&amp;A. <span data-i18n="footer.rights">All rights reserved.</span></span>
+      <span class="upper">Athens · Greece</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var I18N = {
+    en: {
+      "nav.services":"Services","nav.studio":"Studio","nav.contact":"Contact","nav.start":"Start a project",
+      "hero.w1":"Design","hero.w2":"Code","hero.w3":"Action","hero.ctaPrimary":"Start a project","hero.ctaSecondary":"View services","hero.scroll":"Scroll",
+      "marquee":["Web Design","Web Development","Mobile Apps","E-commerce","UI / UX","Branding"],
+      "services.eyebrow":"What we do","services.heading":"A full studio for everything you ship on the web.",
+      "showcase.eyebrow":"See it live","showcase.heading":"From raw code to a living website.","showcase.body":"Every Web Action build starts as hand-written code and ends as a fast, distinctive site — no page builders, no recycled themes.","showcase.topLine":"No templates.","showcase.bottomLine":"Code, written by hand.","showcase.codeLabel":"The code","showcase.siteLabel":"The result",
+      "s1.title":"Web Design","s1.blurb":"Distinctive, on-brand interfaces designed pixel by pixel — never templated.",
+      "s2.title":"Web Development","s2.blurb":"Hand-coded, lightning-fast websites on a modern, maintainable stack.",
+      "s3.title":"Mobile Apps","s3.blurb":"Native-feeling cross-platform apps your users will actually keep.",
+      "s4.title":"E-commerce","s4.blurb":"Storefronts engineered to convert — from first impression to checkout.",
+      "studio.eyebrow":"The Studio","studio.heading":"A small studio with a serious obsession for the web.",
+      "studio.body":"Web Action (W&A) is a web & app development studio based in Athens, Greece. We pair sharp design with rigorous engineering to build digital products that move brands forward.",
+      "p1":"Hand-built, never templated","p2":"Performance as a first principle","p3":"Clear, honest communication",
+      "contact.eyebrow":"Contact","contact.title":"Let’s start something worth shipping.","contact.intro":"Tell us a little about your project. We reply within one business day.",
+      "contact.name":"Name","contact.namePh":"Your name","contact.email":"Email","contact.emailPh":"you@company.com","contact.company":"Company","contact.companyPh":"Company / brand",
+      "contact.message":"Project details","contact.messagePh":"Tell us about your goals, timeline and anything else…","contact.send":"Send message",
+      "contact.emailLabel":"Email","contact.locationLabel":"Studio","contact.location":"Athens, Greece",
+      "footer.tagline":"A design & development studio building websites and apps that move brands forward.","footer.explore":"Explore","footer.touch":"Get in touch","footer.rights":"All rights reserved."
+    },
+    el: {
+      "nav.services":"Υπηρεσίες","nav.studio":"Το Studio","nav.contact":"Επικοινωνία","nav.start":"Ξεκινήστε ένα έργο",
+      "hero.w1":"Σχέδιο","hero.w2":"Κώδικας","hero.w3":"Δράση","hero.ctaPrimary":"Ξεκινήστε ένα έργο","hero.ctaSecondary":"Δείτε τις υπηρεσίες","hero.scroll":"Κυλήστε",
+      "marquee":["Σχεδιασμός Web","Ανάπτυξη Web","Εφαρμογές Κινητών","E-shop","UI / UX","Branding"],
+      "services.eyebrow":"Τι κάνουμε","services.heading":"Ένα ολοκληρωμένο studio για ό,τι ανεβάζετε στο web.",
+      "showcase.eyebrow":"Δείτε το ζωντανά","showcase.heading":"Από τον κώδικα σε ένα website που ζει.","showcase.body":"Κάθε έργο της Web Action ξεκινά ως κώδικας γραμμένος στο χέρι και καταλήγει σε ένα γρήγορο, ξεχωριστό site — χωρίς page builders, χωρίς έτοιμα θέματα.","showcase.topLine":"Χωρίς έτοιμα templates.","showcase.bottomLine":"Κώδικας γραμμένος στο χέρι.","showcase.codeLabel":"Ο κώδικας","showcase.siteLabel":"Το αποτέλεσμα",
+      "s1.title":"Σχεδιασμός Ιστοσελίδων","s1.blurb":"Ξεχωριστά interfaces, φτιαγμένα στο pixel — ποτέ έτοιμα templates.",
+      "s2.title":"Ανάπτυξη Ιστοσελίδων","s2.blurb":"Αστραπιαία γρήγορες ιστοσελίδες, γραμμένες στο χέρι σε σύγχρονο stack.",
+      "s3.title":"Εφαρμογές Κινητών","s3.blurb":"Cross-platform εφαρμογές με native αίσθηση, που οι χρήστες κρατούν.",
+      "s4.title":"Ηλεκτρονικό Εμπόριο","s4.blurb":"E-shops φτιαγμένα να πουλάνε — από την πρώτη ματιά μέχρι το ταμείο.",
+      "studio.eyebrow":"Το Studio","studio.heading":"Ένα μικρό studio με σοβαρή εμμονή για το web.",
+      "studio.body":"Η Web Action (W&A) είναι ένα studio ανάπτυξης web & εφαρμογών με έδρα την Αθήνα. Συνδυάζουμε καθαρό σχεδιασμό με στιβαρή μηχανική, για ψηφιακά προϊόντα που πάνε τις μάρκες μπροστά.",
+      "p1":"Φτιαγμένα στο χέρι, ποτέ templates","p2":"Η ταχύτητα ως αρχή","p3":"Καθαρή, ειλικρινής επικοινωνία",
+      "contact.eyebrow":"Επικοινωνία","contact.title":"Ας ξεκινήσουμε κάτι που αξίζει να βγει στον αέρα.","contact.intro":"Πείτε μας λίγα λόγια για το έργο σας. Απαντάμε εντός μίας εργάσιμης ημέρας.",
+      "contact.name":"Όνομα","contact.namePh":"Το όνομά σας","contact.email":"Email","contact.emailPh":"eseis@etaireia.gr","contact.company":"Εταιρεία","contact.companyPh":"Εταιρεία / μάρκα",
+      "contact.message":"Λεπτομέρειες έργου","contact.messagePh":"Πείτε μας για τους στόχους, το χρονοδιάγραμμα και ό,τι άλλο…","contact.send":"Αποστολή μηνύματος",
+      "contact.emailLabel":"Email","contact.locationLabel":"Έδρα","contact.location":"Αθήνα, Ελλάδα",
+      "footer.tagline":"Ένα studio σχεδιασμού & ανάπτυξης που φτιάχνει ιστοσελίδες και εφαρμογές που πάνε τις μάρκες μπροστά.","footer.explore":"Πλοήγηση","footer.touch":"Επικοινωνία","footer.rights":"Με την επιφύλαξη παντός δικαιώματος."
+    }
+  };
+
+  var lang = (localStorage.getItem('wa-lang') === 'el') ? 'el' : 'en';
+
+  // canvas starfield (cheap to paint — no box-shadow layer to rasterize)
+  (function(){
+    var container=document.querySelector('.cosmic'), canvas=document.getElementById('starCanvas');
+    if(!container||!canvas) return;
+    var ctx=canvas.getContext('2d'); if(!ctx) return;
+    var stars=[], W=0, H=0;
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function build(){
+      var dpr=Math.min(window.devicePixelRatio||1,2);
+      W=container.clientWidth; H=container.clientHeight;
+      canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
+      canvas.style.width=W+'px'; canvas.style.height=H+'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      var count=Math.min(900,Math.round(W*H/1500));
+      stars=[];
+      for(var i=0;i<count;i++){
+        var t=Math.random();
+        var r=t<0.7?Math.random()*0.7+0.3:(t<0.92?Math.random()*0.7+0.9:Math.random()*1+1.4);
+        stars.push({x:Math.random()*W,y:Math.random()*H,r:r,speed:(r/2)*(0.18+Math.random()*0.12),tw:Math.random()*Math.PI*2,twSpeed:0.004+Math.random()*0.012,base:0.45+Math.random()*0.55});
+      }
+    }
+    function render(){
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<stars.length;i++){
+        var s=stars[i];
+        if(!reduce){s.y-=s.speed;if(s.y<-2){s.y=H+2;s.x=Math.random()*W;}s.tw+=s.twSpeed;}
+        var a=s.base*(0.65+Math.sin(s.tw)*0.35); if(a<0)a=0; else if(a>1)a=1;
+        ctx.globalAlpha=a; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      }
+      ctx.globalAlpha=1; requestAnimationFrame(render);
+    }
+    build();
+    if(window.ResizeObserver){new ResizeObserver(build).observe(container);} else {window.addEventListener('resize',build);}
+    requestAnimationFrame(render);
+  })();
+
+  function applyLang(){
+    var d = I18N[lang];
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n'); if(d[k]!=null) el.textContent = d[k];
+    });
+    document.querySelectorAll('[data-ph]').forEach(function(el){
+      var k = el.getAttribute('data-ph'); if(d[k]!=null) el.setAttribute('placeholder', d[k]);
+    });
+    // tagline
+    var t = document.getElementById('tagline'); t.innerHTML='';
+    [d['hero.w1'],d['hero.w2'],d['hero.w3']].forEach(function(w,i){
+      if(i>0){var dot=document.createElement('span');dot.className='dot';dot.textContent='·';t.appendChild(dot);}
+      var s=document.createElement('span');s.className='w';s.textContent=w.toUpperCase();s.style.animationDelay=(0.5+i*0.15)+'s';t.appendChild(s);
+    });
+    // marquee
+    var m=document.getElementById('marquee'); m.innerHTML='';
+    var words=d['marquee']; var seq=words.concat(words);
+    seq.forEach(function(w){var s=document.createElement('span');s.innerHTML=w+' <span class="star">✦</span>';m.appendChild(s);});
+    document.getElementById('langLabel').textContent = (lang==='en')?'ΕΛ':'EN';
+  }
+
+  document.getElementById('langBtn').addEventListener('click', function(){
+    lang = (lang==='en')?'el':'en'; localStorage.setItem('wa-lang', lang); applyLang();
+  });
+
+  // nav scroll + mobile
+  window.addEventListener('scroll', function(){ document.getElementById('hdr').classList.toggle('scrolled', window.scrollY>24); });
+  document.getElementById('menuBtn').addEventListener('click', function(){ document.getElementById('mobile').classList.toggle('open'); });
+  document.querySelectorAll('#mobile a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('mobile').classList.remove('open');});});
+
+  // reveal on scroll
+  var io = new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+  document.querySelectorAll('.reveal, .svc-glow').forEach(function(el){io.observe(el);});
+
+  // hero scroll-out: fade + lift content, zoom the cosmos, grow a dark veil
+  (function(){
+    var hero=document.getElementById('top'); if(!hero) return;
+    var content=document.querySelector('.hero-content'), cosmic=document.querySelector('.cosmic'),
+        veil=document.getElementById('heroVeil'), cue=document.querySelector('.scroll-cue');
+    var ticking=false;
+    function update(){
+      ticking=false;
+      var h=hero.offsetHeight||1;
+      var p=Math.min(1,Math.max(0,(window.scrollY||window.pageYOffset)/h));
+      if(content){content.style.opacity=(1-Math.min(1,p/0.45)).toFixed(3);content.style.transform='translateY('+(-120*p).toFixed(1)+'px)';}
+      if(cosmic){cosmic.style.transform='scale('+(1+0.14*p).toFixed(3)+')';}
+      if(veil){veil.style.opacity=Math.min(0.9,p).toFixed(3);}
+      if(cue){cue.style.opacity=(1-Math.min(1,p/0.15)).toFixed(3);}
+    }
+    window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update);}},{passive:true});
+    update();
+  })();
+
+  // contact form -> opens email client
+  document.getElementById('cform').addEventListener('submit', function(e){
+    e.preventDefault();
+    var f=e.target;
+    var subj=encodeURIComponent('Project enquiry — '+(f.name.value||''));
+    var body=encodeURIComponent('Name: '+f.name.value+'\nEmail: '+f.email.value+'\nCompany: '+f.company.value+'\n\n'+f.message.value);
+    window.location.href='mailto:webactionhellas@gmail.com?subject='+subj+'&body='+body;
+  });
+
+  // animated beams behind the content sections (supports multiple .beams blocks)
+  (function(){
+    function start(container){
+      var canvas=container.querySelector('.beams-canvas'); if(!canvas) return;
+      var ctx=canvas.getContext('2d'); if(!ctx) return;
+      var beams=[], W=0, H=0;
+      function mkBeam(w,h){var angle=-35+Math.random()*10;return{x:Math.random()*w*1.5-w*0.25,y:Math.random()*h*1.5-h*0.25,width:30+Math.random()*60,length:h*2.5,angle:angle,speed:0.6+Math.random()*1.2,opacity:0.12+Math.random()*0.16,hue:212+Math.random()*40,pulse:Math.random()*Math.PI*2,pulseSpeed:0.02+Math.random()*0.03};}
+      function size(){var dpr=window.devicePixelRatio||1;W=container.clientWidth;H=container.clientHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);beams=[];for(var i=0;i<30;i++)beams.push(mkBeam(W,H));}
+      function reset(b,i){var col=i%3,sp=W/3;b.y=H+100;b.x=col*sp+sp/2+(Math.random()-0.5)*sp*0.5;b.width=100+Math.random()*100;b.speed=0.5+Math.random()*0.4;b.hue=212+(i*40)/beams.length;b.opacity=0.2+Math.random()*0.1;}
+      function draw(b){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.angle*Math.PI/180);var o=b.opacity*(0.8+Math.sin(b.pulse)*0.2)*1;var g=ctx.createLinearGradient(0,0,0,b.length);g.addColorStop(0,'hsla('+b.hue+',85%,65%,0)');g.addColorStop(0.1,'hsla('+b.hue+',85%,65%,'+(o*0.5)+')');g.addColorStop(0.4,'hsla('+b.hue+',85%,65%,'+o+')');g.addColorStop(0.6,'hsla('+b.hue+',85%,65%,'+o+')');g.addColorStop(0.9,'hsla('+b.hue+',85%,65%,'+(o*0.5)+')');g.addColorStop(1,'hsla('+b.hue+',85%,65%,0)');ctx.fillStyle=g;ctx.fillRect(-b.width/2,0,b.width,b.length);ctx.restore();}
+      function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.filter='blur(35px)';for(var i=0;i<beams.length;i++){var b=beams[i];b.y-=b.speed;b.pulse+=b.pulseSpeed;if(b.y+b.length<-100)reset(b,i);draw(b);}requestAnimationFrame(loop);}
+      size();
+      if(window.ResizeObserver){new ResizeObserver(size).observe(container);} else {window.addEventListener('resize',size);}
+      loop();
+    }
+    document.querySelectorAll('.beams').forEach(start);
+  })();
+
+  // flowing background paths behind the showcase
+  (function(){
+    var host=document.getElementById('bgPaths'); if(!host) return;
+    var ns='http://www.w3.org/2000/svg';
+    function layer(position){
+      var svg=document.createElementNS(ns,'svg');
+      svg.setAttribute('viewBox','0 0 696 316'); svg.setAttribute('preserveAspectRatio','xMidYMid slice'); svg.setAttribute('fill','none');
+      for(var i=0;i<36;i++){
+        var d='M-'+(380-i*5*position)+' -'+(189+i*6)+'C-'+(380-i*5*position)+' -'+(189+i*6)+' -'+(312-i*5*position)+' '+(216-i*6)+' '+(152-i*5*position)+' '+(343-i*6)+'C'+(616-i*5*position)+' '+(470-i*6)+' '+(684-i*5*position)+' '+(875-i*6)+' '+(684-i*5*position)+' '+(875-i*6);
+        var p=document.createElementNS(ns,'path');
+        p.setAttribute('d',d); p.setAttribute('pathLength','1');
+        p.setAttribute('stroke-width',(0.5+i*0.03).toFixed(2));
+        p.setAttribute('stroke-opacity',(0.06+i*0.016).toFixed(3));
+        p.style.animationDuration=(20+Math.random()*10).toFixed(1)+'s';
+        p.style.animationDelay=(-Math.random()*20).toFixed(1)+'s';
+        svg.appendChild(p);
+      }
+      host.appendChild(svg);
+    }
+    layer(1); layer(-1);
+  })();
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  applyLang();
+</script>
+</body>
+</html>

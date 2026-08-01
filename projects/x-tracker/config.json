@@ -1,0 +1,51 @@
+{
+  "pollSeconds": 20,
+
+  "//wallets": "Seeded from the live Kolscan leaderboard, then LIVE-VERIFIED against Helius: only wallets whose labeled address actually shows self-funded BUYS are kept (7 of the 10 candidates). These are HOT-STREAK wallets, not proven edge - rotate them (see roadmap: wallet scoring). Alerts fire when one BUYS a token.",
+  "wallets": [
+    { "label": "jrus (Kolscan #2)", "address": "951wq3qDowjKHaycrNaiRB5WpovYVKXnqhnrcKPh46zt" },
+    { "label": "Trey (Kolscan #3)", "address": "831yhv67QpKqLBJjbmw2xoDUeeFHGUx8RnuRj9imeoEs" },
+    { "label": "theo (Kolscan #4)", "address": "Bi4rd5FH5bYEN8scZ7wevxNZyNmKHdaBcvewdPFxYdLt" },
+    { "label": "Cooker (Kolscan #5)", "address": "8deJ9xeUvXSJwicYptA9mHsU2rN2pDx37KWzkDkEXhU6" },
+    { "label": "Cupsey", "address": "2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f" },
+    { "label": "Euris", "address": "DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj" },
+    { "label": "Latuche", "address": "GJA1HEbxGnqBhBifH9uQauzXSB53to5rhDrzmKxhSU65" }
+  ],
+
+  "//flaggedWallets": "Dropped after live verification - their labeled address receives tokens but never pays from its own balance (parent/decoy wallet or multi-wallet operation), so it produces NO detectable buy signal. Re-verify before adding back: narc CxgPWvH2GoEDENELne2XKAR2z2Fr4shG2uaeyqZceGve, Cented CyaE1VxvBrahnPWkqm5VsdCvyS2QmNht2UFrKJHga54o, Gake DNfuF1L62WWyW3pNakVkyGGFzVVhj4Yr52jSmdTyeBHm",
+
+  "//xProvider": "Which X data source: 'twitterapi' (cheap, needs TWITTERAPI_KEY) or 'official' (X API v2, needs X_BEARER_TOKEN ~$200/mo).",
+  "xProvider": "twitterapi",
+
+  "//xAccounts": "X handles WITHOUT the @. Replace with the real market-movers you want (elonmusk, realDonaldTrump, blknoiz06, MustStopMurad, etc.). Keep total to 20-40.",
+  "xAccounts": [
+    "elonmusk",
+    "realDonaldTrump",
+    "blknoiz06",
+    "MustStopMurad"
+  ],
+
+  "//axiomPattern": "Axiom has NO documented deeplink API. This is the community-guessed pattern and may be wrong - verify one alert's Axiom link, then fix here. The mint is always shown in the alert so you can paste it into Axiom search regardless.",
+  "axiomPattern": "https://axiom.trade/t/{mint}",
+
+  "//filters": "What counts as a signal worth alerting on inside a tweet.",
+  "filters": {
+    "detectSolanaMints": true,
+    "detectPumpFunLinks": true,
+    "detectDexLinks": true,
+    "keywords": ["launch", "launching", "live now", "contract", "CA:", "ticker", "pump.fun", "just deployed"],
+    "onlyAlertTweetsWithSignal": true
+  },
+
+  "//dedupeMinutes": "Ignore the same detected token from the same source within this many minutes.",
+  "dedupeMinutes": 30,
+
+  "//stream": "Real-time websocket feed from Helius (logsSubscribe). Buys reach you in ~1-2s instead of the 20s poll. Free on the standard key. The poll stays on as backfill. Set false to use polling only.",
+  "stream": true,
+
+  "//enrich": "Attach a rug-safety grade (RugCheck) + live price/liquidity/age (Dexscreener) to every token alert. Both free. Set false to disable.",
+  "enrich": true,
+
+  "//convergence": "Fire a louder CONVERGENCE alert when this many DISTINCT watched wallets buy the same mint within windowMinutes. This is the highest-signal event in a tracked set.",
+  "convergence": { "count": 2, "windowMinutes": 30 }
+}

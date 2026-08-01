@@ -1,0 +1,11 @@
+<svg width="300" height="240" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Web Action">
+  <!-- mark -->
+  <g transform="translate(105,18) scale(0.9)" stroke="#0B0B0C" stroke-width="12" stroke-linecap="butt" stroke-linejoin="miter">
+    <path d="M22 32 L50 12 L78 32"/>
+    <path d="M22 54 L50 34 L78 54"/>
+    <path d="M22 76 L50 56 L78 76"/>
+  </g>
+  <!-- wordmark -->
+  <text x="150" y="210" text-anchor="middle" font-family="Sora, 'Segoe UI', sans-serif"
+        font-size="44" font-weight="800" letter-spacing="-1" fill="#0B0B0C">web action</text>
+</svg>

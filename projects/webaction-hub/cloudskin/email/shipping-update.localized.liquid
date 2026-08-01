@@ -1,0 +1,170 @@
+<!-- ============================================================================
+     CLOUDSKIN - Shopify "Shipping update" customer notification (Liquid)
+     ----------------------------------------------------------------------------
+     APPLY (Shopify admin, needs access):
+       Settings > Notifications > Customer notifications > Shipping update >
+       Edit code > click inside the code editor > Ctrl+A (select all) > Delete >
+       paste this ENTIRE file > Save > "Send test".
+       The SAME file also fits the "{{ t_status_outForDelivery }}" notification (same path,
+       choose "{{ t_status_outForDelivery }}"): both share {{ order }} + {{ fulfillment }} and
+       the headline adapts from fulfillment.shipment_status.
+       CodeMirror 6 editor: copy the whole file to the clipboard, then
+       Ctrl+A + Ctrl+V inside the editor.
+
+     SENT WHEN: tracking is added or updated on an existing shipment (a new
+       tracking number, or a carrier status change such as out for delivery).
+
+     WHAT IT DOES:
+       - Sibling of the {{ t_label_order }} / Shipping confirmation emails (same shell, palette,
+         wordmark, hairline, footer, Gmail dark-mode hardening).
+       - Short and clear: a friendly status, carrier + tracking number, and one
+         "{{ t_cta_track{{ t_label_order }} }}" button to {{ fulfillment.tracking_url }} (falling back
+         to {{ order.order_status_url }}).
+       - Headline humanises fulfillment.shipment_status when the carrier gives it.
+       - No em-dashes (house rule).
+     ============================================================================ -->
+{%- assign lang = attributes.lang | default: 'en' -%}
+{%- case lang -%}
+{%- when 'el' -%}{%- assign t_footer_tagline = "Αθλητική ένδυση πολυτελείας. Τένις, πάντελ, στούντιο." -%}{%- assign t_update_headlineDefault = "Μια ενημέρωση για την παράδοσή σας." -%}{%- assign t_status_attemptedDelivery = "Έγινε προσπάθεια παράδοσης" -%}{%- assign t_headline_outForDelivery = "Προς παράδοση." -%}{%- assign t_cta_trackOrder = "Παρακολουθήστε την παραγγελία σας" -%}{%- assign t_status_outForDelivery = "Προς παράδοση" -%}{%- assign t_status_readyForPickup = "Έτοιμο για παραλαβή" -%}{%- assign t_label_trackingNumber = "Αριθμός εντοπισμού" -%}{%- assign t_status_failure = "Πρόβλημα παράδοσης" -%}{%- assign t_status_inTransit = "Σε μεταφορά" -%}{%- assign t_headline_delivered = "Παραδόθηκε." -%}{%- assign t_status_delivered = "Παραδόθηκε" -%}{%- assign t_status_confirmed = "Επιβεβαιώθηκε" -%}{%- assign t_label_carrier = "Μεταφορέας" -%}{%- assign t_label_status = "Κατάσταση" -%}{%- assign t_label_order = "Παραγγελία" -%}{%- assign t_footer_city = "Ντουμπάι" -%}
+{%- when 'ar' -%}{%- assign t_footer_tagline = "ملابس رياضية فاخرة. تنس، بادل، استوديو." -%}{%- assign t_update_headlineDefault = "تحديث بشأن توصيل طلبك." -%}{%- assign t_status_attemptedDelivery = "جرت محاولة توصيل" -%}{%- assign t_headline_outForDelivery = "خرج للتوصيل." -%}{%- assign t_cta_trackOrder = "تتبع طلبك" -%}{%- assign t_status_outForDelivery = "خرج للتوصيل" -%}{%- assign t_status_readyForPickup = "جاهز للاستلام" -%}{%- assign t_label_trackingNumber = "رقم التتبع" -%}{%- assign t_status_failure = "مشكلة في التوصيل" -%}{%- assign t_status_inTransit = "قيد النقل" -%}{%- assign t_headline_delivered = "تم التوصيل." -%}{%- assign t_status_delivered = "تم التوصيل" -%}{%- assign t_status_confirmed = "تم التأكيد" -%}{%- assign t_label_carrier = "شركة الشحن" -%}{%- assign t_label_status = "الحالة" -%}{%- assign t_label_order = "الطلب" -%}{%- assign t_footer_city = "دبي" -%}
+{%- when 'es' -%}{%- assign t_footer_tagline = "Ropa deportiva de lujo. Tenis, pádel, estudio." -%}{%- assign t_update_headlineDefault = "Una actualización sobre tu entrega." -%}{%- assign t_status_attemptedDelivery = "Entrega intentada" -%}{%- assign t_headline_outForDelivery = "En reparto." -%}{%- assign t_cta_trackOrder = "Sigue tu pedido" -%}{%- assign t_status_outForDelivery = "En reparto" -%}{%- assign t_status_readyForPickup = "Listo para recoger" -%}{%- assign t_label_trackingNumber = "Número de seguimiento" -%}{%- assign t_status_failure = "Incidencia en la entrega" -%}{%- assign t_status_inTransit = "En tránsito" -%}{%- assign t_headline_delivered = "Entregado." -%}{%- assign t_status_delivered = "Entregado" -%}{%- assign t_status_confirmed = "Confirmado" -%}{%- assign t_label_carrier = "Transportista" -%}{%- assign t_label_status = "Estado" -%}{%- assign t_label_order = "Pedido" -%}{%- assign t_footer_city = "Dubái" -%}
+{%- when 'it' -%}{%- assign t_footer_tagline = "Abbigliamento sportivo di lusso. Tennis, padel, studio." -%}{%- assign t_update_headlineDefault = "Un aggiornamento sulla tua consegna." -%}{%- assign t_status_attemptedDelivery = "Consegna tentata" -%}{%- assign t_headline_outForDelivery = "In consegna." -%}{%- assign t_cta_trackOrder = "Traccia il tuo ordine" -%}{%- assign t_status_outForDelivery = "In consegna" -%}{%- assign t_status_readyForPickup = "Pronto per il ritiro" -%}{%- assign t_label_trackingNumber = "Numero di tracciamento" -%}{%- assign t_status_failure = "Problema di consegna" -%}{%- assign t_status_inTransit = "In transito" -%}{%- assign t_headline_delivered = "Consegnato." -%}{%- assign t_status_delivered = "Consegnato" -%}{%- assign t_status_confirmed = "Confermato" -%}{%- assign t_label_carrier = "Corriere" -%}{%- assign t_label_status = "Stato" -%}{%- assign t_label_order = "Ordine" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- when 'fr' -%}{%- assign t_footer_tagline = "Vêtements de sport de luxe. Tennis, padel, studio." -%}{%- assign t_update_headlineDefault = "Une mise à jour sur votre livraison." -%}{%- assign t_status_attemptedDelivery = "Livraison tentée" -%}{%- assign t_headline_outForDelivery = "En cours de livraison." -%}{%- assign t_cta_trackOrder = "Suivre votre commande" -%}{%- assign t_status_outForDelivery = "En cours de livraison" -%}{%- assign t_status_readyForPickup = "Prêt pour le retrait" -%}{%- assign t_label_trackingNumber = "Numéro de suivi" -%}{%- assign t_status_failure = "Problème de livraison" -%}{%- assign t_status_inTransit = "En transit" -%}{%- assign t_headline_delivered = "Livré." -%}{%- assign t_status_delivered = "Livré" -%}{%- assign t_status_confirmed = "Confirmé" -%}{%- assign t_label_carrier = "Transporteur" -%}{%- assign t_label_status = "Statut" -%}{%- assign t_label_order = "Commande" -%}{%- assign t_footer_city = "Dubaï" -%}
+{%- when 'de' -%}{%- assign t_footer_tagline = "Luxuriöse Sportbekleidung. Tennis, Padel, Studio." -%}{%- assign t_update_headlineDefault = "Ein Update zu deiner Lieferung." -%}{%- assign t_status_attemptedDelivery = "Zustellung versucht" -%}{%- assign t_headline_outForDelivery = "In Zustellung." -%}{%- assign t_cta_trackOrder = "Bestellung verfolgen" -%}{%- assign t_status_outForDelivery = "In Zustellung" -%}{%- assign t_status_readyForPickup = "Zur Abholung bereit" -%}{%- assign t_label_trackingNumber = "Sendungsnummer" -%}{%- assign t_status_failure = "Zustellproblem" -%}{%- assign t_status_inTransit = "Unterwegs" -%}{%- assign t_headline_delivered = "Zugestellt." -%}{%- assign t_status_delivered = "Zugestellt" -%}{%- assign t_status_confirmed = "Bestätigt" -%}{%- assign t_label_carrier = "Versandpartner" -%}{%- assign t_label_status = "Status" -%}{%- assign t_label_order = "Bestellung" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- when 'nl' -%}{%- assign t_footer_tagline = "Luxe sportkleding. Tennis, padel, studio." -%}{%- assign t_update_headlineDefault = "Een update over je levering." -%}{%- assign t_status_attemptedDelivery = "Bezorging geprobeerd" -%}{%- assign t_headline_outForDelivery = "Wordt bezorgd." -%}{%- assign t_cta_trackOrder = "Volg je bestelling" -%}{%- assign t_status_outForDelivery = "Wordt bezorgd" -%}{%- assign t_status_readyForPickup = "Klaar om af te halen" -%}{%- assign t_label_trackingNumber = "Trackingnummer" -%}{%- assign t_status_failure = "Bezorgprobleem" -%}{%- assign t_status_inTransit = "Onderweg" -%}{%- assign t_headline_delivered = "Bezorgd." -%}{%- assign t_status_delivered = "Bezorgd" -%}{%- assign t_status_confirmed = "Bevestigd" -%}{%- assign t_label_carrier = "Vervoerder" -%}{%- assign t_label_status = "Status" -%}{%- assign t_label_order = "Bestelling" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- when 'pt' -%}{%- assign t_footer_tagline = "Roupa desportiva de luxo. Ténis, padel, estúdio." -%}{%- assign t_update_headlineDefault = "Uma atualização sobre a tua entrega." -%}{%- assign t_status_attemptedDelivery = "Entrega tentada" -%}{%- assign t_headline_outForDelivery = "Em distribuição." -%}{%- assign t_cta_trackOrder = "Seguir a tua encomenda" -%}{%- assign t_status_outForDelivery = "Em distribuição" -%}{%- assign t_status_readyForPickup = "Pronto para levantamento" -%}{%- assign t_label_trackingNumber = "Número de seguimento" -%}{%- assign t_status_failure = "Problema na entrega" -%}{%- assign t_status_inTransit = "Em trânsito" -%}{%- assign t_headline_delivered = "Entregue." -%}{%- assign t_status_delivered = "Entregue" -%}{%- assign t_status_confirmed = "Confirmado" -%}{%- assign t_label_carrier = "Transportadora" -%}{%- assign t_label_status = "Estado" -%}{%- assign t_label_order = "Encomenda" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- when 'sv' -%}{%- assign t_footer_tagline = "Lyxiga träningskläder. Tennis, padel, studio." -%}{%- assign t_update_headlineDefault = "En uppdatering om din leverans." -%}{%- assign t_status_attemptedDelivery = "Leveransförsök" -%}{%- assign t_headline_outForDelivery = "Ute för leverans." -%}{%- assign t_cta_trackOrder = "Spåra din beställning" -%}{%- assign t_status_outForDelivery = "Ute för leverans" -%}{%- assign t_status_readyForPickup = "Redo för upphämtning" -%}{%- assign t_label_trackingNumber = "Spårningsnummer" -%}{%- assign t_status_failure = "Leveransproblem" -%}{%- assign t_status_inTransit = "Under transport" -%}{%- assign t_headline_delivered = "Levererad." -%}{%- assign t_status_delivered = "Levererad" -%}{%- assign t_status_confirmed = "Bekräftad" -%}{%- assign t_label_carrier = "Transportör" -%}{%- assign t_label_status = "Status" -%}{%- assign t_label_order = "Order" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- when 'ru' -%}{%- assign t_footer_tagline = "Роскошная спортивная одежда. Теннис, падел, студия." -%}{%- assign t_update_headlineDefault = "Новости о вашей доставке." -%}{%- assign t_status_attemptedDelivery = "Попытка доставки" -%}{%- assign t_headline_outForDelivery = "Передан курьеру." -%}{%- assign t_cta_trackOrder = "Отследить заказ" -%}{%- assign t_status_outForDelivery = "Передан курьеру" -%}{%- assign t_status_readyForPickup = "Готов к получению" -%}{%- assign t_label_trackingNumber = "Номер отслеживания" -%}{%- assign t_status_failure = "Проблема с доставкой" -%}{%- assign t_status_inTransit = "В пути" -%}{%- assign t_headline_delivered = "Доставлен." -%}{%- assign t_status_delivered = "Доставлен" -%}{%- assign t_status_confirmed = "Подтверждён" -%}{%- assign t_label_carrier = "Служба доставки" -%}{%- assign t_label_status = "Статус" -%}{%- assign t_label_order = "Заказ" -%}{%- assign t_footer_city = "Дубай" -%}
+{%- else -%}{%- assign t_footer_tagline = "Luxury activewear. Tennis, padel, studio." -%}{%- assign t_update_headlineDefault = "An update on your delivery." -%}{%- assign t_status_attemptedDelivery = "Delivery attempted" -%}{%- assign t_headline_outForDelivery = "Out for delivery." -%}{%- assign t_cta_trackOrder = "Track your order" -%}{%- assign t_status_outForDelivery = "Out for delivery" -%}{%- assign t_status_readyForPickup = "Ready for pickup" -%}{%- assign t_label_trackingNumber = "Tracking number" -%}{%- assign t_status_failure = "Delivery issue" -%}{%- assign t_status_inTransit = "In transit" -%}{%- assign t_headline_delivered = "Delivered." -%}{%- assign t_status_delivered = "Delivered" -%}{%- assign t_status_confirmed = "Confirmed" -%}{%- assign t_label_carrier = "Carrier" -%}{%- assign t_label_status = "Status" -%}{%- assign t_label_order = "Order" -%}{%- assign t_footer_city = "Dubai" -%}
+{%- endcase -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{ shop.name }} delivery update {{ order.name }}</title>
+<style>
+  :root { color-scheme: light; supported-color-schemes: light; }
+  body { margin:0; padding:0; width:100%; background:#efeae1; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  img { border:0; line-height:100%; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+  table { border-collapse:collapse; mso-table-lspace:0; mso-table-rspace:0; }
+  a { color:#171512; }
+  .cs-link { color:#171512; }
+  @media only screen and (max-width:600px){
+    .cs-shell { width:100% !important; }
+    .cs-pad { padding-left:24px !important; padding-right:24px !important; }
+  }
+  /* Cream only (Mike's call): no dark-mode palette. color-scheme:light above + explicit
+     cream bgcolor on every cell keep Gmail/Apple Mail from inverting the background to black. */
+</style>
+</head>
+<body style="margin:0;padding:0;background:#efeae1;">
+
+  {% comment %} Humanise the carrier status into a headline + label {% endcomment %}
+  {% assign headline = '{{ t_update_headlineDefault }}' %}
+  {% assign status_label = '' %}
+  {% case fulfillment.shipment_status %}
+    {% when 'in_transit' %}{% assign status_label = '{{ t_status_inTransit }}' %}
+    {% when 'out_for_delivery' %}{% assign status_label = '{{ t_status_outForDelivery }}' %}{% assign headline = '{{ t_headline_outForDelivery }}' %}
+    {% when 'attempted_delivery' %}{% assign status_label = '{{ t_status_attemptedDelivery }}' %}
+    {% when 'ready_for_pickup' %}{% assign status_label = '{{ t_status_readyForPickup }}' %}
+    {% when 'delivered' %}{% assign status_label = '{{ t_status_delivered }}' %}{% assign headline = '{{ t_headline_delivered }}' %}
+    {% when 'confirmed' %}{% assign status_label = '{{ t_status_confirmed }}' %}
+    {% when 'failure' %}{% assign status_label = '{{ t_status_failure }}' %}
+  {% endcase %}
+  {% assign track_url = order.order_status_url %}
+  {% if fulfillment.tracking_url %}{% assign track_url = fulfillment.tracking_url %}{% endif %}
+
+  <!-- preheader (hidden) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0;color:#efeae1;font-size:1px;line-height:1px;">
+    {% case lang %}{% when 'el' %}Μια ενημέρωση για την παράδοσή σας από την CLOUDSKIN, παραγγελία {{ order.name }}.{% when 'ar' %}تحديث بشأن توصيل طلبك من CLOUDSKIN، الطلب {{ order.name }}.{% when 'es' %}Una actualización sobre tu entrega de CLOUDSKIN, pedido {{ order.name }}.{% when 'it' %}Un aggiornamento sulla tua consegna CLOUDSKIN, ordine {{ order.name }}.{% when 'fr' %}Une mise à jour sur votre livraison CLOUDSKIN, commande {{ order.name }}.{% when 'de' %}Ein Update zu deiner CLOUDSKIN-Lieferung, Bestellung {{ order.name }}.{% when 'nl' %}Een update over je CLOUDSKIN-levering, bestelling {{ order.name }}.{% when 'pt' %}Uma atualização sobre a tua entrega CLOUDSKIN, encomenda {{ order.name }}.{% when 'sv' %}En uppdatering om din CLOUDSKIN-leverans, order {{ order.name }}.{% when 'ru' %}Обновление по вашей доставке CLOUDSKIN, заказ {{ order.name }}.{% else %}An update on your CLOUDSKIN delivery, order {{ order.name }}.{% endcase %}
+  </div>
+
+  <table role="presentation" class="cs-page" width="100%" cellpadding="0" cellspacing="0" bgcolor="#efeae1" style="background:#efeae1;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="600" class="cs-shell cs-card" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:600px;max-width:600px;background:#ffffff;border:1px solid #e6e0d6;">
+
+          <!-- Wordmark -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:44px 48px 0;">
+              <div class="cs-wordmark" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;letter-spacing:.42em;color:#171512;font-weight:600;text-transform:uppercase;">CLOUDSKIN</div>
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;margin:28px 0 0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- Headline -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:34px 48px 0;">
+              <div class="cs-muted" style="font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{ t_label_order }} {{ order.name }}</div>
+              <div class="cs-ink" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:30px;line-height:1.22;color:#171512;margin:12px 0 0;">{{ headline }}</div>
+              <p class="cs-soft" style="margin:16px 0 0;font-size:15px;line-height:1.75;color:#55504a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                {% case lang %}{% when 'el' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, ακολουθούν τα τελευταία νέα για την παραγγελία σας από την CLOUDSKIN. Παρακολουθήστε το ταξίδι της όποτε θέλετε με το κουμπί παρακάτω.{% else %}Ακολουθούν τα τελευταία νέα για την παραγγελία σας από την CLOUDSKIN. Παρακολουθήστε το ταξίδι της όποτε θέλετε με το κουμπί παρακάτω.{% endif %}{% when 'ar' %}{% if order.customer.first_name %}{{ order.customer.first_name }}، إليك آخر المستجدات حول طلبك من CLOUDSKIN. تابع رحلته في أي وقت عبر الزر أدناه.{% else %}إليك آخر المستجدات حول طلبك من CLOUDSKIN. تابع رحلته في أي وقت عبر الزر أدناه.{% endif %}{% when 'es' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, estas son las últimas novedades sobre tu pedido de CLOUDSKIN. Sigue su recorrido cuando quieras con el botón de abajo.{% else %}Estas son las últimas novedades sobre tu pedido de CLOUDSKIN. Sigue su recorrido cuando quieras con el botón de abajo.{% endif %}{% when 'it' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, ecco le ultime novità sul tuo ordine CLOUDSKIN. Segui il suo percorso quando vuoi con il pulsante qui sotto.{% else %}Ecco le ultime novità sul tuo ordine CLOUDSKIN. Segui il suo percorso quando vuoi con il pulsante qui sotto.{% endif %}{% when 'fr' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, voici les dernières nouvelles de votre commande CLOUDSKIN. Suivez son parcours à tout moment grâce au bouton ci-dessous.{% else %}Voici les dernières nouvelles de votre commande CLOUDSKIN. Suivez son parcours à tout moment grâce au bouton ci-dessous.{% endif %}{% when 'de' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, hier ist das Neueste zu deiner CLOUDSKIN-Bestellung. Verfolge ihren Weg jederzeit über den Button unten.{% else %}Hier ist das Neueste zu deiner CLOUDSKIN-Bestellung. Verfolge ihren Weg jederzeit über den Button unten.{% endif %}{% when 'nl' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, hier is het laatste nieuws over je CLOUDSKIN-bestelling. Volg de bezorging wanneer je wilt via de knop hieronder.{% else %}Hier is het laatste nieuws over je CLOUDSKIN-bestelling. Volg de bezorging wanneer je wilt via de knop hieronder.{% endif %}{% when 'pt' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, aqui ficam as últimas novidades sobre a tua encomenda CLOUDSKIN. Segue o seu percurso quando quiseres através do botão abaixo.{% else %}Aqui ficam as últimas novidades sobre a tua encomenda CLOUDSKIN. Segue o seu percurso quando quiseres através do botão abaixo.{% endif %}{% when 'sv' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, här är det senaste om din CLOUDSKIN-beställning. Följ dess resa när du vill med knappen nedan.{% else %}Här är det senaste om din CLOUDSKIN-beställning. Följ dess resa när du vill med knappen nedan.{% endif %}{% when 'ru' %}{% if order.customer.first_name %}{{ order.customer.first_name }}, вот последние новости о вашем заказе CLOUDSKIN. Следите за его путешествием в любое время по кнопке ниже.{% else %}Вот последние новости о вашем заказе CLOUDSKIN. Следите за его путешествием в любое время по кнопке ниже.{% endif %}{% else %}{% if order.customer.first_name %}{{ order.customer.first_name }}, here is the latest on your CLOUDSKIN order. Follow its journey any time with the button below.{% else %}Here is the latest on your CLOUDSKIN order. Follow its journey any time with the button below.{% endif %}{% endcase %}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Tracking -->
+          <tr>
+            <td class="cs-pad" style="padding:34px 48px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="cs-callout" bgcolor="#efeae1" style="border:1px solid #d8d0c3;background:#efeae1;padding:22px 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    {% if status_label != '' %}
+                    <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;">{{ t_label_status }}</div>
+                    <div class="cs-ink" style="font-size:15px;color:#171512;font-weight:600;margin:6px 0 0;">{{ status_label }}</div>
+                    <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;margin:16px 0 0;">{{ t_label_carrier }}</div>
+                    <div class="cs-ink" style="font-size:15px;color:#171512;margin:6px 0 0;">{% if fulfillment.tracking_company %}{{ fulfillment.tracking_company }}{% else %}DHL Express{% endif %}</div>
+                    {% else %}
+                    <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;">{{ t_label_carrier }}</div>
+                    <div class="cs-ink" style="font-size:15px;color:#171512;font-weight:600;margin:6px 0 0;">{% if fulfillment.tracking_company %}{{ fulfillment.tracking_company }}{% else %}DHL Express{% endif %}</div>
+                    {% endif %}
+                    {% if fulfillment.tracking_number %}
+                    <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;margin:16px 0 0;">{{ t_label_trackingNumber }}</div>
+                    <div class="cs-ink" style="font-size:15px;color:#171512;margin:6px 0 0;letter-spacing:.04em;">{{ fulfillment.tracking_number }}</div>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Track button -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:26px 48px 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td class="cs-btn" bgcolor="#171512" align="center" style="background:#171512;">
+                    <a class="cs-btn" href="{{ track_url }}" style="display:inline-block;background:#171512;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:16px 44px;">{{ t_cta_track{{ t_label_order }} }}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Help -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:28px 48px 0;">
+              <p class="cs-muted" style="margin:0;font-size:12.5px;line-height:1.7;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                {% case lang %}{% when 'el' %}Έχετε απορίες για την παραγγελία σας; Είμαστε εδώ για να σας βοηθήσουμε στο <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'ar' %}هل لديك أسئلة حول طلبك؟ نحن هنا لمساعدتك عبر <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'es' %}¿Tienes preguntas sobre tu pedido? Estamos aquí para ayudarte en <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'it' %}Hai domande sul tuo ordine? Siamo qui per aiutarti all'indirizzo <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'fr' %}Des questions sur votre commande ? Nous sommes là pour vous aider à l'adresse <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'de' %}Fragen zu deiner Bestellung? Wir helfen dir gerne unter <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'nl' %}Vragen over je bestelling? We helpen je graag via <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'pt' %}Tens dúvidas sobre a tua encomenda? Estamos aqui para te ajudar em <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'sv' %}Har du frågor om din beställning? Vi hjälper dig gärna på <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'ru' %}Есть вопросы по заказу? Мы будем рады помочь по адресу <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% else %}Questions about your order? We are here to help at <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% endcase %}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:36px 48px 46px;">
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;margin:0 0 22px;">&nbsp;</div>
+              <div class="cs-muted" style="font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">CLOUDSKIN &middot; {{ t_footer_city }}</div>
+              <div class="cs-muted" style="margin:8px 0 0;font-size:11px;line-height:1.6;color:#a59d90;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{ t_footer_tagline }}</div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

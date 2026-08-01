@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://ocszztflphqsaoyhlerx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://ocszztflphqsaoyhlerx.supabase.co">
+  <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/img/brand/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <!-- store-access gate: bounce anyone who has not passed the gate back to '/' -->
+  <script>(function(){try{if(sessionStorage.getItem('cs_gate_ok')==='1')return;}catch(e){return;}location.replace('/');})();</script>
+  <title>Checkout | CLOUDSKIN®</title>
+  <meta name="description" content="Secure CloudSkin checkout.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f4ef">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/main.css?v=78">
+  <link rel="stylesheet" href="css/checkout.css?v=76">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"></noscript>
+</head>
+<body id="top">
+  <a class="skip-link" href="#coPaymentSection">Skip to payment</a>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div id="site-header"></div>
+
+  <main id="checkout" class="co">
+    <div class="co__wrap">
+      <nav class="crumb co__crumb" aria-label="Breadcrumb"><a href="/home" data-i18n="checkout.keepShopping">Continue shopping</a></nav>
+
+      <div class="co__grid">
+        <!-- LEFT: order summary (rendered by js/checkout-page.js from the bag) -->
+        <aside class="co-summary" id="coSummary" aria-live="polite"></aside>
+
+        <!-- RIGHT: one Payment section, all methods together -->
+        <section class="co-pay" id="coPaymentSection" aria-labelledby="coPayHead">
+          <h1 class="co-h co-pay__head" id="coPayHead" data-i18n="checkout.payment">Payment</h1>
+
+          <!-- Stripe embedded: card + Apple Pay + Google Pay + Link (Adaptive Pricing = local currency) -->
+          <div class="co-stripe" id="coStripe">
+            <div class="co-field" id="coCurrency" hidden></div>
+            <div class="co-field" id="coContact" hidden></div>
+            <div class="co-field" id="coAddress" hidden></div>
+            <div class="co-field" id="coPayment"><div class="co-skeleton" aria-hidden="true"></div></div>
+
+            <form class="co-promo" id="coPromoForm" hidden>
+              <label class="co-promo__label" for="coPromoInput" data-i18n="checkout.promo">Promo code</label>
+              <div class="co-promo__row">
+                <input class="co-promo__input" id="coPromoInput" type="text" autocomplete="off" inputmode="text" placeholder="WELCOME10" aria-label="Promo code">
+                <button class="co-promo__btn" type="submit" data-i18n="checkout.apply">Apply</button>
+              </div>
+              <p class="co-promo__note" id="coPromoNote" hidden></p>
+            </form>
+
+            <p class="co-stripe__total" id="coStripeTotal" hidden></p>
+            <p class="co-msg" id="coMsg" role="alert" hidden></p>
+            <button class="btn btn--full co-pay__btn" id="coPayBtn" type="button" hidden data-i18n="checkout.payNow">Pay now</button>
+          </div>
+
+          <!-- sibling rail: PayPal (its own approval + settlement currency) -->
+          <div class="co-or" role="separator"><span data-i18n="checkout.or">or</span></div>
+          <div class="co-paypal">
+            <div class="paypal-slot" id="paypalButtonCheckout"></div>
+            <p class="co-paypal__note" data-i18n="checkout.paypalNote">PayPal is billed in its settlement currency and converted by PayPal at checkout.</p>
+          </div>
+
+          <ul class="co-trust" aria-hidden="true">
+            <li data-i18n="checkout.trustSecure">Encrypted &amp; secure</li>
+            <li data-i18n="checkout.trustDuties">Duties &amp; taxes included</li>
+            <li data-i18n="checkout.trustTracked">Tracked delivery</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer" aria-label="Footer"></footer>
+
+  <script src="js/i18n-strings.js?v=76"></script>
+  <script src="js/i18n.js?v=77"></script>
+  <script src="js/config.js?v=76"></script>
+  <script src="js/products.js?v=76"></script>
+  <script src="js/product-content.js?v=76"></script>
+  <script src="js/shopify.js?v=76"></script>
+  <script src="js/curate.js?v=76"></script>
+  <script src="js/legal.js?v=76"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=76"></script>
+  <script src="js/content-snapshot.js?v=76"></script>
+  <script defer src="js/content.js?v=76"></script>
+  <script src="js/auth.js?v=76"></script>
+  <script src="js/shell.js?v=76"></script>
+  <script src="js/checkout.js?v=76"></script>
+  <script src="js/checkout-paypal.js?v=76"></script>
+  <script src="js/checkout-page.js?v=76"></script>
+</body>
+</html>

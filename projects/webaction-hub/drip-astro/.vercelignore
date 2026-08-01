@@ -1,0 +1,3 @@
+# Excluded from the deployment upload only; local builds are unaffected.
+build-log.txt
+_logo_backup

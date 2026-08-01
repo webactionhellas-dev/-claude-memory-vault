@@ -1,0 +1,232 @@
+{
+  "categories": [
+    {
+      "slug": "sneakers",
+      "label": "Sneakers",
+      "tagline": "The icons, reimagined.",
+      "count": 284,
+      "image": "assets/images/products/jordan-1-retro-high-virgil-abloh-archive-alaska-1.jpg"
+    },
+    {
+      "slug": "running",
+      "label": "Running",
+      "tagline": "Engineered for velocity.",
+      "count": 9,
+      "image": "assets/images/products/asics-gel-kayano-14-white-fjord-grey-1.jpg"
+    },
+    {
+      "slug": "basketball",
+      "label": "Basketball",
+      "tagline": "Above the rim.",
+      "count": 178,
+      "image": "assets/images/products/jordan-1-retro-high-virgil-abloh-archive-alaska-1.jpg"
+    },
+    {
+      "slug": "lifestyle",
+      "label": "Lifestyle",
+      "tagline": "Everyday luxury.",
+      "count": 102,
+      "image": "assets/images/products/nike-mind-001-slide-light-smoke-grey-1.png"
+    },
+    {
+      "slug": "clothing",
+      "label": "Clothing",
+      "tagline": "Wear the culture.",
+      "count": 11,
+      "image": "assets/images/products/drip-logo-hoodie-black-1.png"
+    },
+    {
+      "slug": "accessories",
+      "label": "Accessories",
+      "tagline": "Finish the fit.",
+      "count": 13,
+      "image": "assets/images/products/nike-book-1-what-the-1.jpg"
+    },
+    {
+      "slug": "new-arrivals",
+      "label": "New Arrivals",
+      "tagline": "Fresh off the truck.",
+      "count": 117,
+      "image": "assets/images/products/jordan-1-retro-high-virgil-abloh-archive-alaska-1.jpg"
+    },
+    {
+      "slug": "sale",
+      "label": "Sale",
+      "tagline": "Grails, marked down.",
+      "count": 125,
+      "image": "assets/images/products/jordan-3-retro-og-sp-a-ma-maniere-while-you-were-sleeping-1.jpg"
+    },
+    {
+      "slug": "limited-editions",
+      "label": "Limited Editions",
+      "tagline": "Few made. Fewer left.",
+      "count": 53,
+      "image": "assets/images/products/jordan-1-retro-high-virgil-abloh-archive-alaska-1.jpg"
+    }
+  ],
+  "brands": [
+    {
+      "name": "Nike",
+      "slug": "nike",
+      "count": 108
+    },
+    {
+      "name": "Jordan",
+      "slug": "jordan",
+      "count": 101
+    },
+    {
+      "name": "Yeezy",
+      "slug": "yeezy",
+      "count": 48
+    },
+    {
+      "name": "New Balance",
+      "slug": "new-balance",
+      "count": 10
+    },
+    {
+      "name": "Adidas",
+      "slug": "adidas",
+      "count": 10
+    },
+    {
+      "name": "Drip Exclusive",
+      "slug": "drip-exclusive",
+      "count": 9
+    },
+    {
+      "name": "ASICS",
+      "slug": "asics",
+      "count": 6
+    },
+    {
+      "name": "UGG",
+      "slug": "ugg",
+      "count": 6
+    },
+    {
+      "name": "Essentials",
+      "slug": "essentials",
+      "count": 5
+    },
+    {
+      "name": "Stone Island × Supreme",
+      "slug": "stone-island-supreme",
+      "count": 3
+    },
+    {
+      "name": "Stüssy",
+      "slug": "stu-ssy",
+      "count": 2
+    },
+    {
+      "name": "Fear of God",
+      "slug": "fear-of-god",
+      "count": 2
+    },
+    {
+      "name": "Salomon",
+      "slug": "salomon",
+      "count": 1
+    }
+  ],
+  "collections": [
+    {
+      "slug": "24h-delivery",
+      "title": "24H DELIVERY",
+      "count": 156,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "adidas-1",
+      "title": "ADIDAS",
+      "count": 11,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "air-jordan",
+      "title": "AIR JORDAN",
+      "count": 103,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "all-items",
+      "title": "ALL ITEMS",
+      "count": 345,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "asics",
+      "title": "ASICS",
+      "count": 6,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "best-sellers",
+      "title": "BEST SELLERS",
+      "count": 49,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "drip-clothing",
+      "title": "Drip Clothing",
+      "count": 22,
+      "description": ""
+    },
+    {
+      "slug": "drip-men",
+      "title": "Drip Men",
+      "count": 18,
+      "description": ""
+    },
+    {
+      "slug": "drip-women",
+      "title": "Drip Women",
+      "count": 9,
+      "description": ""
+    },
+    {
+      "slug": "new-in",
+      "title": "NEW ARRIVALS",
+      "count": 124,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "new-balance",
+      "title": "NEW BALANCE",
+      "count": 11,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "sales",
+      "title": "NEW YEAR SALES",
+      "count": 128,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to 85% off for a limited time."
+    },
+    {
+      "slug": "nike-1",
+      "title": "NΙΚΕ",
+      "count": 101,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "ugg-1",
+      "title": "UGG",
+      "count": 6,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    },
+    {
+      "slug": "under-200",
+      "title": "UNDER 200€",
+      "count": 105,
+      "description": "Buy 1 Get € 20 off Buy 2 Get € 50 off Buy 3 Get € 75 Off Free Shipping Included"
+    },
+    {
+      "slug": "yeezy",
+      "title": "YEEZY",
+      "count": 49,
+      "description": "Get special limited edition sneakers, free shipping, and discounts of up to €175 for a limited time time."
+    }
+  ]
+}

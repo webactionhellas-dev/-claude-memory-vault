@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout title="Page not found · DRIP" noindex>
+  <section class="wrap flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
+    <p class="font-display text-7xl font-900 tracking-tight text-accent-soft md:text-8xl">404</p>
+    <h1 class="mt-4 font-display text-2xl font-800" data-en="This pair walked off.">Αυτό το ζευγάρι την έκανε.</h1>
+    <p class="mt-2 max-w-sm text-muted" data-en="The page you’re looking for doesn’t exist, but the grails are still here.">Η σελίδα που ψάχνετε δεν υπάρχει, αλλά τα grails είναι ακόμα εδώ.</p>
+    <a href="/shop" class="btn btn-fill mt-8"><span data-en="Back to the shop">Επιστροφή στο κατάστημα</span> <Icon name="arrow" size={18} /></a>
+  </section>
+</BaseLayout>

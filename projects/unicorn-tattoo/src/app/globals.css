@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --edge-px: clamp(1.25rem, 5vw, 6rem);
+}
+
+@layer base {
+  * {
+    @apply border-ink-500;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: #46B7CE;
+    color: #0a0a0a;
+  }
+
+  :focus-visible {
+    outline: 2px solid #2E96B0;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Custom scrollbar - desktop only */
+  @media (pointer: fine) {
+    ::-webkit-scrollbar {
+      width: 9px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060606;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #242424;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3a3a3a;
+    }
+  }
+}
+
+@layer components {
+  /* Page gutter that respects the iPhone notch / home-bar safe areas */
+  .edge {
+    padding-left: max(var(--edge-px), env(safe-area-inset-left));
+    padding-right: max(var(--edge-px), env(safe-area-inset-right));
+  }
+
+  /* Tracked, uppercase label face */
+  .eyebrow {
+    @apply font-sans text-[11px] uppercase tracking-eyebrow text-bone-dim;
+  }
+
+  .ink-link {
+    @apply relative inline-block text-bone transition-colors duration-300;
+  }
+  .ink-link::after {
+    content: '';
+    @apply absolute left-0 -bottom-1 h-px w-full origin-right scale-x-0 bg-violet transition-transform duration-500;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ink-link:hover::after {
+    @apply origin-left scale-x-100;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Lightbox photo change: a soft fade + settle (smooth, not a hard cut) */
+@keyframes lightboxIn {
+  from {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Film grain overlay ──────────────────────────────── */
+.grain {
+  position: fixed;
+  inset: -150%;
+  width: 400%;
+  height: 400%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  will-change: transform;
+}
+
+/* ── Hero: slow continuous film "breathing" ──────────── */
+/* A very slow zoom on the film layer so the hero is never dead-still. It
+   composes with the framer scroll-parallax scale on the parent. */
+@keyframes heroBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.hero-breathe {
+  animation: heroBreathe 26s ease-in-out infinite;
+  transform-origin: 50% 45%;
+  will-change: transform;
+}
+
+/* ── Hero: rotating discipline word ──────────────────── */
+/* Stack every word in one grid cell so the row width = widest word and there
+   is zero layout shift as they cycle. */
+.rotw {
+  display: inline-grid;
+}
+.rotw > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Zeus lightning: brief double-flash over the statue ─ */
+/* Real lightning signature: strike, dip, second strike, slow decay. */
+@keyframes zeusFlash {
+  0% { opacity: 0; }
+  7% { opacity: 0.85; }
+  15% { opacity: 0.12; }
+  24% { opacity: 0.65; }
+  38% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+.zeus-flash {
+  animation: zeusFlash 1.5s ease-out forwards;
+}
+/* The bolt CRACKLES stroke-to-stroke instead of blinking one frozen shape:
+   three stacked sprites, each a DIFFERENT silhouette, fire on staggered
+   windows that each lead a zeusFlash light peak (the strike causes the light).
+   stroke-1 = bright leader, crackle = faint mid stutter, stroke-2 = the
+   return stroke with a different silhouette. This shape-to-shape change is
+   what separates a live discharge from a photo of lightning being blinked. */
+@keyframes zeusStroke1 {
+  0% { opacity: 0; }
+  3% { opacity: 1; }
+  7% { opacity: 0.5; }
+  10% { opacity: 0.95; }
+  15% { opacity: 0.08; }
+  22% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes zeusCrackle {
+  0%, 11% { opacity: 0; }
+  14% { opacity: 0.45; }
+  16% { opacity: 0.05; }
+  19% { opacity: 0.3; }
+  23% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes zeusStroke2 {
+  0%, 17% { opacity: 0; }
+  21% { opacity: 0.92; }
+  26% { opacity: 0.32; }
+  30% { opacity: 0.68; }
+  37% { opacity: 0; }
+  100% { opacity: 0; }
+}
+.zeus-stroke-1 { animation: zeusStroke1 1.5s linear forwards; }
+.zeus-crackle { animation: zeusCrackle 1.5s linear forwards; }
+.zeus-stroke-2 { animation: zeusStroke2 1.5s linear forwards; }
+
+/* The SECOND stripe strikes, then FREEZES - it stays lit behind the photo
+   (fill-mode forwards holds the final keyframe forever). */
+@keyframes zeusFreeze {
+  0%, 15% { opacity: 0; }
+  20% { opacity: 1; }
+  26% { opacity: 0.4; }
+  32% { opacity: 0.9; }
+  55% { opacity: 0.55; }
+  100% { opacity: 0.55; }
+}
+.zeus-freeze { animation: zeusFreeze 1.9s linear forwards; }
+
+/* ── Button fx: sheen sweep (opt-in via `fx`) ────────── */
+.btn-fx::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(236, 232, 223, 0.22) 50%,
+    transparent 70%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-fx:hover::before {
+  transform: translateX(130%);
+}
+
+/* ── Lenis smooth scroll ─────────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Background hero video ───────────────────────────── */
+/* Never show Safari/iOS's native play button. It appears over the poster when
+   autoplay is refused (Low Power Mode, etc.); hiding it means only the clean
+   poster shows through instead of a broken-looking play control. */
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── Reduced motion: strip the heavy stuff ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain {
+    display: none;
+  }
+}

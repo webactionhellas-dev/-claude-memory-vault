@@ -1,0 +1,209 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import TrustBar from '@/components/TrustBar.astro';
+import ShaderBackground from '@/components/ShaderBackground.astro';
+import MeshGradient from '@/components/MeshGradient.astro';
+import ProductRail from '@/components/ProductRail.astro';
+import Icon from '@/components/Icon.astro';
+import { resolveImage } from '@/lib/images';
+import ProductImage from '@/components/ProductImage.astro';
+import { loadCatalog } from '@/lib/catalog';
+import { loadContent, c as txt } from '@/lib/content';
+import {
+  products,
+  newArrivals,
+  bestSellers,
+  brands,
+  categories,
+  categoryCover,
+} from '@/lib/products';
+
+export const prerender = false;
+
+await loadCatalog();
+// CDN cache for the hot storefront pages: fresh for 60s, then serve stale while
+// revalidating for 5 min. Stock accuracy is unaffected: sold-out sizes come from
+// the client-side /api/stock fetch, which stays no-store. /api/* and /admin*
+// remain uncached (they never set this header).
+Astro.response.headers.set('cache-control', 's-maxage=60, stale-while-revalidate=300');
+await loadContent();
+
+const railBrands = brands.map((b) => b.name);
+
+// Editable homepage copy — falls back to these defaults until changed in admin.
+const cPromiseEy = txt('home.promise.eyebrow', 'Η υπόσχεση DRIP', 'The DRIP promise');
+const cPromiseTi = txt('home.promise.title', 'Πιστοποιημένη πολυτέλεια, σε όλη την Αθήνα μέσα σε 24 ώρες.', 'Authenticated luxury, delivered across Athens in 24 hours.');
+const cNaEy = txt('home.newarrivals.eyebrow', 'Μόλις ήρθαν', 'Just landed');
+const cNaTi = txt('home.newarrivals.title', 'Νέες Παραλαβές', 'New Arrivals');
+const cNaTa = txt('home.newarrivals.tagline', 'Οι πιο πρόσφατες αφίξεις, πιστοποιημένες και έτοιμες για αποστολή.', 'The latest arrivals, authenticated and ready to ship.');
+const cBsEy = txt('home.bestsellers.eyebrow', 'Αγαπημένα των συλλεκτών', 'Loved by collectors');
+const cBsTi = txt('home.bestsellers.title', 'Δημοφιλέστερα', 'Best Sellers');
+const cBsTa = txt('home.bestsellers.tagline', 'Τα πιο περιζήτητα ζευγάρια της σεζόν.', 'The most coveted pairs of the season.');
+const cAuthEy = txt('home.authband.eyebrow', 'Το πρότυπο DRIP', 'The DRIP standard');
+const cAuthTi = txt('home.authband.title', 'Κάθε ζευγάρι, πιστοποιημένο πριν την αποστολή.', 'Every pair, verified before it ships.');
+const cAboutEy = txt('home.about.eyebrow', 'Σχετικά με εμάς', 'About us');
+const cAboutTi = txt('home.about.title', 'Γεννημένο στην Κηφισιά, για τους συλλέκτες.', 'Born in Kifisia, built for collectors.');
+
+const featureCats = ['sneakers', 'basketball', 'lifestyle', 'running']
+  .map((slug) => categories.find((c) => c.slug === slug))
+  .filter(Boolean) as { slug: string; label: string; tagline: string; count: number }[];
+
+// Hand-picked cover image per category (overrides the auto first-product pick)
+const catCoverOverride: Record<string, string> = {
+  basketball: 'kobe-5-protro-year-of-the-mamba-eggplant-1.webp',
+  sneakers: 'yeezy-boost-350-v2-black-red-1.webp',
+};
+---
+
+<BaseLayout>
+  <Hero marquee={railBrands} />
+
+  <!-- Store-photo statement band (full-bleed, like the old mesh band) -->
+  <section class="relative isolate overflow-hidden border-y border-line">
+    <img src="/store-hero.webp" alt="Inside the DRIP flagship store in Kifisia" loading="lazy" class="absolute inset-0 h-full w-full object-cover object-center" />
+    <div class="absolute inset-0 bg-gradient-to-r from-[#050908]/90 via-[#050908]/55 to-[#050908]/25"></div>
+    <div class="absolute inset-0" style="background: radial-gradient(120% 100% at 0% 100%, rgba(0,192,182,0.18), transparent 52%);"></div>
+    <div class="wrap relative z-10 flex min-h-[50vh] flex-col items-start justify-center py-16 md:min-h-[54vh] md:py-24">
+      <span class="text-[11px] font-700 uppercase tracking-[0.28em] text-accent-soft" data-en={cPromiseEy.en}>{cPromiseEy.el}</span>
+      <h2 class="mt-4 max-w-2xl font-display text-3xl font-900 leading-[1.05] tracking-tight text-white md:text-5xl" data-en={cPromiseTi.en}>
+        {cPromiseTi.el}
+      </h2>
+      <a href="/about" class="btn btn-fill mt-8"><span data-en="Discover DRIP">Ανακαλύψτε το DRIP</span> <Icon name="arrowUpRight" size={18} /></a>
+    </div>
+  </section>
+
+  <TrustBar />
+
+  <ShaderBackground>
+  <ProductRail
+    eyebrow={cNaEy.el}
+    enEyebrow={cNaEy.en}
+    title={cNaTi.el}
+    enTitle={cNaTi.en}
+    tagline={cNaTa.el}
+    enTagline={cNaTa.en}
+    href="/shop?category=new-arrivals"
+    products={newArrivals(10)}
+    eager
+  />
+
+  <!-- Category grid -->
+  <section class="wrap py-14 reveal">
+    <div class="mb-8 flex items-end justify-between">
+      <div>
+        <span class="eyebrow" data-en="Browse">Περιήγηση</span>
+        <h2 class="mt-3 font-display text-3xl font-800 tracking-tight md:text-[40px]" data-en="Shop by category">Αγορά ανά κατηγορία</h2>
+      </div>
+      <a href="/shop" class="hidden items-center gap-1.5 text-sm font-600 text-muted hover:text-ink sm:inline-flex">
+        <span data-en="View all">Δείτε όλα</span> <Icon name="arrow" size={16} />
+      </a>
+    </div>
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {
+        featureCats.map((cat) => {
+          const cover = catCoverOverride[cat.slug] ?? categoryCover(cat.slug) ?? '';
+          return (
+            <a href={`/shop?category=${cat.slug}`} class="group block">
+              <div class="plate aspect-square overflow-hidden rounded-2xl border border-line transition-colors group-hover:border-accent/45">
+                {cover && (
+                  <ProductImage
+                    image={cover}
+                    alt={cat.label}
+                    widths={[260, 480]}
+                    sizes="(max-width:1024px) 45vw, 300px"
+                    loading="lazy"
+                    class="h-full w-full object-contain p-[12%] transition-transform duration-700 group-hover:scale-[1.06]"
+                  />
+                )}
+              </div>
+              <p class="mt-3 text-center font-display text-lg font-800 text-ink transition-colors group-hover:text-accent-soft">{cat.label}</p>
+            </a>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <!-- Editorial / authenticity band -->
+  <section class="wrap py-14 reveal">
+    <div class="relative isolate overflow-hidden rounded-3xl border border-line p-8 md:p-14">
+      <!-- Authenticity photo background -->
+      <img src="/editorial-drip.webp" alt="" loading="lazy" class="absolute inset-0 -z-20 h-full w-full object-cover brightness-110 contrast-125 saturate-110" />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-base via-base/70 to-base/15"></div>
+      <div class="max-w-xl">
+        <span class="eyebrow" data-en={cAuthEy.en}>{cAuthEy.el}</span>
+        <h2 class="mt-4 font-display text-3xl font-800 leading-tight md:text-[42px]" data-en={cAuthTi.en}>
+          {cAuthTi.el}
+        </h2>
+        <p class="mt-4 max-w-md text-muted" data-en="Our specialists examine every stitch, material, box and tag against verified references. Anything less than flawless and genuine never reaches your door.">
+          Οι ειδικοί μας εξετάζουν κάθε ραφή, υλικό, κουτί και ετικέτα με βάση πιστοποιημένες αναφορές.
+          Οτιδήποτε δεν είναι άψογο και αυθεντικό δεν φτάνει ποτέ στην πόρτα σας.
+        </p>
+        <div class="mt-7 grid grid-cols-2 gap-4">
+          {[
+            { icon: 'shield', t: 'Πολυεπίπεδη πιστοποίηση', en: 'Multi-point authentication' },
+            { icon: 'truck', t: 'Παράδοση 24ω στην Αθήνα', en: '24h Athens delivery' },
+            { icon: 'refresh', t: 'Εύκολες επιστροφές 14 ημερών', en: '14-day easy returns' },
+            { icon: 'star', t: '12.000+ ικανοποιημένοι συλλέκτες', en: '12,000+ happy collectors' },
+          ].map((f) => (
+            <div class="flex items-center gap-2.5 text-sm">
+              <span class="text-accent"><Icon name={f.icon as any} size={18} /></span>
+              <span data-en={f.en}>{f.t}</span>
+            </div>
+          ))}
+        </div>
+        <a href="/authentication" class="btn btn-ghost mt-8"><span data-en="How authentication works">Πώς λειτουργεί η πιστοποίηση</span> <Icon name="arrowUpRight" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best Sellers, sits between the authenticity poster and the About poster.
+       (Sale rail was removed per owner; sale mechanism stays intact: on-card
+       strike-through + /shop?category=sale filter still work from admin.) -->
+  <ProductRail
+    eyebrow={cBsEy.el}
+    enEyebrow={cBsEy.en}
+    title={cBsTi.el}
+    enTitle={cBsTi.en}
+    tagline={cBsTa.el}
+    enTagline={cBsTa.en}
+    href="/shop?sort=rating"
+    products={bestSellers(10)}
+  />
+
+  <!-- About band -->
+  <section class="wrap py-14 reveal">
+    <div class="relative isolate overflow-hidden rounded-3xl border border-line p-8 md:p-14">
+      <img src="/about-flatlay.webp" alt="" loading="lazy" class="absolute inset-0 -z-20 h-full w-full object-cover brightness-110 contrast-110 saturate-110" />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-base via-base/75 to-base/20"></div>
+      <div class="max-w-xl">
+        <span class="eyebrow" data-en={cAboutEy.en}>{cAboutEy.el}</span>
+        <h2 class="mt-4 font-display text-3xl font-800 leading-tight md:text-[42px]" data-en={cAboutTi.en}>
+          {cAboutTi.el}
+        </h2>
+        <p class="mt-4 max-w-md text-muted" data-en="Founded in Athens in 2023, DRIP grew from a collector's obsession with the real thing. We source the most wanted sneakers and streetwear, verify every piece in-house, and deliver it with the care a grail deserves.">
+          Ιδρύθηκε στην Αθήνα το 2023, από την εμμονή ενός συλλέκτη με το αυθεντικό. Επιλέγουμε τα πιο
+          περιζήτητα sneakers και streetwear, πιστοποιούμε κάθε κομμάτι εσωτερικά και το παραδίδουμε με
+          τη φροντίδα που αξίζει σε ένα grail.
+        </p>
+        <div class="mt-7 grid grid-cols-2 gap-4">
+          {[
+            { icon: 'star', t: 'Με έδρα την Κηφισιά, 2023', en: 'Founded in Kifisia, 2023' },
+            { icon: 'shield', t: 'Επιλογή από συλλέκτες', en: 'Collector-led curation' },
+            { icon: 'truck', t: 'Παράδοση 24ω στην Αθήνα', en: '24h Athens delivery' },
+            { icon: 'heart', t: '12.000+ ικανοποιημένοι πελάτες', en: '12,000+ happy customers' },
+          ].map((f) => (
+            <div class="flex items-center gap-2.5 text-sm">
+              <span class="text-accent"><Icon name={f.icon as any} size={18} /></span>
+              <span data-en={f.en}>{f.t}</span>
+            </div>
+          ))}
+        </div>
+        <a href="/about" class="btn btn-ghost mt-8"><span data-en="Read our story">Η ιστορία μας</span> <Icon name="arrowUpRight" size={16} /></a>
+      </div>
+    </div>
+  </section>
+  </ShaderBackground>
+</BaseLayout>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>DRIP</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="bg-orb a"></div><div class="bg-orb b"></div>
+<div id="hdr"></div>
+
+<div class="wrap" style="position:relative;z-index:2;padding-top:26px">
+  <div class="crumbs" id="crumbs"><a href="index.html">Home</a> / <a href="shop.html">Shop</a></div>
+</div>
+
+<div class="wrap pdp" id="pdp">
+  <div class="gallery">
+    <div class="thumbs skel" id="thumbs" style="min-height:200px"></div>
+    <div class="main-img skel" id="mainimg" style="min-height:480px"></div>
+  </div>
+  <div class="pinfo" id="pinfo"></div>
+</div>
+
+<div class="wrap"><h2 class="section-title" id="rel-title" style="display:none">You may also like</h2>
+  <div class="grid" id="related"></div>
+</div>
+
+<div id="ftr"></div>
+
+<script src="assets/shop.js"></script>
+<script>
+(async () => {
+  DRIP.mountChrome('Shop');
+  const handle = DRIP.qs.get('handle');
+  const all = await DRIP.products();
+  const p = all.find(x => x.slug === handle);
+  if (!p) {
+    document.getElementById('pdp').innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>Product not found</h3><p>It may have sold out. <a href="shop.html" style="color:var(--accent)">Back to shop →</a></p></div>`;
+    return;
+  }
+  document.title = `${p.name} — DRIP`;
+  const off = p.compareAtPrice ? Math.round((1 - p.price / p.compareAtPrice) * 100) : 0;
+
+  // breadcrumb
+  const catLabel = (p.category||'sneakers').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  document.getElementById('crumbs').innerHTML =
+    `<a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <a href="shop.html?brand=${encodeURIComponent(p.brand)}">${p.brand}</a> / <span class="muted">${p.name}</span>`;
+
+  // gallery
+  const imgs = p.images && p.images.length ? p.images : [p.images?.[0]].filter(Boolean);
+  const main = document.getElementById('mainimg');
+  main.classList.remove('skel');
+  main.innerHTML = `<img id="mainpic" src="${imgs[0]}" alt="${p.name}">`;
+  const thumbs = document.getElementById('thumbs');
+  thumbs.classList.remove('skel');
+  thumbs.innerHTML = imgs.map((src, i) => `<button class="thumb ${i===0?'active':''}" data-i="${i}" onclick="setPic(${i})"><img loading="lazy" src="${src}" alt=""></button>`).join('');
+  window.setPic = i => { document.getElementById('mainpic').src = imgs[i]; document.querySelectorAll('.thumb').forEach((t,j)=>t.classList.toggle('active',j===i)); };
+
+  // info
+  const swatches = (p.colors||[]).map((c,i)=>`<button class="swatch-big ${i===0?'active':''}" onclick="pickColor(this)"><i style="background:${c.hex}"></i>${c.name}</button>`).join('');
+  const sizes = (p.sizes||[]).map(s=>`<button onclick="pickSize(this,'${String(s).replace(/'/g,"\\'")}')">${s}</button>`).join('') || '<p class="muted" style="font-size:13px">One size</p>';
+  const stars = '★★★★★';
+  document.getElementById('pinfo').innerHTML = `
+    <div class="brandline">${p.brand}</div>
+    <h1>${p.name}</h1>
+    <div class="rating" style="font-size:13px">${stars} <span class="muted">${p.rating?.toFixed?.(1)||'4.8'} · ${p.reviews||120} reviews</span></div>
+    <div class="pricewrap"><span class="price">${DRIP.money(p.price)}</span>${p.compareAtPrice?`<span class="compare">${DRIP.money(p.compareAtPrice)}</span><span class="off">-${off}%</span>`:''}</div>
+    <div class="tax">Incl. VAT · Free express shipping</div>
+    ${swatches?`<div class="block"><div class="lab">Colour</div><div class="swatch-row">${swatches}</div></div>`:''}
+    <div class="block"><div class="lab">Select Size (EU)<a href="#" onclick="event.preventDefault();DRIP.toast('Size guide: order your usual EU size ✦')" style="color:var(--accent);text-transform:none;letter-spacing:0">Size guide</a></div>
+      <div class="sizes" id="sizes">${sizes}</div>
+      <div class="size-hint" id="sizehint"></div>
+    </div>
+    <div class="buyrow">
+      <button class="btn-primary" id="addbtn" onclick="addToBag()">Add to Bag — ${DRIP.money(p.price)}</button>
+      <button class="btn-ghost" aria-label="Wishlist" onclick="DRIP.toast('Saved to wishlist ♡')">${DRIP.icon('heart')}</button>
+    </div>
+    <div class="trust">
+      <div>${DRIP.icon('truck')} 24h delivery in Athens</div>
+      <div>${DRIP.icon('shield')} 100% authenticated</div>
+      <div>${DRIP.icon('arrow')} 14-day returns</div>
+    </div>
+    <div class="accord" style="margin-top:26px">
+      <details open><summary>Description</summary><div class="body">${p.description||''}</div></details>
+      <details><summary>Materials & Build</summary><div class="body">${p.materials||'Premium materials.'}</div></details>
+      <details><summary>Shipping & Returns</summary><div class="body">Free insured express shipping across Greece, 24h in Athens. EU delivery in 2–4 days. 14-day returns on unworn pairs in original packaging.</div></details>
+      <details><summary>Authenticity</summary><div class="body">Every pair is inspected and authenticated by our team before dispatch, with a verification tag included.</div></details>
+    </div>`;
+
+  // size selection state
+  let chosenSize = null;
+  window.pickSize = (el,s) => { chosenSize = s; document.querySelectorAll('#sizes button').forEach(b=>b.classList.remove('active')); el.classList.add('active'); document.getElementById('sizehint').textContent=''; };
+  window.pickColor = el => { document.querySelectorAll('.swatch-big').forEach(b=>b.classList.remove('active')); el.classList.add('active'); };
+  window.addToBag = () => {
+    if ((p.sizes||[]).length && !chosenSize) { document.getElementById('sizehint').textContent='Please select a size first.'; return; }
+    DRIP.cart.add({ slug:p.slug, name:p.name, brand:p.brand, price:p.price, image:imgs[0], size:chosenSize||'OS' });
+  };
+
+  // related (same brand, else same category)
+  let rel = all.filter(x=>x.slug!==p.slug && x.brand===p.brand);
+  if (rel.length < 4) rel = rel.concat(all.filter(x=>x.slug!==p.slug && x.category===p.category && x.brand!==p.brand));
+  rel = rel.slice(0,4);
+  if (rel.length){ document.getElementById('rel-title').style.display='block'; document.getElementById('related').innerHTML = rel.map(DRIP.card).join(''); }
+})();
+</script>
+</body>
+</html>

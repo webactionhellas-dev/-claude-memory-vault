@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 175" width="160" height="175">
+  <defs>
+    <radialGradient id="drumGrad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0EEFA;stop-opacity:1"/>
+    </radialGradient>
+    <style>
+      .bianco-text {
+        font-family: 'Arial Rounded MT Bold', 'Nunito', 'Varela Round', Arial, sans-serif;
+        font-weight: 900;
+        font-style: italic;
+      }
+    </style>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="80" cy="78" r="68" fill="white" stroke="#4A9FD4" stroke-width="7"/>
+
+  <!-- Drum circle (inner) -->
+  <circle cx="80" cy="78" r="54" fill="url(#drumGrad)" stroke="#4A9FD4" stroke-width="3.5"/>
+
+  <!-- Small porthole dots around inner drum rim -->
+  <circle cx="80" cy="27" r="3.5" fill="#4A9FD4"/>
+  <circle cx="107" cy="34" r="3.5" fill="#4A9FD4"/>
+  <circle cx="124" cy="57" r="3.5" fill="#4A9FD4"/>
+  <circle cx="124" cy="97" r="3.5" fill="#4A9FD4"/>
+  <circle cx="107" cy="120" r="3.5" fill="#4A9FD4"/>
+  <circle cx="53" cy="120" r="3.5" fill="#4A9FD4"/>
+  <circle cx="36" cy="97" r="3.5" fill="#4A9FD4"/>
+  <circle cx="36" cy="57" r="3.5" fill="#4A9FD4"/>
+  <circle cx="53" cy="34" r="3.5" fill="#4A9FD4"/>
+
+  <!-- Smiley face – eyes -->
+  <circle cx="67" cy="70" r="6" fill="#4A9FD4"/>
+  <circle cx="93" cy="70" r="6" fill="#4A9FD4"/>
+  <!-- Eye shine -->
+  <circle cx="69.5" cy="67.5" r="2" fill="white"/>
+  <circle cx="95.5" cy="67.5" r="2" fill="white"/>
+
+  <!-- Smiley face – mouth -->
+  <path d="M 60 84 Q 80 104 100 84" stroke="#4A9FD4" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- "bianco" text -->
+  <text x="80" y="146"
+        class="bianco-text"
+        font-size="32"
+        fill="#5DB32A"
+        text-anchor="middle"
+        dominant-baseline="middle">bianco</text>
+
+  <!-- "WET &amp; DRY CLEANING" -->
+  <text x="80" y="165"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="9.5"
+        font-weight="600"
+        letter-spacing="1.5"
+        fill="#5DB32A"
+        text-anchor="middle"
+        dominant-baseline="middle">WET &amp; DRY CLEANING</text>
+</svg>
