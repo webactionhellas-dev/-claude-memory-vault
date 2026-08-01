@@ -1,0 +1,243 @@
+<!-- ============================================================================
+     CLOUDSKIN - Shopify "{{ t_label_order }} confirmation" customer notification (Liquid)
+     ----------------------------------------------------------------------------
+     APPLY (Shopify admin, needs access):
+       Settings > Notifications > Customer notifications > {{ t_label_order }} confirmation >
+       Edit code > click inside the code editor > Ctrl+A (select all) > Delete >
+       paste this ENTIRE file > Save > "Send test".
+       The editor is CodeMirror 6, so paste reliably by copying the whole file to
+       the clipboard first, then Ctrl+A + Ctrl+V inside the editor.
+
+     WHAT IT FIXES (vs the live re-skinned default):
+       - THE BLANK PRODUCT IMAGE. Several CLOUDSKIN products carry NO image in
+         Shopify (Form Bra, Ace Dress, Performance Shorts), so the default
+         template falls back to Shopify's grey "no-image.png" placeholder = the
+         broken picture Mike saw. This template pulls the REAL product photo from
+         the site itself, https://www.cloudskin.com/img/shopify/<handle>-1.jpg,
+         which is the exact photo shown on the website product cards, is public
+         (the store gate is client-side JS on HTML pages only, static /img assets
+         are always reachable), and is verified 200 for every catalogue product.
+         Fallbacks: Shopify media if a non-catalogue product has it, else a
+         tasteful oat monogram tile. It is NEVER a broken icon.
+       - GMAIL DARK MODE. Explicit background + text colours on every cell, bgcolor
+         attributes, and a prefers-color-scheme dark block, so it stays readable
+         and on-brand in Gmail (desktop + mobile) and Apple / iOS Mail dark mode.
+       - The double currency label. Everything uses `| money` (not
+         `| money_with_currency`), so no more "Dhs. 357.00 AED" next to
+         "Dhs. 357.00". Follows the store money format (Dhs. today, AED after the
+         pending toggle) automatically.
+       - {{ t_label_payment }} reads "{{ t_label_card }}" / "PayPal" (customer-facing), never a gateway label.
+       - "{{ t_cta_view{{ t_label_order }} }}" points at {{ order.order_status_url }} (never 404s;
+         shows live tracking once it exists).
+       - No em-dashes (house rule).
+     ============================================================================ -->
+{%- assign lang = attributes.lang | default: 'en' -%}
+{%- case lang -%}
+{%- when 'el' -%}{%- assign t_order_trackingBody = "Ο σύνδεσμος παρακολούθησης ενεργοποιείται εντός 24 ωρών από την αποστολή. Θα σας τον στείλουμε με email μόλις η παραγγελία σας ξεκινήσει το ταξίδι της προς εσάς, και μπορείτε να την παρακολουθείτε όποτε θέλετε από το κουμπί παρακάτω." -%}{%- assign t_order_intro = "Με μεγάλη χαρά σας καλωσορίζουμε στην CLOUDSKIN. Λάβαμε την παραγγελία σας και την ετοιμάζουμε με φροντίδα." -%}{%- assign t_footer_tagline = "Αθλητική ένδυση πολυτελείας. Τένις, πάντελ, στούντιο." -%}{%- assign t_order_title = "Η παραγγελία σας επιβεβαιώθηκε." -%}{%- assign t_order_trackingTitle = "Παρακολούθηση της παραγγελίας σας" -%}{%- assign t_cta_viewOrder = "Δείτε την παραγγελία σας" -%}{%- assign t_value_complimentary = "Δωρεάν" -%}{%- assign t_label_shipTo = "Αποστολή προς" -%}{%- assign t_order_thankYouPlain = "Σας ευχαριστούμε." -%}{%- assign t_label_quantity = "Ποσότητα" -%}{%- assign t_label_subtotal = "Υποσύνολο" -%}{%- assign t_label_shipping = "Αποστολή" -%}{%- assign t_label_discount = "Έκπτωση" -%}{%- assign t_label_payment = "Πληρωμή" -%}{%- assign t_label_order = "Παραγγελία" -%}{%- assign t_footer_city = "Ντουμπάι" -%}{%- assign t_label_total = "Σύνολο" -%}{%- assign t_label_card = "Κάρτα" -%}
+{%- when 'ar' -%}{%- assign t_order_trackingBody = "يتم تفعيل رابط التتبع خلال 24 ساعة من الشحن. سنرسله إليك عبر البريد الإلكتروني بمجرد أن يبدأ طلبك رحلته إليك، ويمكنك متابعته في أي وقت من الزر أدناه." -%}{%- assign t_order_intro = "يسعدنا أن نرحب بك في CLOUDSKIN. لقد استلمنا طلبك ونعمل على تجهيزه بعناية." -%}{%- assign t_footer_tagline = "ملابس رياضية فاخرة. تنس، بادل، استوديو." -%}{%- assign t_order_title = "تم تأكيد طلبك." -%}{%- assign t_order_trackingTitle = "تتبع طلبك" -%}{%- assign t_cta_viewOrder = "عرض طلبك" -%}{%- assign t_value_complimentary = "مجانًا" -%}{%- assign t_label_shipTo = "الشحن إلى" -%}{%- assign t_order_thankYouPlain = "شكرًا لك." -%}{%- assign t_label_quantity = "الكمية" -%}{%- assign t_label_subtotal = "المجموع الفرعي" -%}{%- assign t_label_shipping = "الشحن" -%}{%- assign t_label_discount = "الخصم" -%}{%- assign t_label_payment = "الدفع" -%}{%- assign t_label_order = "الطلب" -%}{%- assign t_footer_city = "دبي" -%}{%- assign t_label_total = "الإجمالي" -%}{%- assign t_label_card = "بطاقة" -%}
+{%- when 'es' -%}{%- assign t_order_trackingBody = "Tu enlace de seguimiento se activa en las 24 horas siguientes al envío. Te lo enviaremos por correo en cuanto tu pedido esté en camino, y podrás seguirlo en cualquier momento desde el botón de abajo." -%}{%- assign t_order_intro = "Nos complace darte la bienvenida a CLOUDSKIN. Hemos recibido tu pedido y lo estamos preparando con esmero." -%}{%- assign t_footer_tagline = "Ropa deportiva de lujo. Tenis, pádel, estudio." -%}{%- assign t_order_title = "Tu pedido está confirmado." -%}{%- assign t_order_trackingTitle = "Seguimiento de tu pedido" -%}{%- assign t_cta_viewOrder = "Ver tu pedido" -%}{%- assign t_value_complimentary = "Cortesía" -%}{%- assign t_label_shipTo = "Envío a" -%}{%- assign t_order_thankYouPlain = "Gracias." -%}{%- assign t_label_quantity = "Cantidad" -%}{%- assign t_label_subtotal = "Subtotal" -%}{%- assign t_label_shipping = "Envío" -%}{%- assign t_label_discount = "Descuento" -%}{%- assign t_label_payment = "Pago" -%}{%- assign t_label_order = "Pedido" -%}{%- assign t_footer_city = "Dubái" -%}{%- assign t_label_total = "Total" -%}{%- assign t_label_card = "Tarjeta" -%}
+{%- when 'it' -%}{%- assign t_order_trackingBody = "Il tuo link di tracciamento si attiva entro 24 ore dalla spedizione. Te lo invieremo via email non appena il tuo ordine sarà in viaggio, e potrai seguirlo in qualsiasi momento dal pulsante qui sotto." -%}{%- assign t_order_intro = "Siamo felici di darti il benvenuto in CLOUDSKIN. Abbiamo ricevuto il tuo ordine e lo stiamo preparando con cura." -%}{%- assign t_footer_tagline = "Abbigliamento sportivo di lusso. Tennis, padel, studio." -%}{%- assign t_order_title = "Il tuo ordine è confermato." -%}{%- assign t_order_trackingTitle = "Tracciamento dell'ordine" -%}{%- assign t_cta_viewOrder = "Vedi il tuo ordine" -%}{%- assign t_value_complimentary = "Omaggio" -%}{%- assign t_label_shipTo = "Spedizione a" -%}{%- assign t_order_thankYouPlain = "Grazie." -%}{%- assign t_label_quantity = "Quantità" -%}{%- assign t_label_subtotal = "Subtotale" -%}{%- assign t_label_shipping = "Spedizione" -%}{%- assign t_label_discount = "Sconto" -%}{%- assign t_label_payment = "Pagamento" -%}{%- assign t_label_order = "Ordine" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Totale" -%}{%- assign t_label_card = "Carta" -%}
+{%- when 'fr' -%}{%- assign t_order_trackingBody = "Votre lien de suivi s'active dans les 24 heures suivant l'expédition. Nous vous l'enverrons par e-mail dès que votre commande sera en route, et vous pourrez la suivre à tout moment depuis le bouton ci-dessous." -%}{%- assign t_order_intro = "Nous sommes ravis de vous accueillir chez CLOUDSKIN. Votre commande a bien été reçue et nous la préparons avec soin." -%}{%- assign t_footer_tagline = "Vêtements de sport de luxe. Tennis, padel, studio." -%}{%- assign t_order_title = "Votre commande est confirmée." -%}{%- assign t_order_trackingTitle = "Suivi de votre commande" -%}{%- assign t_cta_viewOrder = "Voir votre commande" -%}{%- assign t_value_complimentary = "Offerte" -%}{%- assign t_label_shipTo = "Expédition à" -%}{%- assign t_order_thankYouPlain = "Merci." -%}{%- assign t_label_quantity = "Quantité" -%}{%- assign t_label_subtotal = "Sous-total" -%}{%- assign t_label_shipping = "Livraison" -%}{%- assign t_label_discount = "Remise" -%}{%- assign t_label_payment = "Paiement" -%}{%- assign t_label_order = "Commande" -%}{%- assign t_footer_city = "Dubaï" -%}{%- assign t_label_total = "Total" -%}{%- assign t_label_card = "Carte" -%}
+{%- when 'de' -%}{%- assign t_order_trackingBody = "Dein Tracking-Link wird innerhalb von 24 Stunden nach dem Versand aktiviert. Wir senden ihn dir per E-Mail, sobald deine Bestellung unterwegs ist, und du kannst sie jederzeit über den Button unten verfolgen." -%}{%- assign t_order_intro = "Wir freuen uns, dich bei CLOUDSKIN willkommen zu heißen. Deine Bestellung ist bei uns eingegangen und wird nun sorgfältig vorbereitet." -%}{%- assign t_footer_tagline = "Luxuriöse Sportbekleidung. Tennis, Padel, Studio." -%}{%- assign t_order_title = "Deine Bestellung ist bestätigt." -%}{%- assign t_order_trackingTitle = "Sendungsverfolgung" -%}{%- assign t_cta_viewOrder = "Bestellung ansehen" -%}{%- assign t_value_complimentary = "Kostenlos" -%}{%- assign t_label_shipTo = "Versand an" -%}{%- assign t_order_thankYouPlain = "Vielen Dank." -%}{%- assign t_label_quantity = "Menge" -%}{%- assign t_label_subtotal = "Zwischensumme" -%}{%- assign t_label_shipping = "Versand" -%}{%- assign t_label_discount = "Rabatt" -%}{%- assign t_label_payment = "Zahlung" -%}{%- assign t_label_order = "Bestellung" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Gesamt" -%}{%- assign t_label_card = "Karte" -%}
+{%- when 'nl' -%}{%- assign t_order_trackingBody = "Je trackinglink wordt binnen 24 uur na verzending geactiveerd. We mailen hem zodra je bestelling onderweg is, en je kunt je bestelling op elk moment volgen via de knop hieronder." -%}{%- assign t_order_intro = "We heten je van harte welkom bij CLOUDSKIN. Je bestelling is binnen en wordt nu met zorg klaargemaakt." -%}{%- assign t_footer_tagline = "Luxe sportkleding. Tennis, padel, studio." -%}{%- assign t_order_title = "Je bestelling is bevestigd." -%}{%- assign t_order_trackingTitle = "Je bestelling volgen" -%}{%- assign t_cta_viewOrder = "Bekijk je bestelling" -%}{%- assign t_value_complimentary = "Gratis" -%}{%- assign t_label_shipTo = "Verzending naar" -%}{%- assign t_order_thankYouPlain = "Bedankt." -%}{%- assign t_label_quantity = "Aantal" -%}{%- assign t_label_subtotal = "Subtotaal" -%}{%- assign t_label_shipping = "Verzending" -%}{%- assign t_label_discount = "Korting" -%}{%- assign t_label_payment = "Betaling" -%}{%- assign t_label_order = "Bestelling" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Totaal" -%}{%- assign t_label_card = "Kaart" -%}
+{%- when 'pt' -%}{%- assign t_order_trackingBody = "O teu link de seguimento é ativado nas 24 horas seguintes ao envio. Enviamos-to por email assim que a tua encomenda estiver a caminho e podes segui-la a qualquer momento através do botão abaixo." -%}{%- assign t_order_intro = "É com muito prazer que te damos as boas-vindas à CLOUDSKIN. Recebemos a tua encomenda e estamos a prepará-la com todo o cuidado." -%}{%- assign t_footer_tagline = "Roupa desportiva de luxo. Ténis, padel, estúdio." -%}{%- assign t_order_title = "A tua encomenda está confirmada." -%}{%- assign t_order_trackingTitle = "Seguimento da tua encomenda" -%}{%- assign t_cta_viewOrder = "Ver a tua encomenda" -%}{%- assign t_value_complimentary = "Oferta" -%}{%- assign t_label_shipTo = "Envio para" -%}{%- assign t_order_thankYouPlain = "Obrigado." -%}{%- assign t_label_quantity = "Quantidade" -%}{%- assign t_label_subtotal = "Subtotal" -%}{%- assign t_label_shipping = "Envio" -%}{%- assign t_label_discount = "Desconto" -%}{%- assign t_label_payment = "Pagamento" -%}{%- assign t_label_order = "Encomenda" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Total" -%}{%- assign t_label_card = "Cartão" -%}
+{%- when 'sv' -%}{%- assign t_order_trackingBody = "Din spårningslänk aktiveras inom 24 timmar efter avsändning. Vi mejlar den så snart din beställning är på väg, och du kan följa den när som helst via knappen nedan." -%}{%- assign t_order_intro = "Det gläder oss att välkomna dig till CLOUDSKIN. Vi har tagit emot din beställning och förbereder den nu med omsorg." -%}{%- assign t_footer_tagline = "Lyxiga träningskläder. Tennis, padel, studio." -%}{%- assign t_order_title = "Din beställning är bekräftad." -%}{%- assign t_order_trackingTitle = "Följ din beställning" -%}{%- assign t_cta_viewOrder = "Visa din beställning" -%}{%- assign t_value_complimentary = "Kostnadsfritt" -%}{%- assign t_label_shipTo = "Skickas till" -%}{%- assign t_order_thankYouPlain = "Tack." -%}{%- assign t_label_quantity = "Antal" -%}{%- assign t_label_subtotal = "Delsumma" -%}{%- assign t_label_shipping = "Frakt" -%}{%- assign t_label_discount = "Rabatt" -%}{%- assign t_label_payment = "Betalning" -%}{%- assign t_label_order = "Order" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Totalt" -%}{%- assign t_label_card = "Kort" -%}
+{%- when 'ru' -%}{%- assign t_order_trackingBody = "Ссылка для отслеживания активируется в течение 24 часов после отправки. Мы пришлём её по электронной почте, как только ваш заказ будет в пути, и вы сможете следить за ним в любое время по кнопке ниже." -%}{%- assign t_order_intro = "Рады приветствовать вас в CLOUDSKIN. Мы получили ваш заказ и бережно готовим его." -%}{%- assign t_footer_tagline = "Роскошная спортивная одежда. Теннис, падел, студия." -%}{%- assign t_order_title = "Ваш заказ подтверждён." -%}{%- assign t_order_trackingTitle = "Отслеживание заказа" -%}{%- assign t_cta_viewOrder = "Посмотреть заказ" -%}{%- assign t_value_complimentary = "Бесплатно" -%}{%- assign t_label_shipTo = "Адрес доставки" -%}{%- assign t_order_thankYouPlain = "Спасибо." -%}{%- assign t_label_quantity = "Количество" -%}{%- assign t_label_subtotal = "Промежуточный итог" -%}{%- assign t_label_shipping = "Доставка" -%}{%- assign t_label_discount = "Скидка" -%}{%- assign t_label_payment = "Оплата" -%}{%- assign t_label_order = "Заказ" -%}{%- assign t_footer_city = "Дубай" -%}{%- assign t_label_total = "Итого" -%}{%- assign t_label_card = "Карта" -%}
+{%- else -%}{%- assign t_order_trackingBody = "Your tracking link activates within 24 hours of dispatch. We will email it the moment your order is on its way, and you can follow it any time from the button below." -%}{%- assign t_order_intro = "We are delighted to welcome you to CLOUDSKIN. Your order has been received and is now being prepared with care." -%}{%- assign t_footer_tagline = "Luxury activewear. Tennis, padel, studio." -%}{%- assign t_order_title = "Your order is confirmed." -%}{%- assign t_order_trackingTitle = "Tracking your order" -%}{%- assign t_cta_viewOrder = "View your order" -%}{%- assign t_value_complimentary = "Complimentary" -%}{%- assign t_label_shipTo = "Shipping to" -%}{%- assign t_order_thankYouPlain = "Thank you." -%}{%- assign t_label_quantity = "Quantity" -%}{%- assign t_label_subtotal = "Subtotal" -%}{%- assign t_label_shipping = "Shipping" -%}{%- assign t_label_discount = "Discount" -%}{%- assign t_label_payment = "Payment" -%}{%- assign t_label_order = "Order" -%}{%- assign t_footer_city = "Dubai" -%}{%- assign t_label_total = "Total" -%}{%- assign t_label_card = "Card" -%}
+{%- endcase -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{ shop.name }} order {{ order.name }}</title>
+<style>
+  :root { color-scheme: light; supported-color-schemes: light; }
+  body { margin:0; padding:0; width:100%; background:#efeae1; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  img { border:0; line-height:100%; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+  table { border-collapse:collapse; mso-table-lspace:0; mso-table-rspace:0; }
+  a { color:#171512; }
+  .cs-link { color:#171512; }
+  @media only screen and (max-width:600px){
+    .cs-shell { width:100% !important; }
+    .cs-pad { padding-left:24px !important; padding-right:24px !important; }
+  }
+  /* Cream only (Mike's call): no dark-mode palette. color-scheme:light above + explicit
+     cream bgcolor on every cell keep Gmail/Apple Mail from inverting the background to black. */
+</style>
+</head>
+<body style="margin:0;padding:0;background:#efeae1;">
+  <!-- preheader (hidden) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0;color:#efeae1;font-size:1px;line-height:1px;">
+    {% case lang %}{% when 'el' %}Η παραγγελία σας {{ order.name }} από την CLOUDSKIN επιβεβαιώθηκε. Σας ευχαριστούμε.{% when 'ar' %}تم تأكيد طلبك {{ order.name }} من CLOUDSKIN. شكرًا لك.{% when 'es' %}Tu pedido {{ order.name }} de CLOUDSKIN está confirmado. Gracias.{% when 'it' %}Il tuo ordine {{ order.name }} di CLOUDSKIN è confermato. Grazie.{% when 'fr' %}Votre commande CLOUDSKIN {{ order.name }} est confirmée. Merci.{% when 'de' %}Deine CLOUDSKIN-Bestellung {{ order.name }} ist bestätigt. Vielen Dank.{% when 'nl' %}Je CLOUDSKIN-bestelling {{ order.name }} is bevestigd. Bedankt.{% when 'pt' %}A tua encomenda {{ order.name }} da CLOUDSKIN está confirmada. Obrigado.{% when 'sv' %}Din CLOUDSKIN-beställning {{ order.name }} är bekräftad. Tack.{% when 'ru' %}Ваш заказ CLOUDSKIN {{ order.name }} подтверждён. Спасибо.{% else %}Your CLOUDSKIN order {{ order.name }} is confirmed. {{ t_order_thankYouPlain }}{% endcase %}
+  </div>
+
+  <table role="presentation" class="cs-page" width="100%" cellpadding="0" cellspacing="0" bgcolor="#efeae1" style="background:#efeae1;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="600" class="cs-shell cs-card" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:600px;max-width:600px;background:#ffffff;border:1px solid #e6e0d6;">
+
+          <!-- Wordmark -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:44px 48px 0;">
+              <div class="cs-wordmark" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;letter-spacing:.42em;color:#171512;font-weight:600;text-transform:uppercase;">CLOUDSKIN</div>
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;margin:28px 0 0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- Headline -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:34px 48px 0;">
+              <div class="cs-muted" style="font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{ t_label_order }} {{ order.name }}</div>
+              <div class="cs-ink" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:30px;line-height:1.22;color:#171512;margin:12px 0 0;">{{ t_order_title }}</div>
+              <p class="cs-soft" style="margin:16px 0 0;font-size:15px;line-height:1.75;color:#55504a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                {% if order.customer.first_name %}{% case lang %}{% when 'el' %}Σας ευχαριστούμε, {{ order.customer.first_name }}.{% when 'ar' %}شكرًا لك، {{ order.customer.first_name }}.{% when 'es' %}Gracias, {{ order.customer.first_name }}.{% when 'it' %}Grazie, {{ order.customer.first_name }}.{% when 'fr' %}Merci, {{ order.customer.first_name }}.{% when 'de' %}Vielen Dank, {{ order.customer.first_name }}.{% when 'nl' %}Bedankt, {{ order.customer.first_name }}.{% when 'pt' %}Obrigado, {{ order.customer.first_name }}.{% when 'sv' %}Tack, {{ order.customer.first_name }}.{% when 'ru' %}Спасибо, {{ order.customer.first_name }}.{% else %}Thank you, {{ order.customer.first_name }}.{% endcase %} {% else %}{{ t_order_thankYouPlain }} {% endif %}{{ t_order_intro }}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td class="cs-pad" style="padding:34px 48px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for line in subtotal_line_items %}
+                <tr>
+                  <td width="72" valign="top" style="padding:0 16px 22px 0;">
+                    {%- assign ph = line.product.handle -%}
+                    {%- assign pfx = ph | slice: 0, 4 -%}
+                    {%- if pfx == 'the-' -%}
+                      <img src="https://www.cloudskin.com/img/shopify/{{ ph }}-1.jpg" width="72" height="72" alt="{{ line.title | escape }}" class="cs-tileborder" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid #e6e0d6;background:#efeae1;">
+                    {%- elsif line.image -%}
+                      <img src="{{ line | img_url: '160x160', crop: 'center' }}" width="72" height="72" alt="{{ line.title | escape }}" class="cs-tileborder" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid #e6e0d6;background:#efeae1;">
+                    {%- else -%}
+                      <table role="presentation" width="72" height="72" cellpadding="0" cellspacing="0" style="width:72px;height:72px;"><tr><td class="cs-tile cs-tileborder" align="center" valign="middle" bgcolor="#efeae1" style="width:72px;height:72px;background:#efeae1;border:1px solid #e6e0d6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:.22em;color:#171512;font-weight:600;">CS</td></tr></table>
+                    {%- endif -%}
+                  </td>
+                  <td valign="top" style="padding:0 0 22px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    <div class="cs-ink" style="font-size:14.5px;color:#171512;font-weight:600;line-height:1.4;">{{ line.title }}</div>
+                    {% if line.variant.title and line.variant.title != 'Default Title' %}
+                      <div class="cs-muted" style="font-size:12.5px;color:#857d72;margin:5px 0 0;">{{ line.variant.title }}</div>
+                    {% endif %}
+                    <div class="cs-muted" style="font-size:12.5px;color:#857d72;margin:5px 0 0;">{{ t_label_quantity }} {{ line.quantity }}</div>
+                  </td>
+                  <td valign="top" align="right" style="padding:0 0 22px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    <span class="cs-ink" style="font-size:14px;color:#171512;white-space:nowrap;">{{ line.final_line_price | money_without_currency | replace: 'Dhs.', '' | replace: 'Dhs', '' | replace: 'AED', '' | strip }} {{ order.currency }}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- {{ t_label_total }}s -->
+          <tr>
+            <td class="cs-pad" style="padding:6px 48px 0;">
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;">&nbsp;</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                <tr>
+                  <td class="cs-soft" style="padding:18px 0 0;font-size:13.5px;color:#55504a;">{{ t_label_subtotal }}</td>
+                  <td class="cs-ink" align="right" style="padding:18px 0 0;font-size:13.5px;color:#171512;">{{ subtotal_price | money_without_currency | replace: 'Dhs.', '' | replace: 'Dhs', '' | replace: 'AED', '' | strip }} {{ order.currency }}</td>
+                </tr>
+                <tr>
+                  <td class="cs-soft" style="padding:9px 0 0;font-size:13.5px;color:#55504a;">{{ t_label_shipping }}</td>
+                  <td class="cs-ink" align="right" style="padding:9px 0 0;font-size:13.5px;color:#171512;">
+                    {% if shipping_price == 0 %}{{ t_value_complimentary }}{% else %}{{ shipping_price | money_without_currency | replace: 'Dhs.', '' | replace: 'Dhs', '' | replace: 'AED', '' | strip }} {{ order.currency }}{% endif %}
+                  </td>
+                </tr>
+                {% if total_discounts and total_discounts > 0 %}
+                <tr>
+                  <td class="cs-soft" style="padding:9px 0 0;font-size:13.5px;color:#55504a;">{{ t_label_discount }}</td>
+                  <td class="cs-ink" align="right" style="padding:9px 0 0;font-size:13.5px;color:#171512;">- {{ total_discounts | money_without_currency | replace: 'Dhs.', '' | replace: 'Dhs', '' | replace: 'AED', '' | strip }} {{ order.currency }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td class="cs-ink" style="padding:15px 0 0;font-size:15px;color:#171512;font-weight:700;">{{ t_label_total }}</td>
+                  <td class="cs-ink" align="right" style="padding:15px 0 0;font-size:15px;color:#171512;font-weight:700;">{{ total_price | money_without_currency | replace: 'Dhs.', '' | replace: 'Dhs', '' | replace: 'AED', '' | strip }} {{ order.currency }}</td>
+                </tr>
+              </table>
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;margin:20px 0 0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- {{ t_label_payment }} (customer-facing label, PayPal-ready) -->
+          {% assign pay_label = '{{ t_label_card }}' %}
+          {% for transaction in transactions %}
+            {% if transaction.gateway contains 'aypal' %}{% assign pay_label = 'PayPal' %}{% endif %}
+          {% endfor %}
+          <tr>
+            <td class="cs-pad" style="padding:18px 48px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+              <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;">{{ t_label_payment }}</div>
+              <div class="cs-ink" style="font-size:13.5px;color:#171512;margin:6px 0 0;">{% case lang %}{% when 'el' %}Πληρωμή με {{ pay_label }}. Περιλαμβάνονται δασμοί και φόροι.{% when 'ar' %}تم الدفع بواسطة {{ pay_label }}. الرسوم الجمركية والضرائب مشمولة.{% when 'es' %}Pagado con {{ pay_label }}. Aranceles e impuestos incluidos.{% when 'it' %}Pagato con {{ pay_label }}. Dazi e imposte inclusi.{% when 'fr' %}Payé avec {{ pay_label }}. Droits de douane et taxes inclus.{% when 'de' %}Bezahlt mit {{ pay_label }}. Zölle und Steuern inbegriffen.{% when 'nl' %}Betaald met {{ pay_label }}. Invoerrechten en belastingen inbegrepen.{% when 'pt' %}Pago com {{ pay_label }}. Direitos aduaneiros e impostos incluídos.{% when 'sv' %}Betalt med {{ pay_label }}. Tull och skatt ingår.{% when 'ru' %}Оплачено с помощью {{ pay_label }}. Пошлины и налоги включены.{% else %}Paid with {{ pay_label }}. Duties and taxes included.{% endcase %}</div>
+            </td>
+          </tr>
+
+          <!-- {{ t_label_shipping }} address -->
+          {% if shipping_address %}
+          <tr>
+            <td class="cs-pad" style="padding:18px 48px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+              <div class="cs-muted" style="font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#857d72;">{{ t_label_shipTo }}</div>
+              <div class="cs-ink" style="font-size:13.5px;color:#171512;line-height:1.65;margin:6px 0 0;">
+                {{ shipping_address.name }}<br>
+                {{ shipping_address.address1 }}{% if shipping_address.address2 != blank %}, {{ shipping_address.address2 }}{% endif %}<br>
+                {{ shipping_address.city }}{% if shipping_address.province != blank %}, {{ shipping_address.province }}{% endif %} {{ shipping_address.zip }}<br>
+                {{ shipping_address.country }}
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Tracking grace note (DHL activates within 24h of dispatch) -->
+          <tr>
+            <td class="cs-pad" style="padding:26px 48px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="cs-callout" bgcolor="#efeae1" style="border:1px solid #d8d0c3;background:#efeae1;padding:18px 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                    <div class="cs-ink" style="font-size:13px;color:#171512;font-weight:600;">{{ t_order_trackingTitle }}</div>
+                    <div class="cs-soft" style="font-size:12.5px;line-height:1.7;color:#55504a;margin:6px 0 0;">
+                      {{ t_order_trackingBody }}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:26px 48px 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td class="cs-btn" bgcolor="#171512" align="center" style="background:#171512;">
+                    <a class="cs-btn" href="{{ order.order_status_url }}" style="display:inline-block;background:#171512;color:#ffffff;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:16px 44px;">{{ t_cta_view{{ t_label_order }} }}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Help -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:24px 48px 0;">
+              <p class="cs-muted" style="margin:0;font-size:12.5px;line-height:1.7;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                {% case lang %}{% when 'el' %}Έχετε απορίες για την παραγγελία σας; Είμαστε εδώ για να σας βοηθήσουμε στο <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'ar' %}هل لديك أسئلة حول طلبك؟ نحن هنا لمساعدتك عبر <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'es' %}¿Tienes preguntas sobre tu pedido? Estamos aquí para ayudarte en <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'it' %}Hai domande sul tuo ordine? Siamo qui per aiutarti all'indirizzo <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'fr' %}Des questions sur votre commande ? Nous sommes là pour vous aider à l'adresse <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'de' %}Fragen zu deiner Bestellung? Wir helfen dir gerne unter <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'nl' %}Vragen over je bestelling? We helpen je graag via <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'pt' %}Tens dúvidas sobre a tua encomenda? Estamos aqui para te ajudar em <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'sv' %}Har du frågor om din beställning? Vi hjälper dig gärna på <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% when 'ru' %}Есть вопросы по заказу? Мы будем рады помочь по адресу <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% else %}Questions about your order? We are here to help at <a class="cs-link" href="mailto:info@cloudskin.com" style="color:#171512;text-decoration:underline;">info@cloudskin.com</a>.{% endcase %}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="cs-pad" align="center" style="padding:36px 48px 46px;">
+              <div class="cs-rule" style="height:1px;line-height:1px;font-size:0;background:#e6e0d6;margin:0 0 22px;">&nbsp;</div>
+              <div class="cs-muted" style="font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#857d72;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">CLOUDSKIN &middot; {{ t_footer_city }}</div>
+              <div class="cs-muted" style="margin:8px 0 0;font-size:11px;line-height:1.6;color:#a59d90;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{ t_footer_tagline }}</div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

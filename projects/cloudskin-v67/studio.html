@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/img/brand/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="robots" content="noindex, nofollow">
+  <title>CLOUDSKIN Content Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap">
+  <style>
+    :root{--ink:#1e1e1e;--paper:#f7f4ef;--line:#e4ddd2;--muted:#8a8378;--gold:#b98a4f;--ok:#2f8f5b;--bg:#fbf9f5}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:760px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(18px,4vw,28px)}
+    .brand{font-weight:600;letter-spacing:.34em;font-size:15px;text-transform:uppercase}
+    .brand em{font-family:Fraunces;font-style:italic;letter-spacing:0;font-weight:400;text-transform:none;color:var(--gold);margin-left:.4em}
+    .sub{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+    /* unlock */
+    #lock{max-width:380px;margin:14vh auto;text-align:center}
+    #lock h1{font-family:Fraunces;font-style:italic;font-weight:400;font-size:30px;margin:0 0 6px}
+    #lock p{color:var(--muted);font-size:14px;margin:0 0 22px}
+    input[type=password],input[type=text],textarea,select{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:11px;background:#fff;font:inherit;font-size:15px;color:var(--ink);outline:none;transition:border-color .2s}
+    input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8378' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px;cursor:pointer}
+    textarea{min-height:96px;resize:vertical;line-height:1.6}
+    .btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:500;letter-spacing:.02em;border-radius:11px;padding:13px 22px;background:var(--ink);color:#fff;transition:opacity .2s,transform .05s}
+    .btn:hover{opacity:.88}.btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.45;cursor:default}
+    .btn--ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    #lock .btn{width:100%;margin-top:12px}
+    .err{color:#c0392b;font-size:13px;min-height:18px;margin-top:10px}
+    /* editor */
+    header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:26px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .sec{background:#fff;border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,26px);margin-bottom:18px}
+    .sec>h2{font-family:Fraunces;font-style:italic;font-weight:400;font-size:20px;margin:0 0 4px}
+    .sec>.note{color:var(--muted);font-size:12.5px;margin:0 0 18px}
+    .field{margin-bottom:18px}
+    .field:last-child{margin-bottom:0}
+    .field label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.02em;margin-bottom:7px}
+    .imgrow{display:flex;gap:14px;align-items:center}
+    .thumb{width:96px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#faf7f2;flex:0 0 auto}
+    .imgrow .btn--ghost{padding:10px 16px;font-size:13.5px}
+    .imgrow small{display:block;color:var(--muted);font-size:11.5px;margin-top:6px}
+    .savebar{position:sticky;bottom:0;background:linear-gradient(to top,var(--bg) 60%,transparent);padding:16px 0 6px;display:flex;align-items:center;gap:14px;justify-content:flex-end;margin-top:6px}
+    .savebar .status{color:var(--muted);font-size:13px;margin-right:auto}
+    .savebar .status.ok{color:var(--ok)}
+    .hide{display:none!important}
+    .viewlink{color:var(--muted);font-size:13px;text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+    .viewlink:hover{color:var(--ink)}
+    /* product photos - per-product manager under the Edit-a-product picker */
+    .pacc{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden}
+    .pacc[data-open="true"]{border-color:var(--gold);box-shadow:0 1px 0 rgba(185,138,79,.12)}
+    .pacc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;background:#fff;border:0;cursor:pointer;font:inherit;text-align:left;transition:background .15s}
+    .pacc-head:hover{background:#faf7f2}
+    .pacc[data-open="true"] .pacc-head{background:#faf7f2}
+    .pacc-name{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:.01em}
+    .pacc-meta{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+    .pacc-count{font-size:12.5px;color:var(--muted)}
+    .pacc-count.has{color:var(--gold);font-weight:600}
+    .pacc-arrow{color:var(--muted);font-size:13px;line-height:1;transition:transform .2s ease;display:inline-block}
+    .pacc[data-open="true"] .pacc-arrow{transform:rotate(90deg);color:var(--gold)}
+    .pacc-body{padding:16px 18px 18px;border-top:1px solid var(--line)}
+    /* photo grid (shared by the open accordion row) */
+    .photogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;margin:12px 0 14px}
+    .photocard{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#faf7f2;aspect-ratio:3/4}
+    .photocard img{width:100%;height:100%;object-fit:cover;display:block}
+    .photocard .idx{position:absolute;top:5px;left:5px;background:rgba(30,30,30,.72);color:#fff;font-size:10.5px;font-weight:600;border-radius:6px;padding:2px 6px;letter-spacing:.02em}
+    .photocard .idxsel{position:absolute;top:5px;left:5px;-webkit-appearance:none;appearance:none;background-color:rgba(30,30,30,.78);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M0 0l4 6 4-6z' fill='%23fff'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;color:#fff;font:600 10.5px/1 var(--sans,inherit);letter-spacing:.02em;border:0;border-radius:6px;padding:3px 17px 3px 7px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+    .photocard .idxsel:hover{background-color:rgba(30,30,30,.92)}
+    .photocard .idxsel:focus-visible{outline:2px solid var(--gold,#b98a4f);outline-offset:1px}
+    .photocard .idxsel option{color:#17130e;background:#fff}
+    .photocard .ctrls{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:4px;padding:5px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent)}
+    .photocard .ctrls button{appearance:none;border:0;cursor:pointer;width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.92);color:var(--ink);font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:background .15s}
+    .photocard .ctrls button:hover{background:#fff}
+    .photocard .ctrls button[disabled]{opacity:.35;cursor:default}
+    .photocard .ctrls .rm{color:#c0392b;margin-left:auto}
+    .photoempty{color:var(--muted);font-size:12.5px;padding:12px 0}
+    .photobar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .photobar .btn--ghost{padding:10px 16px;font-size:13.5px}
+    .photobar small{color:var(--muted);font-size:11.5px}
+    .photostatus{font-size:12.5px;color:var(--muted);min-height:16px;margin-top:8px}
+    .photostatus.err{color:#c0392b}
+    .photostatus.ok{color:var(--ok)}
+    /* per-colour photo sub-sections inside an open product row */
+    .pcolour{border-top:1px dashed var(--line);padding-top:16px;margin-top:16px}
+    .pcolour:first-child{border-top:0;padding-top:0;margin-top:0}
+    .pcolour-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+    .pcolour-name{font-size:14px;font-weight:600;letter-spacing:.02em;color:var(--ink)}
+    .pcolour-count{font-size:11.5px;color:var(--muted)}
+    .pcolour-count.has{color:var(--gold);font-weight:600}
+    /* image focal-point picker (homepage images) */
+    .focalbox{position:relative;width:168px;height:112px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#faf7f2;flex:0 0 auto;cursor:crosshair;touch-action:none;user-select:none}
+    .focalimg{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+    .focaldot{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid #fff;background:rgba(185,138,79,.92);box-shadow:0 0 0 1px rgba(0,0,0,.35),0 1px 5px rgba(0,0,0,.4);pointer-events:none}
+    .focalhint{display:block;color:var(--muted);font-size:11.5px;margin-top:6px}
+    /* product controls - per-product Best Seller / New / gender & display order */
+    .pctrl{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;margin-bottom:10px}
+    .pctrl__top{display:flex;align-items:center;gap:12px}
+    .pctrl__pos{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--paper);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+    .pctrl__name{flex:1 1 auto;font-size:14.5px;font-weight:500;letter-spacing:.01em}
+    .pctrl__move{flex:0 0 auto;display:flex;align-items:center;gap:6px}
+    .pctrl__move button{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:11px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+    .pctrl__move button:hover{background:var(--paper)}
+    .pctrl__move button[disabled]{opacity:.35;cursor:default}
+    .pctrl__posSel{width:auto;min-width:58px;padding:6px 28px 6px 11px;font-size:13px;border-radius:8px}
+    .pctrl__row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+    .pctrl__tog{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;cursor:pointer;margin:0}
+    .pctrl__tog input,.pctrl__rad input{width:auto;margin:0;accent-color:var(--gold);cursor:pointer}
+    .pctrl__gender{display:inline-flex;align-items:center;gap:12px;margin-left:auto;flex-wrap:wrap}
+    .pctrl__gender-label{font-size:11.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+    .pctrl__rad{display:inline-flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;margin:0}
+    .pctrl__cat{display:inline-flex;align-items:center;gap:7px}
+    .pctrl__catSel{width:auto;min-width:100px;padding:6px 28px 6px 11px;font-size:13px;border-radius:8px}
+    @media (max-width:560px){.pctrl__gender{margin-left:0;width:100%}}
+    /* top-level collapsible groups (Home / Navigation / Products / Our Story / Footer) */
+    .grp{border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:14px;overflow:hidden}
+    .grp[data-open="true"]{border-color:var(--gold);box-shadow:0 1px 0 rgba(185,138,79,.12)}
+    .grp-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;background:#fff;border:0;cursor:pointer;font:inherit;text-align:left;transition:background .15s}
+    .grp-head:hover{background:#faf7f2}
+    .grp[data-open="true"] .grp-head{background:#faf7f2}
+    .grp-title{font-family:Fraunces;font-style:italic;font-weight:400;font-size:20px;color:var(--ink)}
+    .grp-meta{display:flex;align-items:center;gap:14px;flex:0 1 auto;min-width:0}
+    .grp-summary{font-size:12.5px;color:var(--muted);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .grp-arrow{color:var(--muted);font-size:14px;line-height:1;transition:transform .2s ease;display:inline-block;flex:0 0 auto}
+    .grp[data-open="true"] .grp-arrow{transform:rotate(90deg);color:var(--gold)}
+    .grp[data-open="true"] .grp-summary{display:none}
+    .grp-body{padding:2px 16px 14px;border-top:1px solid var(--line)}
+    .grp[data-open="false"] .grp-body{display:none}
+    .grp-body .sec{border:0;border-radius:0;padding:16px 2px;margin-bottom:0;border-bottom:1px dashed var(--line)}
+    .grp-body .sec:last-child{border-bottom:0}
+    /* sub-headings inside the unified product editor */
+    .subhead{font-family:Fraunces;font-style:italic;font-weight:400;font-size:16px;margin:24px 0 6px;padding-top:18px;border-top:1px dashed var(--line)}
+    /* "When tapped, opens:" dropdown under a merchandising image */
+    .opensfield{margin-top:12px}
+    .opensfield label{font-size:12px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:600}
+    .opensSel{max-width:280px}
+    /* Complete the Look picker */
+    .ctlchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+    .ctlchip{display:inline-flex;align-items:center;gap:2px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px}
+    .ctlchip__n{font-weight:500;white-space:nowrap}
+    .ctlchip__mv,.ctlchip__rm{appearance:none;border:0;background:transparent;cursor:pointer;color:var(--muted);font-size:12px;line-height:1;padding:3px 5px;border-radius:6px}
+    .ctlchip__mv:hover,.ctlchip__rm:hover{background:#fff;color:var(--ink)}
+    .ctlchip__mv[disabled]{opacity:.3;cursor:default}
+    .ctlchip__rm{color:#c0392b}
+    .ctlnone{color:var(--muted);font-size:12.5px;padding:8px 0}
+    .ctlcount{font-size:12px;color:var(--muted);margin-bottom:10px}
+    .ctlsearch{margin-bottom:10px}
+    .ctllist{display:flex;flex-direction:column;gap:2px;max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
+    .ctlrow{display:flex;align-items:center;gap:12px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background .12s;margin:0}
+    .ctlrow:hover{background:var(--paper)}
+    .ctlrow.is-disabled{opacity:.42;cursor:default}
+    .ctlrow input{width:auto;margin:0;accent-color:var(--gold);flex:0 0 auto;cursor:pointer}
+    .ctlrow img{width:34px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--line);flex:0 0 auto;background:#faf7f2}
+    .ctlrow__n{font-size:13.5px}
+  </style>
+</head>
+<body>
+  <!-- UNLOCK -->
+  <div class="wrap" id="lock">
+    <div class="brand">CLOUDSKIN <em>Studio</em></div>
+    <h1>Content Studio</h1>
+    <p>Enter your studio password to edit your site.</p>
+    <form id="lockForm">
+      <input type="password" id="pw" placeholder="Studio password" autocomplete="off" aria-label="Studio password">
+      <div class="err" id="lockErr"></div>
+      <button class="btn" type="submit" id="lockBtn">Unlock</button>
+    </form>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="wrap hide" id="editor">
+    <header class="top">
+      <div>
+        <div class="brand">CLOUDSKIN <em>Studio</em></div>
+        <p class="sub">Edit your site's text &amp; images. Changes go live after you save.</p>
+      </div>
+      <a class="viewlink" href="/home" target="_blank" rel="noopener">View site &nearr;</a>
+    </header>
+    <div id="sections"></div>
+    <div class="savebar">
+      <span class="status" id="status"></span>
+      <button class="btn btn--ghost" type="button" id="publishBtn" title="Rebuild your site so newly replaced product/site photos load instantly on first view. Not needed for text changes - those are live as soon as you save.">Publish to site</button>
+      <button class="btn btn--ghost" type="button" id="resetBtn">Discard changes</button>
+      <button class="btn" type="button" id="saveBtn" disabled>Save changes</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=76"></script>
+  <script src="js/products.js?v=76"></script>
+  <script src="js/curate.js?v=76"></script>
+  <script src="js/product-content.js?v=76"></script>
+  <script src="js/studio.js?v=76"></script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/img/brand/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script>(function(){try{if(sessionStorage.getItem('cs_gate_ok')==='1')return;}catch(e){return;}location.replace('/');})();</script>
+  <title>Sign in | CLOUDSKIN®</title>
+  <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/main.css?v=67">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Inter:wght@300;400;500;600&display=swap">
+  <style>
+    /* ============================================================
+       Sign in / Create account - REAL Supabase Auth (email+password + Google).
+       Sign-up creates a row in public.profiles via the on_auth_user_created
+       trigger. Styled as a CloudSkin account page.
+       ============================================================ */
+    :root { --lg-line: #ded9d0; --lg-muted: #8c877d; --lg-btn: #3b3934; }
+    .login-page { min-height: 100vh; background: #f4f1ec; color: var(--ink); display: flex; flex-direction: column; }
+    .login-page a { color: inherit; }
+
+    /* header */
+    .lg-header { background: #f4f1ec; }
+    .lg-top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+      padding: 20px clamp(20px, 4vw, 56px); }
+    .lg-country { justify-self: start; display: inline-flex; align-items: center; gap: 7px; background: none; border: 0;
+      font-family: var(--sans); font-size: 13px; color: var(--ink); cursor: pointer; letter-spacing: .01em; }
+    .lg-country span { font-size: 9px; opacity: .7; }
+    .lg-logo { justify-self: center; font-family: var(--sans); font-weight: 500; letter-spacing: .42em; text-transform: uppercase;
+      font-size: clamp(17px, 2vw, 21px); padding-left: .42em; text-decoration: none; }
+    .lg-icons { justify-self: end; display: inline-flex; align-items: center; gap: 22px; }
+    .lg-icons a, .lg-icons button { background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+    .lg-icons svg { width: 21px; height: 21px; }
+    .lg-nav { display: flex; justify-content: center; gap: clamp(26px, 4vw, 52px); padding: 6px 20px 22px; border-bottom: 1px solid var(--lg-line); }
+    .lg-nav a { font-family: var(--sans); font-size: 12.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding-bottom: 3px; }
+    .lg-nav a:hover { opacity: .6; }
+    .lg-nav .lg-soon { color: var(--lg-muted); font-weight: 400; cursor: default; }
+
+    /* body: photo + form */
+    .lg-main { flex: 1; display: grid; grid-template-columns: 48% 1fr; }
+    .lg-photo { position: relative; overflow: hidden; background: #e7e3dc; min-height: 62vh; }
+    .lg-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; filter: grayscale(1) contrast(.98); }
+    .lg-watermark { position: absolute; left: clamp(10px, 1.4vw, 20px); top: 50%; transform: translateY(-50%) rotate(180deg);
+      writing-mode: vertical-rl; font-family: var(--sans); font-weight: 500; letter-spacing: .5em; text-transform: uppercase;
+      font-size: clamp(22px, 3vw, 40px); color: rgba(255,255,255,.72); pointer-events: none; }
+
+    .lg-form-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(48px, 7vw, 100px) clamp(24px, 5vw, 80px); }
+    .lg-form { width: 100%; max-width: 360px; }
+    .lg-eyebrow { font-family: var(--sans); font-size: clamp(15px, 1.6vw, 18px); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); font-weight: 700; margin-bottom: 8px; }
+    .lg-title { font-family: var(--sans); font-weight: 300; font-size: clamp(34px, 4vw, 46px); line-height: 1.05; margin: 10px 0 8px; letter-spacing: -.01em; }
+    .lg-sub { font-family: var(--sans); font-size: 14px; color: #5f5b53; margin-bottom: 30px; }
+
+    .lg-field { position: relative; margin-bottom: 14px; }
+    .lg-field input { width: 100%; height: 58px; padding: 22px 44px 6px 15px; border: 1px solid var(--lg-line); background: #fff;
+      font-family: var(--sans); font-size: 15px; color: var(--ink); border-radius: 2px; outline: none; transition: border-color .2s; }
+    .lg-field input:focus { border-color: var(--ink); }
+    .lg-field label { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--lg-muted); font-family: var(--sans);
+      font-size: 15px; pointer-events: none; transition: all .16s var(--ease); }
+    .lg-field input:focus + label, .lg-field input:not(:placeholder-shown) + label { top: 15px; transform: none; font-size: 11px; letter-spacing: .02em; }
+    .lg-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--lg-muted); cursor: pointer; padding: 6px; display: grid; place-items: center; }
+    .lg-eye svg { width: 20px; height: 20px; }
+
+    .lg-forgot { display: block; text-align: right; font-family: var(--sans); font-size: 13px; color: #5f5b53; text-decoration: none; margin: 2px 0 22px; }
+    .lg-forgot:hover { color: var(--ink); }
+
+    .lg-btn { width: 100%; height: 56px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: var(--sans); font-size: 12.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: opacity .2s, background .2s, color .2s; }
+    .lg-btn--dark { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+    .lg-btn--dark:hover { background: var(--ink); color: #fff; }
+    .lg-btn--apple { background: transparent; color: var(--ink); border: 1px solid var(--lg-line); margin-top: 2px; }
+    .lg-btn--apple:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .lg-btn--apple svg { width: 18px; height: 18px; margin-top: -2px; }
+    .lg-btn--google { background: transparent; color: var(--ink); border: 1px solid var(--lg-line); margin-top: 12px; }
+    .lg-btn--google:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .lg-btn--google svg { width: 18px; height: 18px; }
+
+    .lg-or { display: flex; align-items: center; gap: 16px; margin: 22px 0; color: var(--lg-muted); }
+    .lg-or::before, .lg-or::after { content: ""; flex: 1; height: 1px; background: var(--lg-line); }
+    .lg-or span { font-family: var(--sans); font-size: 13px; }
+
+    .lg-check { display: flex; align-items: center; gap: 10px; margin-top: 26px; font-family: var(--sans); font-size: 13px; color: #5f5b53; cursor: pointer; }
+    .lg-check input { width: 16px; height: 16px; accent-color: var(--ink); }
+
+    .lg-create { text-align: center; margin-top: 40px; font-family: var(--sans); font-size: 13.5px; color: #5f5b53; }
+    .lg-create a { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+
+    /* feedback message + account view */
+    .lg-msg { font-family: var(--sans); font-size: 13px; line-height: 1.5; padding: 12px 14px; border-radius: 2px; margin-bottom: 18px; }
+    .lg-msg--err { background: #f7e9e6; color: #8a2f22; }
+    .lg-msg--ok  { background: #e7efe9; color: #2c5c3f; }
+    .lg-btn[disabled] { opacity: .55; cursor: default; }
+    .lg-account .lg-btn { margin-top: 14px; }
+    .lg-btn--admin { background: var(--ink); color: #fff; border: 1px solid var(--ink); }
+    .lg-btn--admin:hover { opacity: .85; }
+
+    /* account menu (signed-in) */
+    .acc-block { margin: 24px 0; border-top: 1px solid var(--lg-line); padding-top: 20px; }
+    .acc-block__h { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--lg-muted); margin: 0 0 14px; }
+    .acc-row { display: flex; justify-content: space-between; gap: 12px; font-family: var(--sans); font-size: 14px; color: var(--ink); padding: 5px 0; }
+    .acc-row span:last-child { color: #5f5b53; text-align: right; word-break: break-word; }
+    .acc-loading, .acc-empty { font-family: var(--sans); font-size: 14px; color: #5f5b53; line-height: 1.55; }
+    .acc-order { border: 1px solid var(--lg-line); border-radius: 2px; padding: 14px 16px; margin-bottom: 12px; background: #fff; }
+    .acc-order__top { display: flex; justify-content: space-between; gap: 12px; font-family: var(--sans); font-size: 13px; }
+    .acc-order__no { font-weight: 600; letter-spacing: .03em; }
+    .acc-order__date { color: var(--lg-muted); }
+    .acc-order__items { margin-top: 7px; font-family: var(--sans); font-size: 12.5px; color: #6f6a61; line-height: 1.5; }
+    .acc-order__meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 9px; font-family: var(--sans); font-size: 13px; color: #5f5b53; }
+    .acc-order__status { display: inline-flex; align-items: center; gap: 7px; }
+    .acc-order__dot { width: 7px; height: 7px; border-radius: 50%; background: #b9b4a8; flex: 0 0 auto; }
+    .acc-order__dot--on { background: #3f8f5f; }
+    .acc-order__track { display: inline-block; margin-top: 11px; font-family: var(--sans); font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+    .acc-order__track:hover { opacity: .6; }
+
+    @media (max-width: 820px) {
+      .lg-main { grid-template-columns: 1fr; }
+      .lg-photo { min-height: 300px; order: -1; }
+      .lg-icons { gap: 16px; }
+      .lg-country { font-size: 11.5px; }
+    }
+
+    /* signup consent line (GDPR) + self-contained policy modal */
+    .lg-consent { font-family: var(--sans); font-size: 12px; line-height: 1.55; color: #6f6a61; margin: 16px 0 0; text-align: center; }
+    .lg-consent a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+    .lglegal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .lglegal.on { display: flex; }
+    .lglegal__ov { position: absolute; inset: 0; background: rgba(23,21,18,.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .lglegal__box { position: relative; z-index: 1; width: min(600px, 100%); max-height: 86vh; overflow-y: auto; background: #f7f4ef; border: 1px solid var(--lg-line); border-radius: 3px; padding: clamp(24px, 4vw, 38px); }
+    .lglegal__close { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; background: none; border: 0; font-size: 26px; line-height: 1; cursor: pointer; color: var(--ink); }
+    .lglegal__title { font-family: var(--sans); font-weight: 300; font-size: 26px; margin: 0 0 14px; color: var(--ink); }
+    .lglegal__body { font-family: var(--sans); font-size: 14px; line-height: 1.75; color: #55504a; font-weight: 300; }
+    .lglegal__body h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--ink); margin: 18px 0 6px; }
+    .lglegal__body p { margin: 0 0 11px; }
+    .lglegal__body ul { margin: 0 0 12px; padding-left: 18px; }
+    .lglegal__body li { margin-bottom: 5px; }
+    .lglegal__body a { color: var(--ink); }
+  </style>
+</head>
+<body class="login-page">
+  <header class="lg-header">
+    <div class="lg-top">
+      <span class="lg-country" aria-hidden="true"></span>
+      <a class="lg-logo" href="home.html">CLOUDSKIN</a>
+      <div class="lg-icons">
+        <a href="login.html" aria-label="Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></a>
+        <button type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></button>
+        <a href="home.html" aria-label="Bag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="lg-main">
+    <div class="lg-photo">
+      <img src="img/shoot/villa-white-skirt-stairs.jpg" alt="" onerror="this.onerror=null;this.src='img/studio/studio-white-set.jpg'">
+      <span class="lg-watermark" aria-hidden="true">CLOUDSKIN</span>
+    </div>
+
+    <div class="lg-form-wrap">
+      <!-- ACCOUNT view (shown when signed in) -->
+      <div class="lg-account" id="lgAccount" hidden>
+        <p class="lg-eyebrow">Your account</p>
+        <h1 class="lg-title" id="lgHello">Welcome</h1>
+        <p class="lg-sub" id="lgEmailLine"></p>
+
+        <section class="acc-block" id="lgOrdersBlock">
+          <h2 class="acc-block__h">Your orders</h2>
+          <div id="lgOrdersBody"><p class="acc-loading">Loading your orders&hellip;</p></div>
+        </section>
+
+        <section class="acc-block">
+          <h2 class="acc-block__h">Details</h2>
+          <div class="acc-row"><span>Name</span><span id="lgAccName">-</span></div>
+          <div class="acc-row"><span>Email</span><span id="lgAccEmail">-</span></div>
+        </section>
+
+        <button class="lg-btn lg-btn--dark" id="lgSignOut" type="button">Sign out</button>
+        <p class="lg-create"><a href="home.html">Continue shopping</a></p>
+      </div>
+
+      <!-- AUTH form (sign in / create account) -->
+      <form class="lg-form" id="loginForm" novalidate>
+        <p class="lg-eyebrow" id="lgEyebrow">Welcome back</p>
+        <h1 class="lg-title" id="lgTitle">Sign in</h1>
+        <p class="lg-sub" id="lgSubtitle">Sign in or create an account</p>
+
+        <div class="lg-msg" id="lgMsg" role="status" hidden></div>
+
+        <div class="lg-field" id="lgNameField" hidden>
+          <input type="text" id="lgName" placeholder=" " autocomplete="name">
+          <label for="lgName">Full name</label>
+        </div>
+        <div class="lg-field">
+          <input type="email" id="lgEmail" placeholder=" " autocomplete="email">
+          <label for="lgEmail">Email</label>
+        </div>
+        <div class="lg-field">
+          <input type="password" id="lgPass" placeholder=" " autocomplete="current-password">
+          <label for="lgPass">Password</label>
+          <button class="lg-eye" type="button" id="lgEye" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+
+        <a class="lg-forgot" href="#" id="lgForgot">Forgot password?</a>
+
+        <button class="lg-btn lg-btn--dark" id="lgSubmit" type="submit">Sign in</button>
+
+        <p class="lg-consent" id="lgConsent" hidden>By creating an account you agree to our <a href="#" data-legal-lite="terms">Terms &amp; Conditions</a> and <a href="#" data-legal-lite="privacy">Privacy Policy</a>.</p>
+
+        <label class="lg-check" id="lgOptWrap" hidden><input type="checkbox" id="lgOptin"> Email me with news and offers</label>
+      </form>
+      <p class="lg-create" id="lgToggleWrap">New to CLOUDSKIN? <a href="#" id="lgToggle">Create account</a></p>
+    </div>
+  </main>
+
+  <!-- self-contained policy modal (Terms / Privacy) for the signup consent links -->
+  <div class="lglegal" id="lgLegal" aria-hidden="true">
+    <div class="lglegal__ov" data-legal-close></div>
+    <div class="lglegal__box" role="dialog" aria-modal="true" aria-labelledby="lgLegalTitle">
+      <button class="lglegal__close" data-legal-close aria-label="Close">&times;</button>
+      <h2 class="lglegal__title" id="lgLegalTitle"></h2>
+      <div class="lglegal__body" id="lgLegalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=67"></script>
+  <script src="js/content-snapshot.js?v=67"></script>
+  <script src="js/auth.js?v=67"></script>
+  <script src="js/legal.js?v=67"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var form = $('loginForm'), account = $('lgAccount');
+    var mode = 'signin';   // 'signin' | 'signup'
+
+    // password reveal
+    $('lgEye').addEventListener('click', function () { var p = $('lgPass'); p.type = p.type === 'password' ? 'text' : 'password'; });
+
+    // signup consent → self-contained Terms / Privacy modal (canonical copy from js/legal.js)
+    function openLegal(key) {
+      var data = (window.CLOUDSKIN && CLOUDSKIN.legal && CLOUDSKIN.legal[key]);
+      if (!data) return;
+      $('lgLegalTitle').textContent = data.title;
+      $('lgLegalBody').innerHTML = data.html;
+      var m = $('lgLegal'); m.classList.add('on'); m.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      var box = m.querySelector('.lglegal__box'); if (box) box.scrollTop = 0;
+    }
+    function closeLegal() {
+      var m = $('lgLegal'); m.classList.remove('on'); m.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('[data-legal-lite]');
+      if (t) { e.preventDefault(); openLegal(t.getAttribute('data-legal-lite')); return; }
+      if (e.target.closest && e.target.closest('[data-legal-close]')) { e.preventDefault(); closeLegal(); return; }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLegal(); });
+
+    function msg(text, kind) {
+      var m = $('lgMsg');
+      if (!text) { m.hidden = true; return; }
+      m.hidden = false; m.textContent = text; m.className = 'lg-msg ' + (kind === 'ok' ? 'lg-msg--ok' : 'lg-msg--err');
+    }
+
+    function setMode(m) {
+      mode = m; msg('');
+      var signup = m === 'signup';
+      $('lgEyebrow').textContent = signup ? 'Join the CloudSkin World' : 'Welcome back';
+      $('lgTitle').textContent = signup ? 'Create account' : 'Sign in';
+      $('lgSubtitle').textContent = signup ? 'Create your CloudSkin account' : 'Sign in or create an account';
+      $('lgSubmit').textContent = signup ? 'Create account' : 'Sign in';
+      $('lgNameField').hidden = !signup;
+      $('lgOptWrap').hidden = !signup;
+      $('lgConsent').hidden = !signup;
+      $('lgForgot').style.display = signup ? 'none' : 'block';
+      $('lgPass').setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+      $('lgToggleWrap').innerHTML = signup
+        ? 'Already have an account? <a href="#" id="lgToggle">Sign in</a>'
+        : 'New to CLOUDSKIN? <a href="#" id="lgToggle">Create account</a>';
+      $('lgToggle').addEventListener('click', function (e) { e.preventDefault(); setMode(signup ? 'signin' : 'signup'); });
+    }
+    $('lgToggle').addEventListener('click', function (e) { e.preventDefault(); setMode('signup'); });
+
+    function busy(on) { $('lgSubmit').disabled = on; }
+
+    // email/password submit
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = $('lgEmail').value.trim(), pass = $('lgPass').value;
+      if (!email || !pass) { msg('Please enter your email and password.'); return; }
+      if (!CLOUDSKIN.auth.configured()) { msg('Accounts are being set up. Please check back shortly.'); return; }
+      busy(true); msg('');
+      if (mode === 'signup') {
+        CLOUDSKIN.auth.signUp(email, pass, { full_name: $('lgName').value.trim(), marketing_opt_in: $('lgOptin').checked }).then(function (r) {
+          busy(false);
+          if (r.error) { msg(r.error.message); return; }
+          if (r.data && r.data.session) { showAccount(r.data.session.user); }
+          else if (r.data && r.data.user) { CLOUDSKIN.auth.signIn(email, pass).then(function (s) { if (s.data && s.data.user) showAccount(s.data.user); else { msg('Account created. You can sign in now.', 'ok'); setMode('signin'); } }); }
+          else { msg('Account created. You can sign in now.', 'ok'); setMode('signin'); }
+        });
+      } else {
+        CLOUDSKIN.auth.signIn(email, pass).then(function (r) {
+          busy(false);
+          if (r.error) { msg(r.error.message); return; }
+          showAccount(r.data.user);
+        });
+      }
+    });
+
+    // forgot password
+    $('lgForgot').addEventListener('click', function (e) {
+      e.preventDefault();
+      var email = $('lgEmail').value.trim();
+      if (!email) { msg('Enter your email above, then tap "Forgot password?".'); return; }
+      if (!CLOUDSKIN.auth.configured()) { msg('Accounts are being set up. Please check back shortly.'); return; }
+      CLOUDSKIN.auth.resetPassword(email).then(function () { msg('If an account exists for that email, a reset link is on its way.', 'ok'); });
+    });
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+    function showAccount(user) {
+      if (!user) return;
+      // Signed in -> go to the dedicated account page (no signed-in state on the login page).
+      location.replace('account.html');
+    }
+
+    // Orders: fetched from a Supabase edge function that reads the customer's real
+    // Shopify orders (matched by their signed-in email) via the Admin API server-side.
+    // Until that function is deployed, or if the customer has none, it degrades to a
+    // friendly empty state - never an error.
+    var ordersLoaded = false;
+    function loadOrders() {
+      if (ordersLoaded) return; ordersLoaded = true;
+      var body = $('lgOrdersBody'); if (!body) return;
+      var cfg = window.CLOUDSKIN_SB || {}, sb = CLOUDSKIN.sb;
+      function empty() { body.innerHTML = '<p class="acc-empty">No orders yet. When you place an order it will appear here with live tracking.</p>'; }
+      if (!sb || !cfg.url) { empty(); return; }
+      sb.auth.getSession().then(function (r) {
+        var token = r && r.data && r.data.session && r.data.session.access_token;
+        if (!token) { empty(); return; }
+        fetch(cfg.url + '/functions/v1/cloudskin-orders', {
+          headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + token }
+        }).then(function (res) { return res.ok ? res.json() : null; }).then(function (data) {
+          var orders = data && data.orders;
+          if (!orders || !orders.length) { empty(); return; }
+          body.innerHTML = orders.map(renderOrder).join('');
+        }).catch(empty);
+      }).catch(empty);
+    }
+    function renderOrder(o) {
+      var on = !!(o.fulfilled || /fulfilled|shipped|delivered/i.test(o.statusLabel || ''));
+      var items = (o.items || []).map(function (it) { return esc(it.title) + (it.quantity > 1 ? ' ×' + it.quantity : ''); }).join(', ');
+      var track = (o.tracking && o.tracking.url)
+        ? '<a class="acc-order__track" href="' + esc(o.tracking.url) + '" target="_blank" rel="noopener">Track shipment</a>' : '';
+      return '<div class="acc-order">' +
+        '<div class="acc-order__top"><span class="acc-order__no">' + esc(o.name || o.number || 'Order') + '</span><span class="acc-order__date">' + esc(o.date || '') + '</span></div>' +
+        (items ? '<div class="acc-order__items">' + items + '</div>' : '') +
+        '<div class="acc-order__meta"><span class="acc-order__status"><span class="acc-order__dot' + (on ? ' acc-order__dot--on' : '') + '"></span>' + esc(o.statusLabel || (on ? 'Shipped' : 'Processing')) + '</span><span>' + esc(o.total || '') + '</span></div>' +
+        track + '</div>';
+    }
+    $('lgSignOut').addEventListener('click', function () {
+      CLOUDSKIN.auth.signOut().then(function () { account.hidden = true; form.hidden = false; $('lgToggleWrap').hidden = false; setMode('signin'); });
+    });
+
+    // reflect existing session on load
+    CLOUDSKIN.auth.onChange(function (user) { if (user) showAccount(user); });
+    if (!CLOUDSKIN.auth.configured()) { /* still fully usable UI; shows a friendly message on submit */ }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/blog/:slug", "destination": "/blog-post.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.supabase.co https://*.myshopify.com https://cdn.shopify.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.myshopify.com; frame-src 'self' https://*.myshopify.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/img/brand/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="robots" content="noindex, nofollow">
+  <title>CLOUDSKIN Vellum &middot; Live Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap">
+  <style>
+    :root{--ink:#1e1e1e;--paper:#f7f4ef;--line:#e4ddd2;--muted:#8a8378;--gold:#b98a4f;--ok:#2f8f5b;--bg:#fbf9f5;--vellum:#3a4fd0}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:
+        radial-gradient(1200px 620px at 50% -10%, rgba(58,79,208,.06), transparent 60%),
+        var(--bg);
+      color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+      display:flex;align-items:center;justify-content:center;min-height:100svh;padding:24px}
+    .card{width:100%;max-width:380px;text-align:center}
+    .mark{display:inline-flex;align-items:center;gap:9px;justify-content:center;margin-bottom:22px}
+    .mark span.glyph{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--vellum),#6b7ef0);
+      box-shadow:0 6px 18px rgba(58,79,208,.28),inset 0 0 0 1px rgba(255,255,255,.35);position:relative}
+    .mark span.glyph::after{content:"";position:absolute;inset:7px;border-radius:3px;border:1.5px solid rgba(255,255,255,.9)}
+    .brand{font-weight:600;letter-spacing:.34em;font-size:14px;text-transform:uppercase}
+    .brand em{font-family:Fraunces;font-style:italic;letter-spacing:0;font-weight:400;text-transform:none;color:var(--vellum);margin-left:.35em}
+    h1{font-family:Fraunces;font-style:italic;font-weight:400;font-size:30px;margin:0 0 6px}
+    p.lede{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 24px}
+    form{display:block}
+    input[type=password]{width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;
+      font:inherit;font-size:15px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;text-align:center}
+    input:focus{border-color:var(--vellum);box-shadow:0 0 0 3px rgba(58,79,208,.12)}
+    .err{color:#c0392b;font-size:13px;min-height:18px;margin-top:10px}
+    .btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:500;letter-spacing:.02em;border-radius:12px;
+      padding:14px 22px;width:100%;margin-top:12px;color:#fff;background:var(--ink);transition:opacity .2s,transform .05s}
+    .btn:hover{opacity:.9}.btn:active{transform:translateY(1px)}
+    .btn[disabled]{opacity:.5;cursor:default}
+    .note{color:var(--muted);font-size:12px;line-height:1.5;margin:20px 0 0}
+    .note a{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark"><span class="glyph"></span><span class="brand">CLOUDSKIN <em>Vellum</em></span></div>
+    <h1>Live editor</h1>
+    <p class="lede">Enter your password to edit your site by clicking on it. Your changes save as you go and go live on your site.</p>
+    <form id="creatorForm" autocomplete="off">
+      <input type="password" id="pw" placeholder="Your editor password" autocomplete="off" aria-label="Editor password" />
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn" type="submit" id="go">Enter editor</button>
+    </form>
+    <p class="note">You will edit the real CloudSkin site. Your password is checked securely and is never shown to anyone.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=67"></script>
+  <script src="js/creator.js?v=67"></script>
+</body>
+</html>

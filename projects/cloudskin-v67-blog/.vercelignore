@@ -1,0 +1,7 @@
+serve.mjs
+.serve.log
+scripts/
+supabase/
+tests/
+.env
+.env.local

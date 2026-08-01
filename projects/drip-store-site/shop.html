@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>Shop All — DRIP</title>
+<meta name="description" content="Shop the full DRIP catalogue — Air Jordan, Nike, Yeezy, New Balance and more. Authenticated grails, 24h delivery.">
+<link rel="preconnect" href="">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="bg-orb a"></div><div class="bg-orb b"></div>
+<div id="hdr"></div>
+
+<div class="wrap page-head">
+  <div class="crumbs"><a href="index.html">Home</a> / <span id="crumb">Shop</span></div>
+  <h1 class="display page-title" id="ptitle">Shop All</h1>
+  <p class="page-sub" id="psub">Every pair in the vault — authenticated, ready to ship.</p>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div class="result-count"><b id="rc">0</b> products</div>
+    <div class="tool-right">
+      <button class="btn-filter" onclick="document.querySelector('.filters').classList.add('open')">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg> Filters</button>
+      <label class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 21l-4.3-4.3M11 19a8 8 0 100-16 8 8 0 000 16z" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="Search in results…">
+      </label>
+      <select class="select" id="sort">
+        <option value="featured">Featured</option>
+        <option value="new">Newest</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="discount">Biggest Discount</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="wrap shop-layout">
+  <aside class="filters">
+    <div class="filter-close"><button onclick="document.querySelector('.filters').classList.remove('open')" aria-label="Close filters">✕</button></div>
+    <div class="fgroup"><h4>Category</h4><div id="f-cat"></div></div>
+    <div class="fgroup"><h4>Brand</h4><div id="f-brand"></div></div>
+    <div class="fgroup"><h4>Size (EU)</h4><div class="size-grid" id="f-size"></div></div>
+    <div class="fgroup"><h4>Price</h4>
+      <div class="price-row"><input id="pmin" type="number" placeholder="Min" min="0"><span class="muted">—</span><input id="pmax" type="number" placeholder="Max" min="0"></div>
+    </div>
+    <div class="fgroup" style="border:0"><label class="fopt"><input type="checkbox" id="instock"> In stock only</label></div>
+    <button class="clear-all" onclick="App.clear()">Clear all filters</button>
+  </aside>
+
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="brands-view" style="display:none"></div>
+    <div class="loadmore-row" id="lm-row" style="display:none"><button class="btn-load" onclick="App.more()">Load more</button></div>
+    <div class="empty" id="empty" style="display:none"><h3>No matches</h3><p>Try removing a filter or two.</p></div>
+  </main>
+</div>
+
+<div id="ftr"></div>
+
+<script src="assets/shop.js"></script>
+<script>
+const App = (() => {
+  const PAGE = 48;
+  let ALL = [], view = [], shown = 0;
+  const state = { cat:'', brands:new Set(), sizes:new Set(), pmin:null, pmax:null, instock:false, q:'', sort:'featured' };
+  const norm = s => (s||'').toString();
+
+  const CAT_LABEL = {sneakers:'Sneakers',running:'Running',basketball:'Basketball',lifestyle:'Lifestyle',clothing:'Clothing',accessories:'Accessories','new-arrivals':'New Arrivals',sale:'Sale','limited-editions':'Limited Editions',featured:'Best Sellers',trending:'Trending'};
+
+  function readURL(){
+    const p = DRIP.qs;
+    state.cat = p.get('c') || '';
+    if (p.get('brand')) state.brands.add(p.get('brand'));
+    state.q = p.get('q') || '';
+    if (p.get('view')==='brands') return 'brands';
+    return 'grid';
+  }
+  function matchCat(prod,c){
+    if(!c) return true;
+    if(c==='featured') return prod.featured;
+    if(c==='trending') return prod.trending;
+    return (prod.categories||[]).includes(c);
+  }
+  function apply(){
+    view = ALL.filter(p=>{
+      if(!matchCat(p,state.cat)) return false;
+      if(state.brands.size && !state.brands.has(p.brand)) return false;
+      if(state.sizes.size && !(p.sizes||[]).some(s=>state.sizes.has(norm(s)))) return false;
+      if(state.pmin!=null && p.price<state.pmin) return false;
+      if(state.pmax!=null && p.price>state.pmax) return false;
+      if(state.instock && !p.inStock) return false;
+      if(state.q){const t=(p.name+' '+p.brand).toLowerCase(); if(!t.includes(state.q.toLowerCase())) return false;}
+      return true;
+    });
+    sortView();
+    document.getElementById('rc').textContent = view.length;
+    shown = 0;
+    document.getElementById('grid').innerHTML='';
+    document.getElementById('empty').style.display = view.length?'none':'block';
+    more();
+    syncActive();
+  }
+  function sortView(){
+    const s=state.sort;
+    view.sort((a,b)=>{
+      if(s==='price-asc') return a.price-b.price;
+      if(s==='price-desc') return b.price-a.price;
+      if(s==='name') return a.name.localeCompare(b.name);
+      if(s==='new') return new Date(b.releaseDate)-new Date(a.releaseDate);
+      if(s==='discount'){const da=a.compareAtPrice?1-a.price/a.compareAtPrice:0,db=b.compareAtPrice?1-b.price/b.compareAtPrice:0;return db-da;}
+      // featured: featured first, then trending, then rating
+      return (b.featured-a.featured)||(b.trending-a.trending)||(b.rating-a.rating);
+    });
+  }
+  function more(){
+    const next = view.slice(shown, shown+PAGE);
+    document.getElementById('grid').insertAdjacentHTML('beforeend', next.map(DRIP.card).join(''));
+    shown += next.length;
+    document.getElementById('lm-row').style.display = shown<view.length?'flex':'none';
+  }
+  function syncActive(){
+    document.querySelectorAll('#f-cat .fopt').forEach(el=>el.classList.toggle('active',el.dataset.v===state.cat));
+    document.querySelectorAll('#f-brand .fopt').forEach(el=>el.classList.toggle('active',state.brands.has(el.dataset.v)));
+    document.querySelectorAll('#f-size button').forEach(el=>el.classList.toggle('active',state.sizes.has(el.dataset.v)));
+  }
+
+  function buildFilters(cats){
+    // category
+    const catEl=document.getElementById('f-cat');
+    const cs=['',...Object.keys(CAT_LABEL)];
+    catEl.innerHTML=cs.map(c=>{
+      const count = c? ALL.filter(p=>matchCat(p,c)).length : ALL.length;
+      if(c && !count) return '';
+      return `<label class="fopt" data-v="${c}" onclick="App.setCat('${c}')"><input type="radio" name="cat" ${c===state.cat?'checked':''} style="border-radius:50%"><span>${c?CAT_LABEL[c]:'All'}</span><span class="c">${count}</span></label>`;
+    }).join('');
+    // brands
+    const brands={};ALL.forEach(p=>brands[p.brand]=(brands[p.brand]||0)+1);
+    document.getElementById('f-brand').innerHTML=Object.entries(brands).sort((a,b)=>b[1]-a[1]).map(([b,n])=>
+      `<label class="fopt" data-v="${b}"><input type="checkbox" ${state.brands.has(b)?'checked':''} onchange="App.toggleBrand('${b.replace(/'/g,"\\'")}',this.checked)"><span>${b}</span><span class="c">${n}</span></label>`).join('');
+    // sizes
+    const sizes=new Set();ALL.forEach(p=>(p.sizes||[]).forEach(s=>sizes.add(norm(s))));
+    const sorted=[...sizes].filter(s=>/^\d/.test(s)).sort((a,b)=>parseFloat(a)-parseFloat(b)).concat([...sizes].filter(s=>!/^\d/.test(s)));
+    document.getElementById('f-size').innerHTML=sorted.map(s=>`<button data-v="${s}" onclick="App.toggleSize(this,'${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+  }
+
+  // brands overview
+  async function renderBrands(){
+    document.querySelector('.shop-layout').style.gridTemplateColumns='1fr';
+    document.querySelector('.filters').style.display='none';
+    document.getElementById('grid').style.display='none';
+    document.getElementById('lm-row').style.display='none';
+    document.getElementById('ptitle').textContent='Brands';
+    document.getElementById('crumb').textContent='Brands';
+    document.getElementById('psub').textContent='The houses we carry — tap a brand to shop its collection.';
+    const data=await DRIP.categories();
+    const cover={};ALL.forEach(p=>{if(!cover[p.brand])cover[p.brand]=p.images[0];});
+    const bv=document.getElementById('brands-view');bv.style.display='grid';
+    bv.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px';
+    bv.innerHTML=data.brands.map(b=>`<a href="shop.html?brand=${encodeURIComponent(b.name)}" class="card"><div class="frame" style="aspect-ratio:4/3">
+      <img loading="lazy" src="${cover[b.name]||ALL[0].images[0]}" alt="${b.name}" style="filter:brightness(.62)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;z-index:2">
+        <div class="display" style="font-size:24px">${b.name}</div><div class="muted" style="font-size:12px">${b.count} styles</div></div>
+      <div class="glow"></div></div></a>`).join('');
+  }
+
+  // public handlers
+  function setCat(c){state.cat=c;const u=new URL(location);c?u.searchParams.set('c',c):u.searchParams.delete('c');u.searchParams.delete('view');history.replaceState({},'',u);apply();window.scrollTo({top:document.querySelector('.toolbar').offsetTop-90,behavior:'smooth'});}
+  function toggleBrand(b,checked){checked?state.brands.add(b):state.brands.delete(b);apply();}
+  function toggleSize(el,s){state.sizes.has(s)?state.sizes.delete(s):state.sizes.add(s);apply();}
+  function clear(){state.cat='';state.brands.clear();state.sizes.clear();state.pmin=state.pmax=null;state.instock=false;state.q='';
+    document.getElementById('q').value='';document.getElementById('pmin').value='';document.getElementById('pmax').value='';document.getElementById('instock').checked=false;
+    const u=new URL(location);u.search='';history.replaceState({},'',u);buildFilters();apply();}
+
+  async function init(){
+    DRIP.mountChrome('Shop');
+    ALL = await DRIP.products();
+    const mode = readURL();
+    buildFilters();
+    if(state.cat && CAT_LABEL[state.cat]){document.getElementById('ptitle').textContent=CAT_LABEL[state.cat];document.getElementById('crumb').textContent=CAT_LABEL[state.cat];}
+    if(state.brands.size){const b=[...state.brands][0];document.getElementById('ptitle').textContent=b;document.getElementById('crumb').textContent=b;document.getElementById('psub').textContent='';}
+    if(state.q)document.getElementById('q').value=state.q;
+    if(mode==='brands'){await renderBrands();return;}
+    // wire inputs
+    document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value;apply();});
+    document.getElementById('sort').addEventListener('change',e=>{state.sort=e.target.value;apply();});
+    const pf=()=>{state.pmin=+document.getElementById('pmin').value||null;state.pmax=+document.getElementById('pmax').value||null;apply();};
+    document.getElementById('pmin').addEventListener('input',pf);document.getElementById('pmax').addEventListener('input',pf);
+    document.getElementById('instock').addEventListener('change',e=>{state.instock=e.target.checked;apply();});
+    apply();
+  }
+  return { init, setCat, toggleBrand, toggleSize, clear, more };
+})();
+App.init();
+</script>
+</body>
+</html>
