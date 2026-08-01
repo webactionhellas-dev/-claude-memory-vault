@@ -1,0 +1,109 @@
+---
+import Icon from './Icon.astro';
+---
+
+<div data-search-root class="pointer-events-none invisible fixed inset-0 z-[90] opacity-0 transition-opacity duration-200">
+  <div data-search-overlay class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="absolute inset-x-0 top-0 mx-auto w-full max-w-2xl px-4 pt-[12vh]">
+    <div data-search-panel class="-translate-y-3 overflow-hidden rounded-2xl border border-accent/45 bg-overlay shadow-[0_30px_90px_-25px_rgba(0,192,182,0.45)] ring-1 ring-accent/20 transition-transform duration-200">
+      <div class="flex items-center gap-3 border-b border-accent/25 bg-accent/[0.04] px-5">
+        <Icon name="search" size={20} class="text-accent" />
+        <input
+          data-search-input
+          type="search"
+          placeholder="Αναζήτηση sneakers, μάρκες…"
+          data-en-ph="Search sneakers, brands…"
+          class="h-14 flex-1 bg-transparent text-base text-ink placeholder:text-accent-soft/60 caret-accent focus:outline-none"
+          autocomplete="off"
+        />
+        <button data-search-close class="rounded-md border border-accent/30 px-2 py-0.5 text-[11px] font-600 text-accent-soft transition-colors hover:bg-accent hover:text-on-accent">ESC</button>
+      </div>
+      <div data-search-results class="max-h-[55vh] overflow-y-auto p-2">
+        <p class="px-3 py-8 text-center text-sm text-accent-soft/70" data-en="Start typing to find your next pair.">Ξεκινήστε να πληκτρολογείτε για το επόμενο ζευγάρι σας.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { money } from '@/lib/money';
+
+  const root = document.querySelector('[data-search-root]')!;
+  const panel = document.querySelector('[data-search-panel]')!;
+  const input = document.querySelector('[data-search-input]') as HTMLInputElement;
+  const results = document.querySelector('[data-search-results]')!;
+  let index: any[] | null = null;
+
+  const open = async () => {
+    root.classList.remove('invisible', 'opacity-0', 'pointer-events-none');
+    requestAnimationFrame(() => panel.classList.remove('-translate-y-3'));
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => input.focus(), 60);
+    if (!index) index = await fetch('/search-index.json').then((r) => r.json());
+  };
+  const close = () => {
+    panel.classList.add('-translate-y-3');
+    root.classList.add('opacity-0');
+    setTimeout(() => root.classList.add('invisible', 'pointer-events-none'), 200);
+    document.body.style.overflow = '';
+  };
+
+  window.addEventListener('search:open', open);
+  document.querySelector('[data-search-overlay]')?.addEventListener('click', close);
+  document.querySelector('[data-search-close]')?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/') {
+      if (document.activeElement?.tagName !== 'INPUT') {
+        e.preventDefault();
+        open();
+      }
+    }
+  });
+
+  function search(q: string) {
+    const T = (window as any).__t || ((k: string) => k);
+    if (!index || q.trim().length < 1) {
+      results.innerHTML = `<p class="px-3 py-8 text-center text-sm text-faint">${T('searchHint')}</p>`;
+      return;
+    }
+    const term = q.toLowerCase();
+    const hits = index
+      .map((p) => {
+        const hay = (p.name + ' ' + p.brand).toLowerCase();
+        if (!hay.includes(term)) return null;
+        const score = p.name.toLowerCase().startsWith(term) ? 0 : hay.indexOf(term);
+        return { p, score };
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => a.score - b.score)
+      .slice(0, 8)
+      .map((x: any) => x.p);
+
+    if (!hits.length) {
+      results.innerHTML = `<p class="px-3 py-8 text-center text-sm text-faint">${T('noMatchPre')} “${q}”.</p>`;
+      return;
+    }
+    results.innerHTML =
+      hits
+        .map(
+          (p) => `
+        <a href="/product/${p.slug}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-card">
+          <span class="plate h-12 w-12 flex-none overflow-hidden rounded-lg border border-line"><img src="${p.image}" class="h-full w-full object-contain p-1" alt=""/></span>
+          <span class="min-w-0 flex-1"><span class="block truncate text-sm text-ink">${p.name}</span><span class="text-xs text-faint">${p.brand}</span></span>
+          <span class="text-sm font-700">${money(p.price)}</span>
+        </a>`,
+        )
+        .join('') +
+      `<a href="/shop?q=${encodeURIComponent(q)}" class="mt-1 block rounded-xl px-3 py-3 text-center text-sm font-600 text-accent-soft hover:bg-card">${T('seeAllPre')} “${q}” →</a>`;
+  }
+
+  let t: any;
+  input.addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(() => search(input.value), 110);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && input.value.trim()) location.href = `/shop?q=${encodeURIComponent(input.value)}`;
+  });
+</script>

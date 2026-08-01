@@ -1,0 +1,41 @@
+{
+  "name": "mykonos-prestige-villas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mykonos Prestige Villas — ultra-premium cinematic villa rental experience (Villa Thalassa & Villa Anemos, Kastro, Mykonos)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.474.0",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.20.0",
+    "eslint-config-next": "^15.1.7",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "last 2 iOS versions",
+    "last 2 ChromeAndroid versions",
+    "not dead"
+  ]
+}

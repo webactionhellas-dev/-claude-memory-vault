@@ -1,0 +1,376 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  marquee: string[];
+}
+const { marquee } = Astro.props;
+// Brands intentionally hidden from the marquee strip.
+const HIDDEN_FROM_MARQUEE = new Set(['Stone Island × Supreme']);
+const shown = marquee.filter((b) => !HIDDEN_FROM_MARQUEE.has(b));
+const loop = [...shown, ...shown];
+
+// Exact tiffany logo per brand for the marquee. The ?v=3 query busts any older
+// cached crop in the browser so the cleaned logos always load fresh.
+const logoMap: Record<string, string> = {
+  Nike: '/brands/pad/logo-nike.webp?v=6',
+  Jordan: '/brands/pad/logo-jordan.webp?v=6',
+  Yeezy: '/brands/pad/logo-yeezy.webp?v=6',
+  'New Balance': '/brands/pad/logo-new-balance.webp?v=6',
+  Adidas: '/brands/pad/logo-adidas.webp?v=6',
+  ASICS: '/brands/pad/logo-asics.webp?v=6',
+  UGG: '/brands/pad/logo-ugg.webp?v=6',
+  Essentials: '/brands/pad/logo-essentials.webp?v=6',
+  'Stüssy': '/brands/pad/logo-stussy.webp?v=8',
+  'Fear of God': '/brands/pad/logo-fear-of-god.webp?v=6',
+  // Dedicated small marquee variant (265x130). The full-res drip-logo-hero.webp
+  // (1059x520) stays only for the crowning hero logo below; reusing it here made
+  // iOS evict the big decoded bitmap and paint a blank frame on re-decode.
+  'Drip Exclusive': '/brands/pad/logo-drip-exclusive.webp?v=1',
+  Salomon: '/brands/salomon.webp?v=6',
+};
+
+// Per-brand marquee height (rem) so every logo carries the same *visual weight*.
+// Compact icons (jumpman, trefoil, compass) get more height; wide wordmarks
+// (Salomon, Fear of God) get less, so nothing looks oversized or lost.
+const logoH: Record<string, number> = {
+  Nike: 2.8,
+  Jordan: 4.0, // tall/narrow jumpman — needs extra height so the thin extended leg reads
+  Yeezy: 2.3,
+  'New Balance': 3.5,
+  Adidas: 3.6,
+  ASICS: 2.8,
+  UGG: 3.0,
+  Essentials: 2.9,
+  'Stüssy': 3.8,
+  'Fear of God': 2.1,
+  'Drip Exclusive': 2.4,
+  Salomon: 2.0,
+};
+
+// Intrinsic pixel dimensions of each marquee asset (post-optimize). Emitted as
+// width/height attrs so the browser reserves the correct box before the image
+// decodes — no aspect/reflow blip when a logo scrolls back into view. All are
+// now <=0.036 MPix so iOS never evicts+re-decodes them (the blink cure).
+const logoWH: Record<string, [number, number]> = {
+  Nike: [293, 114],
+  Jordan: [250, 234],
+  Yeezy: [265, 77],
+  'New Balance': [175, 108],
+  Adidas: [191, 191],
+  ASICS: [284, 106],
+  UGG: [208, 99],
+  Essentials: [281, 76],
+  'Stüssy': [190, 190],
+  'Fear of God': [436, 56],
+  'Drip Exclusive': [265, 130],
+  Salomon: [388, 35],
+};
+---
+
+<section class="relative -mt-24 overflow-hidden bg-base md:-mt-[104px]">
+  <div class="relative isolate">
+    <!-- Background: looping gritty 4K video -->
+    <video
+      class="hero-video absolute inset-0 -z-20 h-full w-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+      x5-playsinline
+      disableremoteplayback
+      preload="auto"
+      poster="/hero/hero-poster.webp"
+      aria-hidden="true"
+    >
+      <!-- H.264 only. AV1 is smaller (3.6MB vs 4.8MB) BUT iOS 17+ Safari selects
+           the AV1 source and then refuses to AUTOPLAY it without a user tap (an
+           Apple power policy for AV1 decode) even with Low Power Mode OFF. H.264
+           is hardware-decoded on every iPhone and autoplays muted+inline reliably,
+           so it is the correct hero codec. 1080p, from the untouched 4K master
+           kept at hero-bg.4k-original.mp4. -->
+      <source src="/hero/hero-bg.mp4?v=4" type="video/mp4" />
+    </video>
+
+    <!-- Scrims: darkened over the whole frame (incl. behind the centered text)
+         so the tiffany headline reads easily, with a stronger vignette at the edges -->
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(120%_95%_at_50%_45%,rgba(10,10,11,0.34)_0%,rgba(10,10,11,0.26)_45%,rgba(10,10,11,0.74)_100%)]"></div>
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-base/70 via-base/8 to-base/14"></div>
+    <!-- Film grain -->
+    <div class="hero-grain pointer-events-none absolute inset-0 -z-10"></div>
+
+    <!-- Centered logo + headline (sneaker showcase removed) -->
+    <div class="wrap flex min-h-svh flex-col items-center justify-center gap-7 pt-28 pb-16 text-center md:pt-32 md:pb-20">
+      <img
+        src="/drip-logo-hero.webp?v=3"
+        alt="DRIP"
+        width="720"
+        height="354"
+        class="hero-logo h-20 w-auto md:h-32"
+      />
+
+      <div class="relative z-10">
+        <span class="eyebrow no-line" data-en="Athens · Est. 2023">Αθήνα · Est. 2023</span>
+        <h1 class="hero-title mx-auto mt-5 font-display text-[clamp(2.3rem,5.5vw,4.6rem)] font-900 leading-[0.95] tracking-[-0.03em]">
+          We don't sell<br />sneakers, we sell<br /><span class="hero-title-fill">culture.</span>
+        </h1>
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <a href="/shop" class="btn btn-fill"><span data-en="Shop the collection">Δείτε τη συλλογή</span> <Icon name="arrow" size={18} /></a>
+          <a href="/shop?category=new-arrivals" class="btn btn-ghost" data-en="New arrivals">Νέες παραλαβές</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- brand marquee — purely decorative: non-interactive so taps/long-press on
+       mobile can't trigger a stuck :hover state or drag the logos (glitch fix) -->
+  <div class="marquee-mask pointer-events-none relative select-none overflow-hidden border-y border-line bg-base py-7">
+    <div class="animate-marquee flex w-max items-center gap-14 whitespace-nowrap">
+      {
+        loop.map((b) => {
+          const src = logoMap[b];
+          return src ? (
+            <span class="brand-chip"><img src={src} alt={b} loading="eager" decoding="sync" width={logoWH[b]?.[0] ?? 200} height={logoWH[b]?.[1] ?? 100} class="brand-logo" style={`height:${logoH[b] ?? 2}rem`} /></span>
+          ) : (
+            <span class="brand-chip font-display text-lg font-800 uppercase tracking-[0.12em]">{b}</span>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* drop the little dash before the hero eyebrow */
+  .eyebrow.no-line::before {
+    display: none;
+  }
+
+  /* Neon-sign hero title: tiffany outline with a bright highlight that sweeps
+     across the letters, plus a gentle neon glow pulse. */
+  .hero-title {
+    color: transparent;
+    -webkit-text-stroke: 1.8px var(--color-accent);
+    paint-order: stroke fill;
+    background: linear-gradient(110deg, transparent 38%, rgba(205, 255, 250, 0.95) 50%, transparent 62%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-size: 260% 100%;
+    background-position: 165% 0;
+    text-shadow: 0 0 28px rgba(0, 192, 182, 0.32);
+    animation: neon-sweep 5.5s ease-in-out infinite, neon-pulse 3.4s ease-in-out infinite;
+  }
+  .hero-title .hero-title-fill {
+    -webkit-text-stroke: 1.8px var(--color-accent);
+  }
+  @keyframes neon-sweep {
+    0% { background-position: 165% 0; }
+    55%, 100% { background-position: -65% 0; }
+  }
+  @keyframes neon-pulse {
+    0%, 100% { text-shadow: 0 0 22px rgba(0, 192, 182, 0.28), 0 0 4px rgba(0, 192, 182, 0.2); }
+    50% { text-shadow: 0 0 34px rgba(0, 192, 182, 0.6), 0 0 8px rgba(0, 192, 182, 0.4); }
+  }
+  @supports not (-webkit-text-stroke: 1px #000) {
+    .hero-title { color: var(--color-accent-soft); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title { animation: none; background-position: -65% 0; }
+  }
+
+  /* Wide, eased fade at the marquee edges so logos dissolve into the dark
+     gracefully instead of snapping to the near-black bg as they scroll in/out.
+
+     This used to be a CSS `mask-image` on the container. On iOS Safari a mask on
+     an element whose child runs an animated transform makes the compositor
+     intermittently drop the masked layer mid-scroll, so the whole strip "blinks
+     off like a light switch" then jumps to catch up. Two edge overlays fading to
+     the EXACT section base colour (#0a0a0b = --color-base) reproduce the dissolve
+     with NO mask, so the GPU layer stays put.
+
+     The fade zone is intentionally WIDE — clamp(84px, 13vw, 150px), i.e. ~84px
+     even on a 390px phone (was ~27px at 7%) — and uses a multi-stop eased ramp so
+     a logo is fully faded to the background BEFORE it reaches the overflow clip
+     boundary. No hard cut at either edge. */
+  .marquee-mask::before,
+  .marquee-mask::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(84px, 13vw, 150px);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .marquee-mask::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      #0a0a0b 0%,
+      #0a0a0b 8%,
+      rgba(10, 10, 11, 0.94) 24%,
+      rgba(10, 10, 11, 0.78) 40%,
+      rgba(10, 10, 11, 0.5) 60%,
+      rgba(10, 10, 11, 0.22) 80%,
+      rgba(10, 10, 11, 0) 100%
+    );
+  }
+  .marquee-mask::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      #0a0a0b 0%,
+      #0a0a0b 8%,
+      rgba(10, 10, 11, 0.94) 24%,
+      rgba(10, 10, 11, 0.78) 40%,
+      rgba(10, 10, 11, 0.5) 60%,
+      rgba(10, 10, 11, 0.22) 80%,
+      rgba(10, 10, 11, 0) 100%
+    );
+  }
+
+  /* Keep the scrolling track on a stable GPU layer so iOS Safari never drops or
+     re-rasterizes it during the transform animation (the flicker cure). The
+     animation itself (marquee 38s linear) stays defined in global.css. */
+  .animate-marquee {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+
+  /* Marquee brand logos: per-brand height (inline) for balanced visual weight */
+  .brand-chip {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-accent-soft);
+    text-shadow: 0 0 20px rgba(0, 192, 182, 0.4);
+    /* The tiffany glow lives HERE (static, on the chip) instead of on the moving
+       <img>. A filter drop-shadow traces the child logo's alpha silhouette, so the
+       look is unchanged, but the animated image no longer re-rasterizes a per-logo
+       filter when it decodes — removing the second flicker cause. */
+    filter: drop-shadow(0 0 5px rgba(0, 192, 182, 0.5));
+    transition: color 0.3s, transform 0.3s var(--ease-lux), text-shadow 0.3s;
+  }
+  .brand-logo {
+    width: auto;
+    object-fit: contain;
+    /* brighten/saturate so the tiffany marks pop; NO drop-shadow here (see
+       .brand-chip) — thin details like the jumpman's extended leg stay crisp */
+    filter: brightness(1.12) saturate(1.08);
+    transition: transform 0.3s var(--ease-lux), filter 0.3s;
+  }
+  .brand-chip:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 0 26px rgba(0, 192, 182, 0.7);
+  }
+  .brand-chip:hover .brand-logo {
+    filter: drop-shadow(0 0 20px rgba(0, 192, 182, 0.8));
+  }
+
+  /* gritty grade on the background clip — brightened so the 4K footage reads
+     clearly while the vignette keeps the centered text legible */
+  .hero-video {
+    filter: contrast(1.05) saturate(0.92) brightness(0.55);
+  }
+  /* film grain */
+  .hero-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+  }
+
+  /* tiffany glow on the crowning logo */
+  .hero-logo {
+    image-rendering: -webkit-optimize-contrast;
+    filter:
+      brightness(1.25) saturate(1.1)
+      drop-shadow(0 0 22px rgba(0, 192, 182, 0.75))
+      drop-shadow(0 0 60px rgba(0, 192, 182, 0.55));
+    opacity: 1;
+    animation: logo-glow 3.6s ease-in-out infinite;
+  }
+  @keyframes logo-glow {
+    0%, 100% {
+      filter: brightness(1.2) saturate(1.1) drop-shadow(0 0 20px rgba(0, 192, 182, 0.6)) drop-shadow(0 0 48px rgba(0, 192, 182, 0.4));
+    }
+    50% {
+      filter: brightness(1.35) saturate(1.15) drop-shadow(0 0 32px rgba(0, 192, 182, 0.9)) drop-shadow(0 0 80px rgba(0, 192, 182, 0.6));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-grain { display: none; }
+    .hero-logo { animation: none; }
+  }
+</style>
+
+<script>
+  // Keep the background hero video playing on iOS/Android no matter what.
+  // Correct attributes (muted/autoplay/playsinline) are necessary but NOT
+  // sufficient: Low Power Mode, tab backgrounding, Data Saver, and bfcache
+  // restore on refresh all pause muted autoplay video. This watchdog resumes it.
+  const video = document.querySelector<HTMLVideoElement>('.hero-video');
+  if (video) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Belt-and-suspenders so mobile browsers permit muted autoplay.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute('muted', '');
+    video.playsInline = true;
+
+    let watchdog = 0;
+
+    const play = () => {
+      if (reduce.matches || document.hidden) return;
+      const p = video.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    };
+
+    const halt = () => {
+      video.pause();
+      if (watchdog) { clearInterval(watchdog); watchdog = 0; }
+    };
+
+    const start = () => {
+      if (reduce.matches) { video.removeAttribute('autoplay'); halt(); return; }
+      play();
+      if (!watchdog) {
+        // Last resort: if anything paused it, resume within ~1s.
+        watchdog = window.setInterval(() => {
+          if (!reduce.matches && !document.hidden && video.paused) play();
+        }, 1000);
+      }
+    };
+
+    start();
+
+    // Resume the instant the browser pauses it on its own.
+    video.addEventListener('pause', play);
+    video.addEventListener('stalled', play);
+    video.addEventListener('suspend', play);
+    video.addEventListener('ended', play);
+    video.addEventListener('loadedmetadata', play);
+    video.addEventListener('canplay', play);
+
+    // Tab/app brought back to the foreground.
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+    window.addEventListener('focus', play);
+    window.addEventListener('online', play);
+
+    // Refresh / back-forward-cache restore (iOS keeps it paused on bfcache).
+    window.addEventListener('pageshow', start);
+
+    // First (and every) user gesture unlocks playback under iOS Low Power Mode.
+    ['touchstart', 'touchend', 'click', 'scroll', 'keydown'].forEach((ev) =>
+      window.addEventListener(ev, play, { passive: true })
+    );
+
+    // React to Reduce Motion being toggled at runtime.
+    reduce.addEventListener?.('change', () => (reduce.matches ? halt() : start()));
+  }
+</script>

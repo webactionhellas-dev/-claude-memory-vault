@@ -1,0 +1,161 @@
+---
+import Icon from './Icon.astro';
+---
+
+<div data-qv-root class="pointer-events-none invisible fixed inset-0 z-[80] opacity-0 transition-opacity duration-300">
+  <div data-qv-overlay class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 flex items-end justify-center p-0 sm:items-center sm:p-6">
+    <div
+      data-qv-panel
+      class="relative max-h-[92vh] w-full max-w-3xl translate-y-6 overflow-y-auto rounded-t-3xl bg-card shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:translate-y-4 sm:rounded-3xl"
+    >
+      <button data-qv-close class="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-base/60 text-muted backdrop-blur hover:text-ink" aria-label="Close">
+        <Icon name="close" size={20} />
+      </button>
+      <div data-qv-body class="grid gap-0 sm:grid-cols-2"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { addItem } from '@/lib/cart';
+  import { money } from '@/lib/money';
+
+  const root = document.querySelector('[data-qv-root]')!;
+  const panel = document.querySelector('[data-qv-panel]')!;
+  const body = document.querySelector('[data-qv-body]')!;
+  const cache = new Map<string, any>();
+  let current: any = null;
+  let selectedSize: string | null = null;
+
+  const open = () => {
+    root.classList.remove('invisible', 'opacity-0', 'pointer-events-none');
+    requestAnimationFrame(() => panel.classList.remove('translate-y-6', 'sm:translate-y-4'));
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    panel.classList.add('translate-y-6', 'sm:translate-y-4');
+    root.classList.add('opacity-0');
+    setTimeout(() => root.classList.add('invisible', 'pointer-events-none'), 300);
+    document.body.style.overflow = '';
+  };
+
+  document.querySelector('[data-qv-overlay]')?.addEventListener('click', close);
+  document.querySelector('[data-qv-close]')?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+
+  async function load(slug: string) {
+    if (cache.has(slug)) return cache.get(slug);
+    const data = await fetch(`/api/qv/${slug}.json`).then((r) => r.json());
+    cache.set(slug, data);
+    return data;
+  }
+
+  function render(d: any) {
+    selectedSize = null;
+    const T = (window as any).__t || ((k: string) => k);
+    const priceRow = d.off
+      ? `<span class="text-2xl font-800">${money(d.price)}</span>
+         <span class="text-base text-faint line-through">${money(d.compareAtPrice)}</span>
+         <span class="rounded-full bg-sale px-2 py-0.5 text-xs font-700 text-white">-${d.off}%</span>`
+      : `<span class="text-2xl font-800">${money(d.price)}</span>`;
+
+    body.innerHTML = `
+      <div class="plate flex aspect-square items-center justify-center sm:rounded-l-3xl" style="--plate-c:${d.plateColor || '#ffffff'}">
+        <img data-qv-main src="${d.images[0]}" alt="${d.name}" class="h-full w-full object-contain p-[12%]" />
+      </div>
+      <div class="flex flex-col p-6 sm:p-7">
+        <p class="text-[11px] font-600 uppercase tracking-[0.16em] text-faint">${d.brand}</p>
+        <h2 class="mt-1 font-display text-2xl font-800 leading-tight">${d.name}</h2>
+        <div class="mt-3 flex items-center gap-3">${priceRow}</div>
+        ${
+          d.images.length > 1
+            ? `<div class="mt-4 flex gap-2">${d.images
+                .map(
+                  (src: string, i: number) =>
+                    `<button data-qv-thumb="${i}" class="plate h-12 w-12 overflow-hidden rounded-lg border ${i === 0 ? 'border-ink' : 'border-line'}" style="--plate-c:${d.plateColor || '#ffffff'}"><img src="${src}" class="h-full w-full object-contain p-1" alt=""/></button>`,
+                )
+                .join('')}</div>`
+            : ''
+        }
+        <p class="mt-4 line-clamp-3 text-sm leading-relaxed text-muted">${d.description}</p>
+
+        <div class="mt-5">
+          <div class="mb-2 flex items-center justify-between">
+            <span class="text-xs font-600 uppercase tracking-[0.14em] text-faint">${T('selectSize')}</span>
+            <a href="/product/${d.slug}" class="text-xs text-accent-soft hover:underline">${T('sizeGuide')}</a>
+          </div>
+          <div data-qv-sizes class="grid grid-cols-5 gap-1.5">
+            ${d.sizes
+              .map(
+                (s: string) =>
+                  `<button data-size="${s}" class="h-10 rounded-lg border border-line text-sm text-ink transition-colors hover:border-ink">${s}</button>`,
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <div class="mt-auto pt-6">
+          <button data-qv-add class="btn btn-fill w-full">${T('addBag')}</button>
+          <a href="/product/${d.slug}" class="mt-2 flex h-10 items-center justify-center text-sm text-muted hover:text-ink">${T('viewDetails')}</a>
+        </div>
+      </div>`;
+
+    const main = body.querySelector('[data-qv-main]') as HTMLImageElement;
+    body.querySelectorAll('[data-qv-thumb]').forEach((t) =>
+      t.addEventListener('click', () => {
+        const i = Number(t.getAttribute('data-qv-thumb'));
+        main.src = d.images[i];
+        body.querySelectorAll('[data-qv-thumb]').forEach((x) => x.classList.replace('border-ink', 'border-line'));
+        t.classList.replace('border-line', 'border-ink');
+      }),
+    );
+    body.querySelectorAll('[data-size]').forEach((b) =>
+      b.addEventListener('click', () => {
+        selectedSize = b.getAttribute('data-size');
+        body.querySelectorAll('[data-size]').forEach((x) => {
+          x.classList.remove('border-ink', 'bg-ink', 'text-noir');
+          x.classList.add('border-line', 'text-ink');
+        });
+        b.classList.add('border-ink', 'bg-ink', 'text-noir');
+        b.classList.remove('border-line', 'text-ink');
+      }),
+    );
+
+    const addBtn = body.querySelector('[data-qv-add]') as HTMLButtonElement;
+    addBtn.addEventListener('click', () => {
+      if (!selectedSize) {
+        const sizes = body.querySelector('[data-qv-sizes]')!;
+        sizes.animate(
+          [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }],
+          { duration: 280 },
+        );
+        return;
+      }
+      addItem({ slug: d.slug, name: d.name, brand: d.brand, price: d.price, image: d.images[0], size: selectedSize });
+      close();
+    });
+  }
+
+  async function openQuickView(slug: string) {
+    open();
+    const T = (window as any).__t || ((k: string) => k);
+    body.innerHTML = `<div class="col-span-2 flex h-72 items-center justify-center text-muted">${T('loading')}</div>`;
+    try {
+      current = await load(slug);
+      render(current);
+    } catch {
+      body.innerHTML = `<div class="col-span-2 p-10 text-center text-muted">${T('loadError')}</div>`;
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const trigger = (e.target as HTMLElement).closest('[data-quickview]');
+    if (trigger) {
+      e.preventDefault();
+      openQuickView(trigger.getAttribute('data-quickview')!);
+    }
+  });
+  window.addEventListener('quickview:open', (e) => openQuickView((e as CustomEvent).detail.slug));
+  window.addEventListener('lang:change', () => { if (current && !root.classList.contains('invisible')) render(current); });
+</script>

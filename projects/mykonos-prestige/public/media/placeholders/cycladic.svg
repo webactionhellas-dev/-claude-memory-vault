@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" fill="none">
+  <!-- Minimal Cycladic line-art: whitewashed cubes, dome church, sun -->
+  <g stroke="#2478B5" stroke-width="1.1" opacity="0.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="188" cy="52" r="18"/>
+    <path d="M40 150h60v50H40z"/>
+    <path d="M100 130h44v70h-44z"/>
+    <path d="M100 130l22-16 22 16"/>
+    <path d="M144 165h40v35h-40z"/>
+    <path d="M164 150a10 10 0 0 1 20 0v15h-20z"/>
+    <line x1="174" y1="138" x2="174" y2="150"/>
+    <line x1="168" y1="144" x2="180" y2="144"/>
+    <path d="M28 200h190"/>
+    <path d="M56 168h28M56 182h28"/>
+  </g>
+</svg>

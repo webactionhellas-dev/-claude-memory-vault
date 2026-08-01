@@ -1,0 +1,41 @@
+---
+// Tab bar shared across the admin pages.
+interface Props { active: 'orders' | 'products' | 'analytics' | 'content'; email?: string }
+const { active, email } = Astro.props;
+const tab = (id: string, href: string, label: string) =>
+  ({ id, href, label, on: id === active });
+const tabs = [
+  tab('products', '/admin/products', 'Products'),
+  tab('orders', '/admin', 'Orders'),
+  tab('content', '/admin/content', 'Content'),
+  tab('analytics', '/admin/analytics', 'Analytics'),
+];
+---
+<div class="border-b border-line">
+  <div class="wrap flex items-center justify-between gap-4 py-4">
+    <div class="flex items-center gap-1">
+      <a href="/" class="mr-3 font-display text-lg font-900 tracking-tight text-accent-soft">ACME</a>
+      {tabs.map((t) => (
+        <a
+          href={t.href}
+          class:list={[
+            'rounded-full px-4 py-2 text-sm font-600 transition-colors',
+            t.on ? 'bg-accent text-on-accent' : 'text-muted hover:text-ink',
+          ]}
+        >{t.label}</a>
+      ))}
+    </div>
+    <div class="flex items-center gap-3 text-xs text-faint">
+      {email && <span class="hidden sm:inline">{email}</span>}
+      <button data-admin-signout class="rounded-full border border-line px-3 py-1.5 text-muted hover:text-ink">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { supabaseBrowser } from '@/lib/supabase';
+  document.querySelector('[data-admin-signout]')?.addEventListener('click', async () => {
+    await supabaseBrowser().auth.signOut();
+    location.href = '/';
+  });
+</script>

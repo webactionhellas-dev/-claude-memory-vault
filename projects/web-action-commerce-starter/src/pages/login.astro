@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+export const prerender = false;
+// Owner-only sign-in (not linked anywhere public). Customers never log in —
+// checkout is guest-only. This page exists purely to reach the /admin dashboard.
+---
+
+<BaseLayout title="Owner sign-in · ACME" noindex>
+  <section class="wrap flex min-h-[70vh] items-center justify-center py-16">
+    <div class="w-full max-w-sm">
+      <h1 class="text-center font-display text-3xl font-900 tracking-tight text-ink">Owner sign-in</h1>
+      <p class="mt-2 text-center text-sm text-muted">Manage products and orders.</p>
+
+      <form data-auth-form class="mt-8 space-y-3">
+        <input name="email" type="email" required autocomplete="email" placeholder="Email"
+          class="h-12 w-full rounded-xl border border-line bg-raised px-4 text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
+        <input name="password" type="password" required autocomplete="current-password" placeholder="Password" minlength="6"
+          class="h-12 w-full rounded-xl border border-line bg-raised px-4 text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
+        <p data-auth-error class="hidden text-sm text-sale"></p>
+        <button type="submit" data-auth-submit class="btn btn-accent w-full">Sign in</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    import { supabaseBrowser } from '@/lib/supabase';
+    const sb = supabaseBrowser();
+
+    const form = document.querySelector('[data-auth-form]') as HTMLFormElement;
+    const submit = document.querySelector('[data-auth-submit]') as HTMLButtonElement;
+    const errEl = document.querySelector('[data-auth-error]') as HTMLElement;
+    const next = new URLSearchParams(location.search).get('next') || '/admin';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.classList.add('hidden');
+      submit.disabled = true;
+      const fd = new FormData(form);
+      const email = String(fd.get('email'));
+      const password = String(fd.get('password'));
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      submit.disabled = false;
+      if (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove('hidden');
+        return;
+      }
+      location.href = next;
+    });
+  </script>
+</BaseLayout>

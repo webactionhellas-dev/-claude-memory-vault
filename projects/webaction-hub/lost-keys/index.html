@@ -1,0 +1,1855 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost Keys Barbershop – Νέο Ηράκλειο, Αθήνα</title>
+  <meta name="description" content="Lost Keys Barbershop – Premium κουρείο στο Νέο Ηράκλειο. Κούρεμα, γένια, hot shave. 4.9★ Google. Τηλ: 210 2850148">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --ink:     #080808;
+      --s1:      #111111;
+      --s2:      #1a1a1a;
+      --s3:      #222222;
+      --gold:    #C8952A;
+      --gold-lt: #E8B84B;
+      --gold-dk: #9A6E18;
+      --text:    #F0EAD6;
+      --muted:   #888888;
+      --muted2:  #555555;
+      --border:  rgba(200,149,42,.18);
+
+      --font-d: 'Bebas Neue', sans-serif;
+      --font-h: 'Montserrat', sans-serif;
+      --font-b: 'DM Sans', sans-serif;
+
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --tx: 220ms cubic-bezier(0.23, 1, 0.32, 1);
+      --gap: clamp(80px, 10vw, 120px);
+      --w: min(1200px, 100% - 2rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-b);
+      background: var(--ink);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    .wrap { width: var(--w); margin-inline: auto; }
+
+    *:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       SKIP LINK
+    ══════════════════════════════════════════ */
+    .skip {
+      position: absolute; top: -60px; left: 16px;
+      background: var(--gold); color: #000;
+      padding: 10px 18px; border-radius: 0 0 6px 6px;
+      font-size: 14px; font-weight: 700; z-index: 9999;
+      transition: top .15s;
+    }
+    .skip:focus { top: 0; }
+
+    /* ══════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════ */
+    .nav {
+      position: fixed; inset: 0 0 auto; z-index: 200;
+      padding: 0;
+      /* subtle gradient so logo stays legible on the hero photo */
+      background: linear-gradient(180deg, rgba(8,8,8,.72) 0%, rgba(8,8,8,0) 100%);
+      transition: background var(--tx), box-shadow var(--tx), border-color var(--tx), backdrop-filter var(--tx);
+    }
+    .nav.scrolled {
+      background: rgba(8,8,8,.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 40px rgba(0,0,0,.7);
+    }
+
+    /* ── Logo images ──
+       The JPG has a white background. processLogos() in JS converts
+       every pixel to white with alpha proportional to original darkness,
+       so the background becomes fully transparent and ink stays white.
+       No CSS filter tricks needed — Canvas gives pixel-perfect results. */
+    .nav-logo-img {
+      height: 46px;
+      width: auto;
+      display: block;
+      transition: opacity var(--tx);
+    }
+    .nav-logo:hover .nav-logo-img { opacity: .7; }
+
+    .foot-logo-img {
+      height: 60px;
+      width: auto;
+      display: block;
+      opacity: .82;
+    }
+
+    .nav-inner {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      height: 72px; gap: 16px;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #000;
+    }
+    .nav-logo-text {
+      display: flex; flex-direction: column; gap: 1px;
+    }
+    .nav-logo-name {
+      font-family: var(--font-d);
+      font-size: 20px; letter-spacing: 2px;
+      color: var(--text); line-height: 1;
+    }
+    .nav-logo-sub {
+      font-family: var(--font-h);
+      font-size: 8px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); line-height: 1;
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2px;
+    }
+    .nav-links a {
+      padding: 8px 14px;
+      font-family: var(--font-h);
+      font-size: 12.5px; font-weight: 600;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: rgba(240,234,214,.55);
+      border-radius: 6px;
+      transition: color var(--tx), background var(--tx);
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+
+    .btn-nav {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 22px;
+      background: var(--gold); color: #0a0a0a;
+      font-family: var(--font-h);
+      font-size: 12.5px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      border-radius: 6px; border: none; cursor: pointer; flex-shrink: 0;
+      transition: background var(--tx), box-shadow var(--tx), transform 140ms var(--ease-out);
+    }
+    .btn-nav:hover { background: var(--gold-lt); box-shadow: 0 4px 20px rgba(200,149,42,.4); }
+    .btn-nav:active { transform: scale(0.96); }
+
+    .ham {
+      display: none; width: 44px; height: 44px;
+      align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer;
+      border-radius: 6px; color: var(--text);
+      transition: background var(--tx);
+    }
+    .ham:hover { background: rgba(255,255,255,.06); }
+
+    .mob-nav {
+      display: none; flex-direction: column;
+      position: fixed; inset: 72px 0 0;
+      background: var(--ink); z-index: 199;
+      padding: 16px; gap: 4px; overflow-y: auto;
+      border-top: 1px solid var(--border);
+    }
+    .mob-nav.open { display: flex; }
+    .mob-nav a {
+      display: block; padding: 15px 16px;
+      font-family: var(--font-h);
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      border-radius: 8px; border-bottom: 1px solid var(--border);
+      transition: background var(--tx), color var(--tx);
+    }
+    .mob-nav a:hover { background: rgba(200,149,42,.08); color: var(--gold); }
+    .mob-cta {
+      margin-top: 10px;
+      background: var(--gold) !important; color: #000 !important;
+      text-align: center; font-weight: 700 !important;
+      border: none !important;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero {
+      position: relative; min-height: 100svh;
+      display: flex; align-items: center;
+      overflow: hidden;
+      /* Full-screen barbershop interior as the background template */
+      /* Real Lost Keys Barbershop storefront photo */
+      background-image: url('https://www.ebarber.gr/photo/uploads/vHInVnS1SI5cgYKULaOAbqnFcuHikif7gzquDhhC.jpg');
+      background-size: cover;
+      background-position: center 35%;
+      background-color: var(--ink);
+    }
+
+    /* Grain overlay — sits above photo */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 2;
+      opacity: .06;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+    }
+
+    /* Multi-layer dark overlay — keeps text highly legible */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        /* lighter center to let the Lost Keys sign bleed through */
+        radial-gradient(ellipse 55% 45% at 50% 38%, rgba(8,8,8,.52) 0%, rgba(8,8,8,.86) 100%),
+        /* warm bottom glow */
+        radial-gradient(ellipse at 15% 90%, rgba(30,16,0,.6) 0%, transparent 50%);
+        /* no solid color — let the real photo show */
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 3;
+      text-align: center; width: 100%;
+      padding: 96px 1rem 80px;
+      display: flex; flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Hero entrance states ── */
+    /* ── Hero intro logo (the real handwritten brand mark) ── */
+    .hero-logo {
+      width: clamp(220px, 30vw, 440px);
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      /* drop-shadow applied AFTER canvas makes it white+alpha,
+         giving a soft depth effect on the transparent letterforms */
+      filter: drop-shadow(0 2px 24px rgba(0,0,0,.55));
+    }
+
+    .hero-eyebrow, .hero-logo,
+    .hero-divider, .hero-lead, .hero-ctas,
+    .hero-rating, .hero-scroll-ind {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+    }
+    .hero-in .hero-eyebrow    { opacity:1; transform:none; transition-delay: 0ms; }
+    .hero-in .hero-logo       { opacity:1; transform:none; transition-delay: 100ms; }
+    .hero-in .hero-divider    { opacity:1; transform:none; transition-delay: 260ms; }
+    .hero-in .hero-lead       { opacity:1; transform:none; transition-delay: 330ms; }
+    .hero-in .hero-ctas       { opacity:1; transform:none; transition-delay: 400ms; }
+    .hero-in .hero-rating     { opacity:1; transform:none; transition-delay: 470ms; }
+    .hero-in .hero-scroll-ind { opacity:1; transform:none; transition-delay: 620ms; }
+
+    .hero-eyebrow {
+      font-family: var(--font-h);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-family: var(--font-d);
+      font-size: clamp(80px, 14vw, 180px);
+      line-height: .88; letter-spacing: 4px;
+      color: var(--text); margin-bottom: 8px;
+    }
+    .hero-title .accent { color: var(--gold); }
+
+    .hero-sub {
+      font-family: var(--font-h);
+      font-size: clamp(12px, 1.8vw, 16px);
+      font-weight: 600; letter-spacing: 9px;
+      text-transform: uppercase;
+      color: rgba(240,234,214,.35);
+      margin-bottom: 32px;
+    }
+
+    .hero-divider {
+      width: 56px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin-bottom: 28px;
+    }
+
+    .hero-lead {
+      font-size: clamp(15px, 1.7vw, 17px);
+      color: rgba(240,234,214,.55);
+      line-height: 1.8; max-width: 440px;
+      margin-bottom: 44px;
+    }
+
+    .hero-ctas {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 16px 38px;
+      background: var(--gold); color: #0a0a0a;
+      font-family: var(--font-h);
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border-radius: 6px; border: none; cursor: pointer;
+      box-shadow: 0 4px 28px rgba(200,149,42,.35);
+      transition: background var(--tx), box-shadow var(--tx), transform 140ms var(--ease-out);
+    }
+    .btn-primary:hover { background: var(--gold-lt); box-shadow: 0 6px 36px rgba(200,149,42,.5); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 16px 38px;
+      background: transparent; color: var(--text);
+      font-family: var(--font-h);
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border-radius: 6px; cursor: pointer;
+      border: 1.5px solid rgba(240,234,214,.2);
+      transition: border-color var(--tx), background var(--tx), transform 140ms var(--ease-out);
+    }
+    .btn-ghost:hover { border-color: rgba(200,149,42,.5); background: rgba(200,149,42,.07); }
+    .btn-ghost:active { transform: scale(0.97); }
+
+    .hero-rating {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      padding: 10px 20px; border-radius: 100px;
+      margin-bottom: 56px;
+    }
+    .rating-stars { color: var(--gold); font-size: 14px; letter-spacing: -1px; }
+    .rating-score {
+      font-family: var(--font-h);
+      font-size: 13px; font-weight: 700; color: var(--text);
+    }
+    .rating-count { font-size: 12px; color: var(--muted); }
+
+    .hero-scroll-ind {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .scroll-line {
+      width: 1px; height: 52px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+    .scroll-lbl {
+      font-family: var(--font-h);
+      font-size: 9px; letter-spacing: 3.5px; text-transform: uppercase;
+      color: rgba(240,234,214,.3);
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity:.35; transform: scaleY(1); }
+      50% { opacity:1; transform: scaleY(1.18); }
+    }
+
+    /* ══════════════════════════════════════════
+       CONTAINER SCROLL ANIMATION
+       Replicates Aceternity UI ContainerScroll
+    ══════════════════════════════════════════ */
+    .cs-section {
+      /* Must be tall — gives scroll distance for the animation */
+      min-height: 80rem;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.25rem;
+      position: relative;
+      background: var(--ink);
+    }
+
+    /* Inner wrapper that sets the 3D perspective context */
+    .cs-perspective {
+      padding: 2.5rem 1rem 10rem;
+      width: 100%; position: relative;
+      perspective: 1000px;
+    }
+
+    /* ── Header that translates UP as you scroll ── */
+    .cs-header {
+      max-width: 72rem; margin: 0 auto;
+      text-align: center; margin-bottom: 0;
+      will-change: transform;
+    }
+    .cs-eyebrow {
+      font-family: var(--font-h);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+      display: block;
+    }
+    .cs-title {
+      font-family: var(--font-d);
+      font-size: clamp(42px, 6vw, 78px);
+      letter-spacing: 2px; line-height: 1;
+      color: var(--text); margin-bottom: 16px;
+    }
+    .cs-title .gold { color: var(--gold); }
+    .cs-desc {
+      font-size: clamp(14px, 1.6vw, 16px);
+      color: var(--muted); max-width: 520px;
+      margin: 0 auto; line-height: 1.8;
+    }
+
+    /* ── The 3D Card that rotateX-animates ── */
+    .cs-card {
+      max-width: 72rem;
+      margin: -3rem auto 0;
+      height: 30rem;
+      border: 4px solid #6C6C6C;
+      padding: 8px;
+      background: #222222;
+      border-radius: 30px;
+      box-shadow:
+        0 0 #0000004d,
+        0 9px 20px #0000004a,
+        0 37px 37px #00000042,
+        0 84px 50px #00000026,
+        0 149px 60px #0000000a,
+        0 233px 65px #00000003;
+      will-change: transform;
+      transform-origin: top center;
+    }
+
+    .cs-card-inner {
+      height: 100%; width: 100%;
+      overflow: hidden;
+      border-radius: 22px;
+      background: #1a1a1a;
+      position: relative;
+    }
+
+    .cs-card-img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      border-radius: 22px;
+      filter: brightness(.88) contrast(1.08) saturate(.92);
+    }
+
+    /* Overlay on the card with branding */
+    .cs-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(8,8,8,.85) 0%,
+        rgba(8,8,8,.4) 50%,
+        rgba(8,8,8,.1) 100%
+      );
+      display: flex; align-items: center;
+      padding: 3rem;
+    }
+    .cs-card-brand {
+      max-width: 420px;
+    }
+    .cs-card-brand-eyebrow {
+      font-family: var(--font-h);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .cs-card-brand-name {
+      font-family: var(--font-d);
+      font-size: clamp(40px, 6vw, 80px);
+      line-height: .9; letter-spacing: 3px;
+      color: var(--text); margin-bottom: 20px;
+    }
+    .cs-card-brand-tagline {
+      font-size: 15px; color: rgba(240,234,214,.65);
+      line-height: 1.7; margin-bottom: 28px;
+    }
+    .cs-card-brand-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px;
+      background: var(--gold); color: #000;
+      font-family: var(--font-h);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border-radius: 6px;
+      transition: background var(--tx);
+    }
+    .cs-card-brand-cta:hover { background: var(--gold-lt); }
+
+    @media (max-width: 768px) {
+      .cs-section { min-height: 60rem; padding: .5rem; }
+      .cs-card { height: 22rem; margin-top: -1.5rem; border-radius: 22px; }
+      .cs-card-inner { border-radius: 16px; }
+      .cs-card-overlay { padding: 1.5rem; }
+      .cs-card-brand-name { font-size: 38px; }
+    }
+
+    /* ══════════════════════════════════════════
+       TRUST STRIP
+    ══════════════════════════════════════════ */
+    .trust {
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold));
+      padding: 20px 0;
+    }
+    .trust-row {
+      display: flex; align-items: center;
+      justify-content: center; gap: 40px; flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--font-h);
+      font-size: 13px; font-weight: 600;
+      color: rgba(8,8,8,.85);
+    }
+    .trust-item svg { opacity: .7; flex-shrink: 0; }
+    .trust-sep { width: 1px; height: 20px; background: rgba(0,0,0,.18); }
+
+    /* ══════════════════════════════════════════
+       SHARED SECTION STYLES
+    ══════════════════════════════════════════ */
+    .section { padding: var(--gap) 0; }
+    .section-dark { background: var(--s1); }
+
+    .sec-head {
+      text-align: center; max-width: 580px;
+      margin: 0 auto 64px;
+    }
+    .sec-eyebrow {
+      font-family: var(--font-h);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3.5px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 14px;
+    }
+    .sec-title {
+      font-family: var(--font-d);
+      font-size: clamp(38px, 5.5vw, 62px);
+      letter-spacing: 1.5px; color: var(--text);
+      line-height: 1.0; margin-bottom: 16px;
+      text-wrap: balance;
+    }
+    .sec-desc { font-size: 16px; color: var(--muted); line-height: 1.8; }
+    .gold-line {
+      width: 44px; height: 2px;
+      background: var(--gold); margin: 22px auto 0;
+    }
+
+    /* ══════════════════════════════════════════
+       SERVICES
+    ══════════════════════════════════════════ */
+    .svc-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .svc-card {
+      background: var(--s1);
+      padding: 38px 32px;
+      position: relative; overflow: hidden;
+      transition: background var(--tx);
+      cursor: default;
+    }
+    .svc-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transform: scaleX(0);
+      transition: transform 380ms var(--ease-out);
+    }
+    .svc-card:hover { background: var(--s2); }
+    .svc-card:hover::after { transform: scaleX(1); }
+
+    /* Subtle background number */
+    .svc-card::before {
+      content: attr(data-num);
+      position: absolute; bottom: -8px; right: 16px;
+      font-family: var(--font-d);
+      font-size: 80px; letter-spacing: -2px;
+      color: rgba(200,149,42,.05);
+      pointer-events: none; line-height: 1;
+    }
+
+    .svc-icon {
+      width: 50px; height: 50px;
+      border-radius: 10px;
+      background: rgba(200,149,42,.1);
+      border: 1px solid rgba(200,149,42,.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px; color: var(--gold);
+    }
+    .svc-card h3 {
+      font-family: var(--font-d);
+      font-size: 30px; letter-spacing: 1px;
+      color: var(--text); margin-bottom: 8px; line-height: 1;
+    }
+    .svc-card p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .svc-price-row { display: flex; align-items: baseline; gap: 10px; }
+    .svc-price {
+      font-family: var(--font-d);
+      font-size: 40px; color: var(--gold); line-height: 1;
+    }
+    .svc-price sup {
+      font-family: var(--font-h);
+      font-size: 14px; font-weight: 700;
+      vertical-align: super; color: rgba(200,149,42,.7);
+    }
+    .svc-duration {
+      font-family: var(--font-h);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted2);
+    }
+
+    /* ══════════════════════════════════════════
+       ABOUT
+    ══════════════════════════════════════════ */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-img-wrap {
+      position: relative;
+    }
+    .about-img-wrap::before {
+      content: '';
+      position: absolute;
+      top: -18px; left: -18px; right: 18px; bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px; z-index: 0;
+    }
+    .about-img {
+      width: 100%; aspect-ratio: 4/5;
+      object-fit: cover; object-position: center top;
+      border-radius: 14px;
+      position: relative; z-index: 1;
+      filter: brightness(.9) contrast(1.05);
+    }
+    .about-badge {
+      position: absolute;
+      bottom: -22px; right: -22px; z-index: 2;
+      background: var(--gold); color: #000;
+      padding: 18px 22px; border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 36px rgba(200,149,42,.35);
+    }
+    .about-badge-num {
+      font-family: var(--font-d);
+      font-size: 44px; line-height: 1;
+    }
+    .about-badge-lbl {
+      font-family: var(--font-h);
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    .about-txt .sec-head { text-align: left; margin: 0 0 24px; }
+    .about-txt .gold-line { margin: 16px 0 32px; }
+
+    .about-body {
+      font-size: 16px; color: rgba(240,234,214,.6);
+      line-height: 1.9; margin-bottom: 12px;
+    }
+
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 36px;
+    }
+    .astat {
+      padding: 22px 20px;
+      background: var(--s2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .astat-val {
+      font-family: var(--font-d);
+      font-size: 40px; color: var(--gold);
+      line-height: 1; margin-bottom: 5px;
+    }
+    .astat-lbl { font-size: 13px; color: var(--muted); }
+
+    /* ══════════════════════════════════════════
+       GALLERY
+    ══════════════════════════════════════════ */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 280px 280px;
+      gap: 12px;
+    }
+    .gal-item {
+      position: relative; overflow: hidden;
+      border-radius: 12px; cursor: pointer;
+    }
+    .gal-item.tall { grid-row: span 2; }
+    .gal-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 600ms var(--ease-out), filter 400ms ease;
+      filter: brightness(.82) saturate(.85);
+    }
+    .gal-item:hover img {
+      transform: scale(1.07);
+      filter: brightness(.95) saturate(1.05);
+    }
+    .gal-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,.65) 0%, transparent 55%);
+      opacity: 0; transition: opacity 300ms ease;
+    }
+    .gal-item:hover .gal-overlay { opacity: 1; }
+
+    /* ══════════════════════════════════════════
+       CONTACT
+    ══════════════════════════════════════════ */
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .contact-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px;
+    }
+    .cc-head {
+      display: flex; align-items: center; gap: 16px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .cc-ico {
+      width: 50px; height: 50px; border-radius: 10px;
+      background: rgba(200,149,42,.1);
+      border: 1px solid rgba(200,149,42,.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); flex-shrink: 0;
+    }
+    .cc-head h3 {
+      font-family: var(--font-d);
+      font-size: 24px; letter-spacing: 1px; color: var(--text);
+    }
+    .cc-head p { font-size: 13px; color: var(--muted); }
+
+    .open-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 100px;
+      font-family: var(--font-h);
+      font-size: 12px; font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .open-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      animation: blink 2s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .hours-list { display: flex; flex-direction: column; gap: 6px; }
+    .hr-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; border-radius: 6px; font-size: 14.5px;
+    }
+    .hr-row:nth-child(odd) { background: var(--s2); }
+    .hr-day { font-weight: 600; color: var(--text); }
+    .hr-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .hr-closed { color: var(--muted2); font-style: italic; }
+
+    .cdetails { display: flex; flex-direction: column; gap: 20px; }
+    .cdetail { display: flex; align-items: flex-start; gap: 16px; }
+    .cd-ico {
+      width: 42px; height: 42px;
+      background: var(--s2); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--gold);
+    }
+    .cd-lbl {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted2); margin-bottom: 3px;
+    }
+    .cd-val { font-size: 15px; font-weight: 600; color: var(--text); }
+    .cd-val a { color: var(--gold); transition: color var(--tx); }
+    .cd-val a:hover { color: var(--gold-lt); }
+
+    .btn-call {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: var(--gold); color: #0a0a0a;
+      padding: 16px 32px; border-radius: 8px;
+      font-family: var(--font-h);
+      font-size: 16px; font-weight: 700;
+      margin-top: 28px; cursor: pointer;
+      transition: background var(--tx), box-shadow var(--tx);
+      box-shadow: 0 4px 22px rgba(200,149,42,.3);
+    }
+    .btn-call:hover { background: var(--gold-lt); box-shadow: 0 6px 32px rgba(200,149,42,.45); }
+
+    /* ══════════════════════════════════════════
+       CTA BAND
+    ══════════════════════════════════════════ */
+    .cta-band {
+      padding: 88px 0; text-align: center;
+      background: linear-gradient(135deg, #140e00 0%, #0a0a0a 50%, #0e0900 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .cta-band::before {
+      content: 'LOST KEYS';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-d);
+      font-size: clamp(100px, 20vw, 240px);
+      letter-spacing: 6px;
+      color: rgba(200,149,42,.035);
+      pointer-events: none; white-space: nowrap;
+    }
+    .cta-band h2 {
+      font-family: var(--font-d);
+      font-size: clamp(38px, 5.5vw, 66px);
+      letter-spacing: 2.5px; color: var(--text);
+      margin-bottom: 16px; position: relative; z-index: 1;
+    }
+    .cta-band p {
+      font-size: 16px; color: var(--muted);
+      margin-bottom: 40px; position: relative; z-index: 1;
+    }
+    .cta-band .btn-primary { position: relative; z-index: 1; }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      background: #040404;
+      padding: 64px 0 30px;
+      border-top: 1px solid rgba(200,149,42,.08);
+    }
+    .foot-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .foot-logo {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .foot-logo-ico {
+      width: 32px; height: 32px;
+      background: var(--gold); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; color: #000;
+    }
+    .foot-logo-name {
+      font-family: var(--font-d);
+      font-size: 20px; letter-spacing: 2px; color: var(--text);
+    }
+    .foot-brand p { font-size: 13px; color: rgba(240,234,214,.35); line-height: 1.8; max-width: 250px; }
+    .foot-col h4 {
+      font-family: var(--font-h);
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: rgba(240,234,214,.25); margin-bottom: 16px;
+    }
+    .foot-col ul { display: flex; flex-direction: column; gap: 10px; }
+    .foot-col ul li a { font-size: 14px; color: rgba(240,234,214,.4); transition: color var(--tx); }
+    .foot-col ul li a:hover { color: var(--gold); }
+    .foot-col ul li { font-size: 13px; color: rgba(240,234,214,.3); }
+
+    .foot-hr { border: none; border-top: 1px solid rgba(255,255,255,.05); margin-bottom: 22px; }
+    .foot-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 16px; flex-wrap: wrap;
+      font-size: 12px; color: rgba(240,234,214,.22);
+    }
+    .foot-rating-row { display: flex; align-items: center; gap: 8px; }
+    .foot-stars { color: var(--gold); font-size: 13px; letter-spacing: -1px; }
+
+    /* ══════════════════════════════════════════
+       EDITORIAL SECTION (anber.gr inspired)
+    ══════════════════════════════════════════ */
+    .editorial {
+      background: var(--ink);
+      padding: var(--gap) 0;
+      border-bottom: 1px solid rgba(200,149,42,.1);
+    }
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+    .editorial-h {
+      font-family: var(--font-d);
+      font-size: clamp(52px, 8vw, 110px);
+      line-height: .9;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 28px;
+      text-wrap: balance;
+    }
+    .editorial-desc {
+      font-size: 16px;
+      color: rgba(240,234,214,.55);
+      line-height: 1.85;
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+    .editorial-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .editorial-fact {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--s1);
+    }
+    .editorial-fact h4 {
+      font-family: var(--font-d);
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .editorial-fact p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .editorial-img-wrap { position: relative; }
+    .editorial-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 10px;
+      filter: brightness(.88) contrast(1.06);
+    }
+    .editorial-badge {
+      position: absolute;
+      bottom: -18px; left: -18px;
+      background: var(--gold);
+      color: #000;
+      padding: 16px 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(200,149,42,.35);
+    }
+    .editorial-badge-num { font-family: var(--font-d); font-size: 40px; line-height: 1; }
+    .editorial-badge-lbl { font-family: var(--font-h); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ══════════════════════════════════════════
+       MOBILE FIXES — logo, hero, layout
+    ══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .editorial-grid { grid-template-columns: 1fr; gap: 40px; }
+      .editorial-img-wrap { order: -1; max-width: 360px; margin-inline: auto; }
+      .editorial-h { font-size: clamp(44px, 12vw, 72px); }
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL-TO-TOP
+    ══════════════════════════════════════════ */
+    .scroll-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--gold); color: #0a0a0a;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(200,149,42,.4);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out), background var(--tx);
+      pointer-events: none; z-index: 100;
+    }
+    .scroll-top.visible { opacity: 1; transform: none; pointer-events: auto; }
+    .scroll-top:hover { background: var(--gold-lt); }
+    .scroll-top:active { transform: scale(.93); }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .svc-grid { grid-template-columns: repeat(2, 1fr); }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .btn-nav { display: none; }
+      .ham { display: flex; }
+
+      /* ── Logo mobile fix ── */
+      .nav-logo-img {
+        height: 36px;  /* smaller on mobile */
+        max-width: 120px;
+        object-fit: contain;
+      }
+      /* Fallback text logo on mobile */
+      #nav-logo-fb span:first-child { font-size: 17px; }
+      #nav-logo-fb span:last-child  { font-size: 7px; }
+
+      /* ── Hero logo mobile fix ── */
+      .hero-logo {
+        width: min(72vw, 300px);
+        /* Ensure canvas-processed image renders crisply on mobile */
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+      .hero-content { padding: 96px 1.5rem 60px; }
+
+      .about-grid { grid-template-columns: 1fr; gap: 56px; }
+      .about-img-wrap { max-width: 460px; margin-inline: auto; }
+      .about-txt .sec-head { text-align: center; }
+      .about-txt .gold-line { margin: 16px auto 32px; }
+
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gal-item.tall { grid-row: span 1; }
+      .gallery-grid .gal-item { height: 220px; }
+
+      .contact-grid { grid-template-columns: 1fr; }
+
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-brand { grid-column: 1 / -1; }
+      .foot-bottom { justify-content: center; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-ctas { flex-direction: column; align-items: stretch; }
+      .btn-primary, .btn-ghost { justify-content: center; }
+      .svc-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-grid .gal-item { height: 240px; }
+      .foot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<a class="skip" href="#main">Μετάβαση στο κύριο περιεχόμενο</a>
+
+<!-- ═══ NAVBAR ═══ -->
+<header role="banner">
+  <nav class="nav" id="nav" aria-label="Κύρια πλοήγηση">
+    <div class="wrap">
+      <div class="nav-inner">
+
+        <a href="#" class="nav-logo" aria-label="Lost Keys Barbershop – Αρχική">
+          <img
+            src="data:image/png;base64,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"
+            alt="Lost Keys Barbershop"
+            class="nav-logo-img"
+            width="140"
+            height="46"
+            onerror="this.style.display='none'; document.getElementById('nav-logo-fb').style.display='flex';"
+          >
+          <!-- Fallback shown if logo.png is missing -->
+          <div id="nav-logo-fb" style="display:none; flex-direction:column; gap:1px;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--text);line-height:1;">LOST KEYS</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);line-height:1;">Barbershop</span>
+          </div>
+        </a>
+
+        <ul class="nav-links" role="list">
+          <li><a href="#services">Υπηρεσίες</a></li>
+          <li><a href="#about">Σχετικά</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Επικοινωνία</a></li>
+        </ul>
+
+        <a href="tel:2102850148" class="btn-nav">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Κλείστε Ραντεβού
+        </a>
+
+        <button class="ham" id="ham" aria-label="Άνοιγμα μενού" aria-expanded="false" aria-controls="mob-nav">
+          <svg id="ham-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mob-nav" id="mob-nav" role="navigation" aria-label="Κινητό μενού">
+    <a href="#services"   onclick="closeNav()">Υπηρεσίες</a>
+    <a href="#about"      onclick="closeNav()">Σχετικά</a>
+    <a href="#gallery"    onclick="closeNav()">Gallery</a>
+    <a href="#contact"    onclick="closeNav()">Επικοινωνία</a>
+    <a href="tel:2102850148" class="mob-cta" onclick="closeNav()">📞 210 2850148</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <div class="hero-content" id="hero-section">
+
+        <p class="hero-eyebrow">Νέο Ηράκλειο · Αθήνα · Est. 2020</p>
+
+        <!-- The real Lost Keys handwritten logo, rendered white via CSS -->
+        <img
+          src="data:image/png;base64,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"
+          alt="Lost Keys Barbershop"
+          class="hero-logo"
+          id="hero-h"
+          width="420"
+          height="420"
+          draggable="false"
+        >
+
+        <div class="hero-divider" aria-hidden="true"></div>
+
+        <p class="hero-lead">
+          Η τέχνη του κουρέματος σε έναν χώρο που ορίζει το ανδρικό στυλ. Premium εμπειρία, κάθε φορά.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="tel:2102850148" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Κλείστε Ραντεβού
+          </a>
+          <a href="#services" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Δείτε Υπηρεσίες
+          </a>
+        </div>
+
+        <div class="hero-rating" aria-label="4.9 αστέρια από 253 κριτικές">
+          <span class="rating-stars" aria-hidden="true">★★★★★</span>
+          <span class="rating-score">4.9</span>
+          <span class="rating-count">253 αξιολογήσεις Google</span>
+        </div>
+
+        <div class="hero-scroll-ind" aria-hidden="true">
+          <div class="scroll-line"></div>
+          <span class="scroll-lbl">Scroll</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTAINER SCROLL ANIMATION (Aceternity UI style) ═══ -->
+  <section class="cs-section" id="cs-section" aria-labelledby="cs-h">
+    <div class="cs-perspective">
+
+      <!-- Title that translates upward on scroll -->
+      <div class="cs-header" id="cs-header">
+        <span class="cs-eyebrow">Καλωσόρισες στο</span>
+        <h2 class="cs-title" id="cs-h">
+          LOST KEYS<br><span class="gold">EXPERIENCE</span>
+        </h2>
+        <p class="cs-desc">
+          Ένας χώρος που συνδυάζει την παράδοση της barbering με σύγχρονο στυλ. Κάθε κούρεμα είναι μια μοναδική εμπειρία.
+        </p>
+      </div>
+
+      <!-- 3D Card that rotates from tilted to flat on scroll -->
+      <div class="cs-card" id="cs-card" role="img" aria-label="Εσωτερικό του Lost Keys Barbershop">
+        <div class="cs-card-inner">
+          <img
+            class="cs-card-img"
+            src="https://www.ebarber.gr/photo/uploads/aF8jlalUgvUSwRAStX3wVnxCKIhZWsJsXVnEveuq.jpg"
+            alt="Lost Keys Barbershop interior — barbers at work with wall mural"
+            loading="eager"
+          >
+          <div class="cs-card-overlay">
+            <div class="cs-card-brand">
+              <p class="cs-card-brand-eyebrow">Premium Barbershop</p>
+              <h3 class="cs-card-brand-name">LOST<br>KEYS</h3>
+              <p class="cs-card-brand-tagline">
+                Κάθε λεπτομέρεια μετράει.<br>
+                Εμπιστέψου το στυλ σου σε εμάς.
+              </p>
+              <a href="tel:2102850148" class="cs-card-brand-cta">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Κλείστε τώρα
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ TRUST STRIP ═══ -->
+  <div class="trust" role="complementary" aria-label="Πιστοποιήσεις">
+    <div class="wrap">
+      <div class="trust-row">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          4.9 Google Rating
+        </div>
+        <div class="trust-sep" aria-hidden="true"></div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Εξειδικευμένοι Barbers
+        </div>
+        <div class="trust-sep" aria-hidden="true"></div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Premium Προϊόντα
+        </div>
+        <div class="trust-sep" aria-hidden="true"></div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Νέο Ηράκλειο, Αθήνα
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ EDITORIAL INTRO (anber.gr style) ═══ -->
+  <section class="editorial" aria-labelledby="editorial-h">
+    <div class="wrap">
+      <div class="editorial-grid">
+
+        <div>
+          <h2 class="editorial-h" id="editorial-h">
+            BARBERSHOP<br>ΝΕΟ<br>ΗΡΑΚΛΕΙΟ
+          </h2>
+          <p class="editorial-desc">
+            Το Lost Keys Barbershop στη Μενελάου 62 & Ιφιγένειας, Νέο Ηράκλειο, είναι ένας χώρος που ξεχωρίζει για την αισθητική του, την τεχνική του και τη συνολική εμπειρία που προσφέρει σε κάθε άντρα.
+          </p>
+          <div class="editorial-facts">
+            <div class="editorial-fact">
+              <h4>ΤΕΧΝΗ</h4>
+              <p>Κάθε κούρεμα είναι μια τέχνη. Δουλεύουμε με πάθος και λεπτομέρεια σε κάθε τεμάχιο.</p>
+            </div>
+            <div class="editorial-fact">
+              <h4>ΣΤΥΛ</h4>
+              <p>Από το 2020 καλύπτουμε τις ανάγκες του σύγχρονου άντρα, δημιουργώντας εκρηκτικά αποτελέσματα.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="editorial-img-wrap">
+          <img
+            class="editorial-img"
+            src="https://www.ebarber.gr/photo/uploads/XZ7ZwBYCUA2EdGoFqNkT0fuRaObZMIh6guUYzHdu.jpg"
+            alt="Lost Keys Barbershop interior"
+            loading="lazy"
+          >
+          <div class="editorial-badge" aria-label="4.9 αστέρια Google">
+            <div class="editorial-badge-num">4.9<small style="font-size:.4em">★</small></div>
+            <div class="editorial-badge-lbl">Google Rating</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SERVICES ═══ -->
+  <section class="section section-dark" id="services" aria-labelledby="svc-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-eyebrow">Υπηρεσίες</p>
+        <h2 class="sec-title" id="svc-h">ΤΙΜΟΚΑΤΑΛΟΓΟΣ</h2>
+        <p class="sec-desc">Από classic κουρέματα έως premium shaving — κάθε υπηρεσία με επαγγελματική φροντίδα.</p>
+        <div class="gold-line"></div>
+      </div>
+
+      <div class="svc-grid" role="list">
+
+        <article class="svc-card" data-num="01" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9C6 9 6.5 7 9 7C11 7 12 8.5 12 8.5C12 8.5 13 7 15 7C17.5 7 18 9 18 9"/><path d="M3 21L5 12L12 15L19 12L21 21"/><path d="M12 15V21"/></svg>
+          </div>
+          <h3>ΚΟΥΡΕΜΑ</h3>
+          <p>Classic κούρεμα με πλύσιμο, styling και φινίρισμα με hot towel.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>18</span>
+            <span class="svc-duration">45 λεπτά</span>
+          </div>
+        </article>
+
+        <article class="svc-card" data-num="02" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12c0 0 0 6 7 6s7-6 7-6"/><path d="M8 8c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2h-4c-1.1 0-2-.9-2-2V8z"/></svg>
+          </div>
+          <h3>BEARD</h3>
+          <p>Shaping, γραμμές και conditioning με premium προϊόντα γένειων.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>14</span>
+            <span class="svc-duration">30 λεπτά</span>
+          </div>
+        </article>
+
+        <article class="svc-card" data-num="03" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16L8 12"/><path d="M8 12L12 8"/><path d="M12 8L20 6L18 14L12 8Z"/><circle cx="8" cy="16" r="2"/></svg>
+          </div>
+          <h3>HOT SHAVE</h3>
+          <p>Classic ξύρισμα με hot towel και straight razor. Η απόλυτη εμπειρία.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>22</span>
+            <span class="svc-duration">45 λεπτά</span>
+          </div>
+        </article>
+
+        <article class="svc-card" data-num="04" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 12h6M12 9v6"/></svg>
+          </div>
+          <h3>COMBO</h3>
+          <p>Κούρεμα + Beard Grooming. Η πλήρης εμπειρία σε ένα appointment.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>28</span>
+            <span class="svc-duration">70 λεπτά</span>
+          </div>
+        </article>
+
+        <article class="svc-card" data-num="05" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2L12 6"/><path d="M12 18L12 22"/><path d="M2 12L6 12"/><path d="M18 12L22 12"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <h3>FADE</h3>
+          <p>Skin fade, mid fade ή high fade. Καθαρές γραμμές, τέλειο αποτέλεσμα.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>20</span>
+            <span class="svc-duration">50 λεπτά</span>
+          </div>
+        </article>
+
+        <article class="svc-card" data-num="06" role="listitem">
+          <div class="svc-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg>
+          </div>
+          <h3>KIDS CUT</h3>
+          <p>Παιδικό κούρεμα για παιδιά έως 12 ετών. Ήρεμο περιβάλλον, γρήγορη εξυπηρέτηση.</p>
+          <div class="svc-price-row">
+            <span class="svc-price"><sup>€</sup>12</span>
+            <span class="svc-duration">30 λεπτά</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section class="section" id="about" aria-labelledby="about-h">
+    <div class="wrap">
+      <div class="about-grid">
+
+        <div class="about-img-wrap">
+          <img
+            class="about-img"
+            src="https://www.ebarber.gr/photo/uploads/InuXRfJxQUbyGvtSfy6F4IUjdnzOjfW9QAS30QNV.jpg"
+            alt="Lost Keys barber at work — black and white artistic photo"
+            loading="lazy"
+            width="800"
+            height="1000"
+          >
+          <div class="about-badge" aria-label="4.9 αστέρια">
+            <div class="about-badge-num">4.9<small style="font-size:.45em">★</small></div>
+            <div class="about-badge-lbl">Google Rating</div>
+          </div>
+        </div>
+
+        <div class="about-txt">
+          <div class="sec-head">
+            <p class="sec-eyebrow">Το Lost Keys</p>
+            <h2 class="sec-title" id="about-h">ΠΟΥ ΠΑΕΙ Η ΤΕΧΝΗ</h2>
+          </div>
+          <div class="gold-line"></div>
+
+          <p class="about-body">
+            Στο Lost Keys δεν απλώς κόβουμε μαλλιά — δημιουργούμε. Κάθε πελάτης μας φεύγει με αυτοπεποίθηση και στυλ που τον εκφράζει.
+          </p>
+          <p class="about-body" style="margin-top: 14px;">
+            Βρισκόμαστε στη Μενελάου 62 & Ιφιγένειας στο Νέο Ηράκλειο, με εξειδικευμένους barbers και premium προϊόντα που σέβονται τα μαλλιά και το δέρμα σας.
+          </p>
+
+          <div class="about-stats" role="list">
+            <div class="astat" role="listitem">
+              <div class="astat-val">5+</div>
+              <div class="astat-lbl">Χρόνια εμπειρία</div>
+            </div>
+            <div class="astat" role="listitem">
+              <div class="astat-val">253</div>
+              <div class="astat-lbl">Google Reviews</div>
+            </div>
+            <div class="astat" role="listitem">
+              <div class="astat-val">6</div>
+              <div class="astat-lbl">Υπηρεσίες</div>
+            </div>
+            <div class="astat" role="listitem">
+              <div class="astat-val">4.9</div>
+              <div class="astat-lbl">Μέση βαθμολογία</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ GALLERY ═══ -->
+  <section class="section section-dark" id="gallery" aria-labelledby="gal-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="sec-eyebrow">Δουλειά μας</p>
+        <h2 class="sec-title" id="gal-h">GALLERY</h2>
+        <p class="sec-desc">Αφήστε τα αποτελέσματα να μιλήσουν μόνα τους.</p>
+        <div class="gold-line"></div>
+      </div>
+
+      <div class="gallery-grid" role="list" aria-label="Gallery εικόνων">
+        <!-- All real Lost Keys Barbershop photos from ebarber.gr -->
+        <div class="gal-item tall" role="listitem">
+          <img
+            src="https://www.ebarber.gr/photo/uploads/zO7YTpyi5s90DLnIPWp9yTdnTeofnvGRyOl9EwMU.jpg"
+            alt="Lost Keys barber performing razor shave"
+            loading="lazy"
+          >
+          <div class="gal-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="gal-item" role="listitem">
+          <img
+            src="https://www.ebarber.gr/photo/uploads/CcSeYgjdPvad1Sn55CkKxWmejztLcimHgTWNvu9q.jpg"
+            alt="Lost Keys Barbershop — artistic haircut"
+            loading="lazy"
+          >
+          <div class="gal-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="gal-item" role="listitem">
+          <img
+            src="https://www.ebarber.gr/photo/uploads/OQno4A1AblAgHJrkD3nfo4xLF3u8cdtEtIZi21Tu.jpg"
+            alt="Lost Keys Barbershop — haircut result"
+            loading="lazy"
+          >
+          <div class="gal-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="gal-item" role="listitem">
+          <img
+            src="https://www.ebarber.gr/photo/uploads/dRRpEi5sTcGvFEJ8YZnKdxo4OMNKWoJlAv6cDEg6.jpg"
+            alt="Lost Keys Barbershop — barber at work"
+            loading="lazy"
+          >
+          <div class="gal-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="gal-item" role="listitem">
+          <img
+            src="https://www.ebarber.gr/photo/uploads/Q62mVu0mldyorD2oqvO7oausg4IGpKNzqPPHOZMJ.jpg"
+            alt="Lost Keys Barbershop — styling"
+            loading="lazy"
+          >
+          <div class="gal-overlay" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section class="section" id="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="sec-title" id="contact-h">ΒΡΕΙΤΕ ΜΑΣ</h2>
+        <p class="sec-desc">Καλέστε για ραντεβού ή ελάτε απευθείας στο κατάστημα.</p>
+      </div>
+
+      <div class="contact-grid">
+
+        <div class="contact-card">
+          <div class="cc-head">
+            <div class="cc-ico">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <h3>Ωράριο Λειτουργίας</h3>
+              <p>Σχεδόν κάθε μέρα εξυπηρέτηση</p>
+            </div>
+          </div>
+
+          <div class="open-badge" id="open-badge" role="status" aria-live="polite">
+            <span class="open-dot" id="open-dot"></span>
+            <span id="open-text">Ανοιχτά Τώρα</span>
+          </div>
+
+          <div class="hours-list" role="table" aria-label="Ωράριο λειτουργίας">
+            <div class="hr-row" role="row">
+              <span class="hr-day" role="cell">Δευτέρα – Παρασκευή</span>
+              <span class="hr-time" role="cell">09:00 – 21:00</span>
+            </div>
+            <div class="hr-row" role="row">
+              <span class="hr-day" role="cell">Σάββατο</span>
+              <span class="hr-time" role="cell">09:00 – 18:00</span>
+            </div>
+            <div class="hr-row" role="row">
+              <span class="hr-day" role="cell">Κυριακή</span>
+              <span class="hr-closed" role="cell">Κλειστά</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="cc-head">
+            <div class="cc-ico">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <div>
+              <h3>Επικοινωνήστε μαζί μας</h3>
+              <p>Είμαστε στη διάθεσή σας</p>
+            </div>
+          </div>
+
+          <div class="cdetails">
+            <div class="cdetail">
+              <div class="cd-ico">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="cd-lbl">Τηλέφωνο</div>
+                <div class="cd-val"><a href="tel:2102850148">210 2850148</a></div>
+              </div>
+            </div>
+            <div class="cdetail">
+              <div class="cd-ico">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <div class="cd-lbl">Διεύθυνση</div>
+                <div class="cd-val">
+                  Μενελάου 62 & Ιφιγένειας<br>
+                  Νέο Ηράκλειο, Αθήνα
+                  <a href="https://maps.google.com/?q=Lost+Keys+Barbershop+Nea+Iraklio+Athens" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:4px;font-size:12px;" aria-label="Δείτε στο Google Maps (ανοίγει σε νέα καρτέλα)">Χάρτης →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a href="tel:2102850148" class="btn-call">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Καλέστε: 210 2850148
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA BAND ═══ -->
+  <section class="cta-band" aria-labelledby="cta-h">
+    <div class="wrap">
+      <h2 id="cta-h">ΕΤΟΙΜΟΣ ΓΙΑ ΜΙΑ<br>ΝΕΑ ΕΜΠΕΙΡΙΑ;</h2>
+      <p>Κλείστε ραντεβού σήμερα και νιώστε τη διαφορά.</p>
+      <a href="tel:2102850148" class="btn-primary">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.4 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        210 2850148
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer role="contentinfo">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="foot-logo">
+          <img
+            src="data:image/png;base64,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"
+            alt="Lost Keys Barbershop"
+            class="foot-logo-img"
+            width="180"
+            height="60"
+            loading="lazy"
+          >
+        </div>
+        <p>Premium barbershop στο Νέο Ηράκλειο Αθήνας. Επαγγελματικοί barbers, premium προϊόντα, αξέχαστη εμπειρία.</p>
+      </div>
+
+      <div class="foot-col">
+        <h4>Υπηρεσίες</h4>
+        <ul>
+          <li><a href="#services">Κούρεμα</a></li>
+          <li><a href="#services">Beard Grooming</a></li>
+          <li><a href="#services">Hot Shave</a></li>
+          <li><a href="#services">Combo</a></li>
+          <li><a href="#services">Fade</a></li>
+          <li><a href="#services">Kids Cut</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Πληροφορίες</h4>
+        <ul>
+          <li><a href="#about">Σχετικά</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Επικοινωνία</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>Επικοινωνία</h4>
+        <ul>
+          <li><a href="tel:2102850148">210 2850148</a></li>
+          <li>Μενελάου 62 & Ιφιγένειας</li>
+          <li>Νέο Ηράκλειο, Αθήνα</li>
+          <li>Δευ–Παρ: 09:00–21:00</li>
+          <li>Σάββατο: 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="foot-hr">
+
+    <div class="foot-bottom">
+      <p>© 2025 Lost Keys Barbershop. Όλα τα δικαιώματα κατοχυρωμένα.</p>
+      <div class="foot-rating-row" aria-label="4.9 αστέρια στο Google">
+        <span class="foot-stars" aria-hidden="true">★★★★★</span>
+        <span>4.9 · 253 Google Reviews</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top" id="scrollTop" aria-label="Επιστροφή στην κορυφή">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Navbar shadow ────────────────────────────────────
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll', function () {
+    nav.classList.toggle('scrolled', window.scrollY > 12);
+  }, { passive: true });
+
+  // ── Mobile menu ──────────────────────────────────────
+  var ham     = document.getElementById('ham');
+  var mobNav  = document.getElementById('mob-nav');
+  var hamIcon = document.getElementById('ham-icon');
+  var open    = false;
+
+  function openNav() {
+    open = true;
+    mobNav.classList.add('open');
+    ham.setAttribute('aria-expanded', 'true');
+    hamIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  }
+  window.closeNav = function () {
+    open = false;
+    mobNav.classList.remove('open');
+    ham.setAttribute('aria-expanded', 'false');
+    hamIcon.innerHTML = '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>';
+  };
+  ham.addEventListener('click', function () { open ? closeNav() : openNav(); });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768) closeNav();
+  }, { passive: true });
+
+  // ══════════════════════════════════════════════════════
+  //  LOGO TRANSPARENCY via Canvas
+  //  The logo is a JPG (black ink on white bg).
+  //  For each pixel: compute luminance → if near-white,
+  //  make transparent; if dark, convert to white + alpha.
+  //  Result: crisp white letterforms on a transparent canvas
+  //  that float cleanly over any dark background.
+  // ══════════════════════════════════════════════════════
+  function processLogos() {
+    var imgs = document.querySelectorAll('.hero-logo, .nav-logo-img, .foot-logo-img');
+    imgs.forEach(function (img) {
+      function applyCanvas() {
+        try {
+          var canvas = document.createElement('canvas');
+          var ctx    = canvas.getContext('2d');
+          // Scale UP 2x for much sharper rendering — especially critical on
+          // high-DPI mobile screens. CSS will scale it back down via the
+          // element's width/height, but we process at 2x resolution.
+          var scale = 2;
+          canvas.width  = img.naturalWidth  * scale;
+          canvas.height = img.naturalHeight * scale;
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          var id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var px = id.data;
+          for (var i = 0; i < px.length; i += 4) {
+            var lum = px[i] * 0.299 + px[i+1] * 0.587 + px[i+2] * 0.114;
+            // Sharper threshold: > 210 = background (transparent), < 210 = ink (white)
+            var raw   = lum > 210 ? 0 : Math.min(255, Math.round((210 - lum) * 1.4));
+            // Gamma correction → crisper edges (pushes mid-grays toward fully opaque)
+            var alpha = raw > 0 ? Math.round(Math.pow(raw / 255, 0.65) * 255) : 0;
+            px[i] = px[i+1] = px[i+2] = 255;
+            px[i+3] = alpha;
+          }
+          ctx.putImageData(id, 0, 0);
+          img.src = canvas.toDataURL('image/png');
+        } catch (e) { /* CORS-blocked — keep original */ }
+      }
+      if (img.complete && img.naturalWidth > 0) {
+        applyCanvas();
+      } else {
+        img.addEventListener('load', applyCanvas, { once: true });
+      }
+    });
+  }
+  processLogos();
+
+  // ── Hero entrance ────────────────────────────────────
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var hero = document.getElementById('hero-section');
+      if (hero) {
+        var el = hero.closest('.hero');
+        if (el) el.classList.add('hero-in');
+      }
+    });
+  });
+
+  // ── Dynamic open/closed badge ─────────────────────────
+  (function () {
+    var badge = document.getElementById('open-badge');
+    var dot   = document.getElementById('open-dot');
+    var txt   = document.getElementById('open-text');
+    if (!badge) return;
+    var now  = new Date();
+    var day  = now.getDay();
+    var mins = now.getHours() * 60 + now.getMinutes();
+    var isOpen =
+      (day >= 1 && day <= 5 && mins >= 540 && mins < 1260) ||
+      (day === 6 && mins >= 540 && mins < 1080);
+    if (isOpen) {
+      badge.style.background = 'rgba(22,163,74,.12)';
+      badge.style.color = '#22c55e';
+      dot.style.background = '#22c55e';
+      txt.textContent = 'Ανοιχτά Τώρα';
+    } else {
+      badge.style.background = 'rgba(239,68,68,.12)';
+      badge.style.color = '#f87171';
+      dot.style.background = '#f87171';
+      txt.textContent = 'Κλειστά Αυτήν την Ώρα';
+    }
+  })();
+
+  // ══════════════════════════════════════════════════════
+  //  CONTAINER SCROLL ANIMATION
+  //  Replicates Aceternity UI ContainerScroll behaviour:
+  //  - Card starts at rotateX(20deg), scale(1.05)
+  //  - As user scrolls through the tall section,
+  //    card rotates to flat (0deg) and scale drops to 1
+  //  - Header translates upward by -100px
+  // ══════════════════════════════════════════════════════
+  var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var csSection = document.getElementById('cs-section');
+  var csCard    = document.getElementById('cs-card');
+  var csHeader  = document.getElementById('cs-header');
+
+  if (csSection && csCard && csHeader && !noMotion) {
+
+    // Set initial transform (matches Aceternity initial state)
+    csCard.style.transform = 'rotateX(20deg) scale(1.05)';
+
+    function updateCS() {
+      var rect   = csSection.getBoundingClientRect();
+      var secH   = csSection.offsetHeight;
+      var vpH    = window.innerHeight;
+
+      // Progress: 0 = section just entered view from bottom
+      //           1 = section scrolled past (at top of viewport)
+      var scrolled = -rect.top;
+      var total    = secH - vpH;
+      var p        = Math.max(0, Math.min(1, total > 0 ? scrolled / total : 0));
+
+      var isMobile    = window.innerWidth <= 768;
+      var scaleStart  = isMobile ? 0.7  : 1.05;
+      var scaleEnd    = isMobile ? 0.9  : 1.0;
+
+      var rotate  = 20  * (1 - p);           // 20° → 0°
+      var scale   = scaleStart + (scaleEnd - scaleStart) * p;
+      var ty      = -p * 100;               // 0 → -100px
+
+      csCard.style.transform =
+        'rotateX(' + rotate.toFixed(3) + 'deg) scale(' + scale.toFixed(4) + ')';
+      csHeader.style.transform =
+        'translateY(' + ty.toFixed(2) + 'px)';
+    }
+
+    window.addEventListener('scroll',  updateCS, { passive: true });
+    window.addEventListener('resize',  updateCS, { passive: true });
+    updateCS(); // run once on load
+  }
+
+  // ── Scroll reveal: 3D perspective entrance ────────────
+  if (!noMotion) {
+    var revealStyle = document.createElement('style');
+    revealStyle.textContent =
+      '.svc-card,.astat,.gal-item,.contact-card{' +
+        'opacity:0;' +
+        'transform:perspective(700px) translateY(28px) rotateX(-10deg) scale(0.97);' +
+        'transform-origin:top center;' +
+        'transition:opacity 480ms cubic-bezier(0.23,1,0.32,1),' +
+                   'transform 480ms cubic-bezier(0.23,1,0.32,1)' +
+      '}' +
+      '.svc-card.in,.astat.in,.gal-item.in,.contact-card.in{' +
+        'opacity:1;transform:perspective(700px) translateY(0) rotateX(0deg) scale(1)' +
+      '}';
+    document.head.appendChild(revealStyle);
+
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.06, rootMargin: '0px 0px -36px 0px' });
+
+    document.querySelectorAll('.svc-card,.astat,.gal-item,.contact-card')
+      .forEach(function (el) {
+        var siblings = el.parentElement
+          .querySelectorAll(':scope > .' + el.className.split(' ')[0]);
+        var idx = Array.from(siblings).indexOf(el);
+        el.style.transitionDelay = Math.min(idx, 4) * 60 + 'ms';
+        obs.observe(el);
+      });
+  }
+
+  // ── Scroll-to-top ─────────────────────────────────────
+  var stBtn = document.getElementById('scrollTop');
+  if (stBtn) {
+    window.addEventListener('scroll', function () {
+      stBtn.classList.toggle('visible', window.scrollY > 360);
+    }, { passive: true });
+    stBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+})();
+</script>
+</body>
+</html>

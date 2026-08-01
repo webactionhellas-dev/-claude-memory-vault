@@ -1,0 +1,15 @@
+{
+  "name": "x-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only radar: watches X accounts and Solana wallets, pushes you alerts. You place every trade yourself.",
+  "scripts": {
+    "start": "node src/index.js",
+    "check-x": "node src/x.js",
+    "check-wallets": "node src/wallets.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

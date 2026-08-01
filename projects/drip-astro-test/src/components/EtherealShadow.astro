@@ -1,0 +1,77 @@
+---
+/**
+ * Ethereal shadow backdrop — Astro/SVG adaptation of the framer-motion
+ * `etheral-shadow` component, themed tiffany. A tiffany field is distorted by an
+ * animated SVG turbulence + displacement filter (SMIL, no JS/framer-motion) for a
+ * slow drifting "smoke" effect. Kept low-opacity over the dark base so content
+ * stays readable; respects prefers-reduced-motion.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['es-wrap relative', className]}>
+  <div class="es-bg" aria-hidden="true">
+    <svg class="es-defs" width="0" height="0" aria-hidden="true">
+      <defs>
+        <filter id="es-filter" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.004 0.008" numOctaves="2" seed="3" result="noise">
+            <animate attributeName="baseFrequency" dur="34s" values="0.004 0.008;0.006 0.013;0.004 0.008" repeatCount="indefinite" />
+            <animate attributeName="seed" dur="40s" values="3;9;3" repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="70" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+    <div class="es-shape"></div>
+  </div>
+  <slot />
+</div>
+
+<style>
+  .es-wrap {
+    position: relative;
+    overflow-x: clip; /* contain the drifting smoke shape so it never widens the page on mobile */
+  }
+  .es-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: clip; /* strictly clip the composited shape so it can't widen the page */
+    contain: paint;
+    pointer-events: none;
+    background: var(--color-base);
+  }
+  /* tiffany field that the turbulence filter warps into drifting smoke */
+  .es-shape {
+    position: absolute;
+    inset: -12%;
+    background:
+      radial-gradient(38% 50% at 22% 30%, rgba(0, 192, 182, 0.5), transparent 70%),
+      radial-gradient(42% 55% at 78% 40%, rgba(87, 225, 214, 0.4), transparent 72%),
+      radial-gradient(46% 60% at 50% 90%, rgba(0, 192, 182, 0.35), transparent 74%);
+    filter: url(#es-filter) blur(8px);
+    opacity: 0.4;
+    will-change: filter;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .es-shape {
+      filter: blur(40px);
+    }
+  }
+
+  /* Mobile: the animated SVG turbulence + displacement filter is far too heavy for
+     phone GPUs. It recomputes every frame, overwhelms the compositor, and thrashes
+     GPU layers, which flickered the brand images and glitched the footer. Swap to a
+     cheap STATIC tiffany blur (rasterized once, no per-frame cost) and drop the
+     layer-promoting will-change. Keeps the look; kills the flicker. */
+  @media (max-width: 768px) {
+    .es-shape {
+      filter: blur(30px);
+      opacity: 0.5;
+      will-change: auto;
+    }
+  }
+</style>

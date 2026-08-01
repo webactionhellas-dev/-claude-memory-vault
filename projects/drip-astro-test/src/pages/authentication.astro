@@ -1,0 +1,170 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+
+// The five-point authentication process. Greek is the visible copy; the EN
+// toggle swaps to data-en, matching the rest of the site.
+const steps = [
+  {
+    icon: 'search',
+    el: 'Ραφές και κατασκευή',
+    en: 'Stitching & construction',
+    elB: 'Ελέγχουμε πυκνότητα βελονιάς, ευθυγράμμιση και συμμετρία σε κάθε ραφή, όπως ακριβώς στο γνήσιο ζευγάρι.',
+    enB: 'We check stitch density, alignment and symmetry across every seam, exactly as on the genuine pair.',
+  },
+  {
+    icon: 'sliders',
+    el: 'Υλικά και υφή',
+    en: 'Materials & texture',
+    elB: 'Δέρμα, ύφασμα και σόλα συγκρίνονται με πιστοποιημένα δείγματα αναφοράς για υφή, βάρος και μυρωδιά.',
+    enB: 'Leather, textile and sole are compared against certified reference samples for texture, weight and smell.',
+  },
+  {
+    icon: 'bag',
+    el: 'Κουτί και αξεσουάρ',
+    en: 'Box & accessories',
+    elB: 'Κουτί, χαρτί, extra κορδόνια και ένθετα πρέπει να ταιριάζουν απόλυτα με το επίσημο release.',
+    enB: 'Box, tissue, spare laces and inserts must match the official release down to the detail.',
+  },
+  {
+    icon: 'check',
+    el: 'Ετικέτες και κωδικοί',
+    en: 'Tags & size codes',
+    elB: 'Size tag, SKU και barcode διασταυρώνονται με τις επίσημες βάσεις δεδομένων του κατασκευαστή.',
+    enB: 'Size tag, SKU and barcode are cross-checked against the maker official databases.',
+  },
+  {
+    icon: 'shield',
+    el: 'Τελική σφραγίδα γνησιότητας',
+    en: 'Final authenticity seal',
+    elB: 'Μόνο ό,τι περνά και τα πέντε στάδια σφραγίζεται ως γνήσιο και ετοιμάζεται για αποστολή.',
+    enB: 'Only what passes all five stages is sealed as genuine and prepared to ship.',
+  },
+] as const;
+
+const promises = [
+  { icon: 'shield', el: 'Πιστοποιημένο', en: 'Certified' },
+  { icon: 'check', el: 'Εγγύηση αυθεντικότητας', en: 'Authenticity guarantee' },
+  { icon: 'refresh', el: 'Επιστροφές 14 ημερών', en: '14-day returns' },
+];
+---
+
+<BaseLayout
+  title="How authentication works · DRIP"
+  description="Every pair that leaves DRIP passes a multi-point authenticity check. See exactly what our specialists inspect: stitching, materials, box, tags and certified references. 100% genuine, or your money back."
+>
+  <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
+  <section class="auth-hero relative isolate flex min-h-[64vh] items-end overflow-hidden">
+    <img src="/editorial-drip.webp" alt="" aria-hidden="true" class="absolute inset-0 -z-20 h-full w-full object-cover brightness-105 contrast-110 saturate-105" fetchpriority="high" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-base via-base/80 to-base/30"></div>
+    <div class="absolute inset-0 -z-10" style="background: radial-gradient(120% 90% at 0% 100%, rgba(0,192,182,0.20), transparent 55%);"></div>
+
+    <div class="wrap relative w-full pb-14 pt-36 md:pb-20 md:pt-44">
+      <span class="eyebrow" data-en="DRIP authentication">Πιστοποίηση DRIP</span>
+      <h1 class="mt-5 max-w-3xl font-display text-4xl font-900 leading-[0.95] tracking-tight md:text-6xl" data-en="How authentication works">
+        Πώς λειτουργεί η πιστοποίηση
+      </h1>
+      <p class="mt-6 max-w-xl text-lg text-muted" data-en="Every pair that leaves DRIP passes a multi-point authenticity check. Here is exactly what our specialists examine before it reaches your door.">
+        Κάθε ζευγάρι που φεύγει από το DRIP περνά από πολυεπίπεδο έλεγχο γνησιότητας. Δείτε ακριβώς τι εξετάζουν οι ειδικοί μας πριν φτάσει στην πόρτα σας.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ FIVE-POINT PROCESS ════════════════════════════════════════════ -->
+  <section class="wrap py-16 reveal md:py-20">
+    <div class="mb-10 max-w-2xl">
+      <span class="eyebrow" data-en="The process">Η διαδικασία</span>
+      <h2 class="mt-3 font-display text-3xl font-800 tracking-tight md:text-[40px]" data-en="Five checks, before it ships">
+        Πέντε έλεγχοι, πριν την αποστολή
+      </h2>
+    </div>
+
+    <ol class="grid gap-4 md:gap-5">
+      {
+        steps.map((s, i) => (
+          <li class="auth-step group relative flex flex-col gap-4 rounded-2xl border border-line p-6 transition-colors md:flex-row md:items-center md:gap-7 md:p-8">
+            <span class="auth-num font-display text-2xl font-800 md:text-3xl">{String(i + 1).padStart(2, '0')}</span>
+            <span class="auth-icn">
+              <Icon name={s.icon as any} size={22} />
+            </span>
+            <div class="min-w-0 md:flex-1">
+              <h3 class="font-display text-xl font-800 text-ink transition-colors group-hover:text-accent-soft" data-en={s.en}>
+                {s.el}
+              </h3>
+              <p class="mt-2 max-w-2xl text-muted" data-en={s.enB}>{s.elB}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- ══ GUARANTEE BAND ════════════════════════════════════════════════ -->
+  <section class="wrap pb-20 reveal">
+    <div class="relative isolate overflow-hidden rounded-3xl border border-line p-8 md:p-14">
+      <div class="absolute inset-0 -z-10" style="background: radial-gradient(110% 120% at 100% 0%, rgba(0,192,182,0.16), transparent 55%);"></div>
+      <span class="eyebrow" data-en="The guarantee">Η εγγύηση</span>
+      <h2 class="mt-4 max-w-2xl font-display text-3xl font-900 leading-tight md:text-[44px]" data-en="100% genuine, or your money back.">
+        100% γνήσιο, ή επιστροφή χρημάτων.
+      </h2>
+      <p class="mt-4 max-w-xl text-muted" data-en="If any item is ever proven inauthentic, we refund you in full. No questions asked.">
+        Αν οποιοδήποτε προϊόν αποδειχθεί μη αυθεντικό, επιστρέφουμε ολόκληρο το ποσό. Χωρίς ερωτήσεις.
+      </p>
+
+      <div class="mt-8 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-3">
+        {
+          promises.map((p) => (
+            <div class="flex items-center gap-3 rounded-xl border border-line px-4 py-3">
+              <span class="text-accent"><Icon name={p.icon as any} size={20} /></span>
+              <span class="text-sm font-600" data-en={p.en}>{p.el}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="/shop" class="btn btn-fill"><span data-en="Shop the collection">Δείτε τη συλλογή</span> <Icon name="arrow" size={18} /></a>
+        <a href="/about" class="btn btn-ghost"><span data-en="Our story">Η ιστορία μας</span> <Icon name="arrowUpRight" size={16} /></a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .auth-hero h1 { text-wrap: balance; }
+
+  .auth-step {
+    background: color-mix(in srgb, var(--color-raised) 55%, transparent);
+  }
+  .auth-step:hover {
+    border-color: rgba(0, 192, 182, 0.35);
+    background: color-mix(in srgb, var(--color-raised) 80%, transparent);
+  }
+
+  .auth-num {
+    flex: none;
+    color: var(--color-accent);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    opacity: 0.9;
+  }
+
+  .auth-icn {
+    display: flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-accent);
+    transition: color 0.4s, background 0.4s, border-color 0.4s, transform 0.5s var(--ease-lux);
+  }
+  .auth-step:hover .auth-icn {
+    color: var(--color-on-accent);
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    border-color: transparent;
+    transform: rotate(-8deg) scale(1.06);
+  }
+</style>

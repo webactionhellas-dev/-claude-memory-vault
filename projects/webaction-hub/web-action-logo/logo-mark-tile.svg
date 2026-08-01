@@ -1,0 +1,28 @@
+<svg width="180" height="180" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Web Action">
+  <defs>
+    <linearGradient id="tileBg" x1="14" y1="8" x2="82" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#101a2e"/>
+      <stop offset="1" stop-color="#0a0e17"/>
+    </linearGradient>
+    <linearGradient id="waGrad2" x1="26" y1="66" x2="70" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="0.55" stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#4F7BFF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.62" cy="0.32" r="0.7">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="2" y="2" width="92" height="92" rx="26" fill="url(#tileBg)"/>
+  <rect x="2" y="2" width="92" height="92" rx="26" fill="url(#glow)"/>
+  <rect x="2.75" y="2.75" width="90.5" height="90.5" rx="25.25" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1.5"/>
+  <g transform="translate(16,16) scale(1.0)">
+    <path d="M12 27 L22 45 L32 31 L42 49 L52 21"
+          stroke="url(#waGrad2)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M41 30.5 L52 21 L54.5 34.5"
+          stroke="url(#waGrad2)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="22" cy="45" r="2.2" fill="#22D3EE"/>
+    <circle cx="42" cy="49" r="2.2" fill="#4F7BFF"/>
+  </g>
+</svg>

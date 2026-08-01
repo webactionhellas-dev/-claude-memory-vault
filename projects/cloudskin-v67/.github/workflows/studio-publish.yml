@@ -1,0 +1,46 @@
+name: studio-publish
+
+# Rebuild + deploy on demand when the owner clicks "Publish to site" in
+# /studio, so a content/photo edit goes live immediately instead of waiting
+# for the next deploy that happens to run for some other reason.
+#
+# Chain: Studio "Publish to site" click -> Supabase edge fn `studio-publish`
+#        (password-checked via the studio_auth RPC) -> repository_dispatch
+#        (event "studio-publish") -> THIS job -> scripts/deploy.mjs, which
+#        re-bakes js/content-snapshot.js from live Supabase content and
+#        deploys with the team Vercel token.
+#
+# No commit step here (unlike blog-rebuild/product-price-sync): deploy.mjs's
+# content-snapshot bake has no separate source file to persist - it reads
+# live Supabase content fresh on every run, blog or price-sync included.
+
+on:
+  repository_dispatch:
+    types: [studio-publish]
+  workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
+
+# A burst of clicks (or a click during another deploy) collapses into one build.
+concurrency:
+  group: studio-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Deploy (re-bakes content snapshot from live Supabase)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: node scripts/deploy.mjs

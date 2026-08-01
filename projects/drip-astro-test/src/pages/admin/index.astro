@@ -1,0 +1,224 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import { supabaseServer } from '@/lib/supabase';
+import { supabaseAdmin, adminReady } from '@/lib/supabase-admin';
+import { money } from '@/lib/money';
+
+export const prerender = false;
+
+const supabase = supabaseServer(Astro.cookies, Astro.request);
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) return Astro.redirect('/login?next=/admin');
+
+// Only admins (profiles.is_admin = true) get in.
+const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
+const isAdmin = !!profile?.is_admin;
+
+let orders: any[] = [];
+if (isAdmin && adminReady()) {
+  // select('*') so the page keeps working before AND after the tracking
+  // migration (tracking_number/courier read as undefined until applied).
+  const { data } = await supabaseAdmin
+    .from('orders')
+    .select('*, order_items(name,brand,size,quantity,unit_price_cents)')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  orders = data ?? [];
+}
+
+const STATUSES = ['pending', 'paid', 'fulfilled', 'cancelled', 'refunded'];
+const revenue = orders.filter((o) => ['paid', 'fulfilled'].includes(o.status)).reduce((s, o) => s + (o.total_cents ?? 0), 0);
+
+// The shipping jsonb stores Stripe's customer_details / shipping_details shape.
+const addr = (sh: any): string[] => {
+  const a = sh?.address ?? {};
+  return [sh?.name, a.line1, a.line2, [a.postal_code, a.city].filter(Boolean).join(' '), a.country, sh?.phone]
+    .filter((v: any) => !!v && String(v).trim().length > 0);
+};
+---
+
+<BaseLayout title="Admin · Orders · DRIP" noindex>
+  <AdminNav active="orders" email={user.email} />
+  <section class="wrap py-10">
+    <h1 class="font-display text-2xl font-900 tracking-tight text-ink">Orders</h1>
+
+    {!isAdmin && (
+      <div class="mt-8 rounded-2xl border border-line p-10 text-center">
+        <p class="text-muted">You don't have admin access.</p>
+        <p class="mt-2 text-sm text-faint">
+          Grant it by setting <code class="text-accent-soft">profiles.is_admin = true</code> for your user in Supabase.
+        </p>
+      </div>
+    )}
+
+    {isAdmin && (
+      <>
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Orders</p><p class="mt-1 font-display text-2xl font-800 text-ink">{orders.length}</p></div>
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Paid revenue</p><p class="mt-1 font-display text-2xl font-800 text-ink">{money(revenue / 100)}</p></div>
+          <div class="rounded-2xl border border-line p-5"><p class="text-xs text-faint">Pending</p><p class="mt-1 font-display text-2xl font-800 text-ink">{orders.filter((o) => o.status === 'pending').length}</p></div>
+        </div>
+
+        <div class="mt-8 overflow-x-auto rounded-2xl border border-line">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-line text-xs uppercase tracking-wide text-faint">
+              <tr><th class="p-4"></th><th class="p-4">Order</th><th class="p-4">Date</th><th class="p-4">Customer</th><th class="p-4">Items</th><th class="p-4">Total</th><th class="p-4">Status</th></tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <>
+                  <tr class="border-b border-line last:border-0">
+                    <td class="p-2 pl-4">
+                      <button type="button" data-toggle-detail={o.id} aria-expanded="false" aria-label="Order details"
+                        class="grid size-8 place-items-center rounded-lg border border-line text-muted transition-colors hover:border-accent hover:text-accent">
+                        <svg data-chevron viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 transition-transform"><path d="m9 18 6-6-6-6"/></svg>
+                      </button>
+                    </td>
+                    <td class="p-4 font-600 text-ink">#{String(o.id).slice(0, 8).toUpperCase()}</td>
+                    <td class="p-4 text-muted">{new Date(o.created_at).toLocaleDateString()}</td>
+                    <td class="p-4 text-muted">{o.email}</td>
+                    <td class="p-4 text-muted">{(o.order_items ?? []).reduce((n: number, it: any) => n + it.quantity, 0)}</td>
+                    <td class="p-4 font-700 text-ink">{money((o.total_cents ?? 0) / 100)}</td>
+                    <td class="p-4">
+                      <select data-order-status data-id={o.id} class="rounded-lg border border-line bg-raised px-2 py-1 text-ink focus:border-accent focus:outline-none">
+                        {STATUSES.map((s) => <option value={s} selected={s === o.status}>{s}</option>)}
+                      </select>
+                    </td>
+                  </tr>
+                  <tr hidden data-detail-row={o.id} class="border-b border-line last:border-0 bg-raised/40">
+                    <td colspan="7" class="p-5">
+                      <div class="grid gap-6 md:grid-cols-3">
+                        <div>
+                          <p class="text-xs uppercase tracking-wide text-faint">Shipping</p>
+                          {addr(o.shipping).length ? (
+                            <p class="mt-2 text-sm leading-relaxed text-ink">{addr(o.shipping).map((l: string) => <>{l}<br /></>)}</p>
+                          ) : (
+                            <p class="mt-2 text-sm text-faint">No shipping details (order not paid yet).</p>
+                          )}
+                          <p class="mt-3 text-xs text-faint">Email: <span class="text-muted">{o.email}</span></p>
+                          {o.stripe_session_id && (
+                            <p class="mt-1 break-all text-xs text-faint">Stripe session: <span class="font-mono text-muted">{o.stripe_session_id}</span></p>
+                          )}
+                        </div>
+
+                        <div>
+                          <p class="text-xs uppercase tracking-wide text-faint">Items</p>
+                          <ul class="mt-2 space-y-1.5">
+                            {(o.order_items ?? []).map((it: any) => (
+                              <li class="flex justify-between gap-3 text-sm">
+                                <span class="text-muted">{it.name} <span class="text-faint">· {it.size} · x{it.quantity}</span></span>
+                                <span class="shrink-0 text-ink">{money(((it.unit_price_cents ?? 0) * it.quantity) / 100)}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <p class="mt-3 flex justify-between border-t border-line pt-2 text-sm font-700 text-ink">
+                            <span>Total</span><span>{money((o.total_cents ?? 0) / 100)}</span>
+                          </p>
+                        </div>
+
+                        <div>
+                          <p class="text-xs uppercase tracking-wide text-faint">Shipping & tracking</p>
+                          <div class="mt-2 space-y-2">
+                            <input data-tracking={o.id} value={o.tracking_number ?? ''} placeholder="Tracking number"
+                              class="h-10 w-full rounded-lg border border-line bg-raised px-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
+                            <input data-courier={o.id} value={o.courier ?? ''} placeholder="Courier (ACS, ELTA, Speedex, BoxNow, DHL, UPS)"
+                              class="h-10 w-full rounded-lg border border-line bg-raised px-3 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
+                            <button type="button" data-save-tracking={o.id} data-status={o.status}
+                              class="btn btn-accent w-full !py-2 text-sm">Save tracking</button>
+                            <p class="text-xs text-faint">Flipping status to "fulfilled" emails the customer the tracking info once.</p>
+                          </div>
+                          {['paid', 'fulfilled'].includes(o.status) && (
+                            <div class="mt-4 border-t border-line pt-3">
+                              <label class="flex items-center gap-2 text-xs text-muted">
+                                <input type="checkbox" data-restock={o.id} class="size-4 rounded border-line bg-raised" />
+                                Return quantities to stock
+                              </label>
+                              <button type="button" data-refund={o.id}
+                                class="btn btn-ghost mt-2 w-full !py-2 text-sm">Refund order (full)</button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+  </section>
+
+  <script>
+    // Expand/collapse the per-order detail row.
+    document.querySelectorAll<HTMLButtonElement>('[data-toggle-detail]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.toggleDetail!;
+        const row = document.querySelector<HTMLTableRowElement>(`[data-detail-row="${id}"]`);
+        if (!row) return;
+        row.hidden = !row.hidden;
+        btn.setAttribute('aria-expanded', String(!row.hidden));
+        btn.querySelector('[data-chevron]')?.classList.toggle('rotate-90', !row.hidden);
+      });
+    });
+
+    // Status changes (the fulfilled flip also sends the shipped email server-side).
+    document.querySelectorAll('[data-order-status]').forEach((el) => {
+      el.addEventListener('change', async (e) => {
+        const sel = e.currentTarget as HTMLSelectElement;
+        sel.disabled = true;
+        const res = await fetch('/api/admin/order-status', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ id: sel.dataset.id, status: sel.value }),
+        });
+        sel.disabled = false;
+        if (!res.ok) alert((await res.json().catch(() => ({})))?.error || 'Could not update status.');
+      });
+    });
+
+    // Save tracking fields (keeps the currently selected status).
+    document.querySelectorAll<HTMLButtonElement>('[data-save-tracking]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.saveTracking!;
+        const status = (document.querySelector<HTMLSelectElement>(`[data-order-status][data-id="${id}"]`))?.value || btn.dataset.status;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/order-status', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            id, status,
+            tracking_number: (document.querySelector<HTMLInputElement>(`[data-tracking="${id}"]`))?.value ?? '',
+            courier: (document.querySelector<HTMLInputElement>(`[data-courier="${id}"]`))?.value ?? '',
+          }),
+        });
+        btn.disabled = false;
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) alert(data?.error || 'Could not save tracking.');
+        else btn.textContent = data.shippedEmail ? 'Saved (email sent)' : 'Saved';
+      });
+    });
+
+    // Full refund (optional restock).
+    document.querySelectorAll<HTMLButtonElement>('[data-refund]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.refund!;
+        const restock = (document.querySelector<HTMLInputElement>(`[data-restock="${id}"]`))?.checked ?? false;
+        if (!confirm(`Refund this order in full${restock ? ' and return the items to stock' : ''}? This cannot be undone.`)) return;
+        btn.disabled = true;
+        const res = await fetch('/api/admin/refund', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ id, restock }),
+        });
+        const data = await res.json().catch(() => ({}));
+        btn.disabled = false;
+        if (!res.ok) { alert(data?.error || 'Refund failed.'); return; }
+        alert(`Refunded.${data.restockError ? ' Restock warning: ' + data.restockError : restock ? ` Restocked ${data.restocked} line(s).` : ''}`);
+        location.reload();
+      });
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,85 @@
+---
+// Cookie consent, built DORMANT on purpose. The site sets no non-essential
+// cookies today, so showing a banner would be legally pointless noise. The
+// component renders NOTHING until an analytics id is configured
+// (PUBLIC_GA4_ID in .env, empty now); the day analytics is switched on, the
+// banner appears, the stored choice gates loadAnalytics(), and nothing loads
+// before consent. Activation steps are documented in BACKEND.md.
+//
+// Bilingual via the site's data-en swap (Greek rendered, EN toggled by the
+// global language runtime in BaseLayout). Fixed-position bottom sheet:
+// no layout shift, safe at 360px, real buttons for keyboard/screen readers.
+const GA4_ID = import.meta.env.PUBLIC_GA4_ID || '';
+---
+
+{
+  GA4_ID && (
+    <aside
+      id="cookie-consent"
+      role="region"
+      aria-label="Cookies"
+      hidden
+      class="fixed inset-x-4 bottom-4 z-[90] mx-auto max-w-md rounded-2xl border border-line bg-raised/95 p-5 shadow-2xl backdrop-blur-sm"
+    >
+      <p class="text-sm font-700 text-ink" data-en="Cookies at DRIP">
+        Cookies στο DRIP
+      </p>
+      <p
+        class="mt-1.5 text-sm leading-relaxed text-muted"
+        data-en="We use cookies only for anonymous visit statistics, so we can make the store better. No ads, no tracking across other sites."
+      >
+        Χρησιμοποιούμε cookies μόνο για ανώνυμα στατιστικά επισκεψιμότητας, ώστε
+        να βελτιώνουμε το κατάστημα. Χωρίς διαφημίσεις, χωρίς παρακολούθηση σε
+        άλλα sites.
+      </p>
+      <div class="mt-4 flex gap-2">
+        <button type="button" data-consent="granted" class="btn btn-accent flex-1 !py-2.5 text-sm">
+          <span data-en="Accept">Αποδοχή</span>
+        </button>
+        <button type="button" data-consent="denied" class="btn btn-ghost flex-1 !py-2.5 text-sm">
+          <span data-en="Decline">Απόρριψη</span>
+        </button>
+      </div>
+    </aside>
+
+    <script is:inline define:vars={{ GA4_ID }}>
+      (function () {
+        var KEY = 'drip-consent';
+        var box = document.getElementById('cookie-consent');
+        if (!box) return;
+
+        // Analytics loader stub: this is the ONLY place a tracking script may
+        // enter the page, and it runs strictly after a stored "granted".
+        // Swap/extend here later (GA4 config flags, Meta Pixel, ...).
+        function loadAnalytics() {
+          if (document.getElementById('ga4-src')) return;
+          var s = document.createElement('script');
+          s.id = 'ga4-src';
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA4_ID);
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', GA4_ID, { anonymize_ip: true });
+        }
+
+        var choice = null;
+        try { choice = localStorage.getItem(KEY); } catch (e) {}
+
+        if (choice === 'granted') { loadAnalytics(); return; }
+        if (choice === 'denied') return;
+
+        box.hidden = false;
+        box.querySelectorAll('[data-consent]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var v = btn.getAttribute('data-consent');
+            try { localStorage.setItem(KEY, v); } catch (e) {}
+            box.hidden = true;
+            if (v === 'granted') loadAnalytics();
+          });
+        });
+      })();
+    </script>
+  )
+}

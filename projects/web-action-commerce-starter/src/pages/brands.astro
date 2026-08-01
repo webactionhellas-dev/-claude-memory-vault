@@ -1,0 +1,115 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import EtherealShadow from '@/components/EtherealShadow.astro';
+import { loadCatalog } from '@/lib/catalog';
+import { brands } from '@/lib/products';
+import covers from '@/data/brand-covers.json';
+
+export const prerender = false;
+
+await loadCatalog();
+const coverMap = covers as Record<string, string>;
+
+// Brands with a full-bleed branded photo (hand-picked) instead of a floating cut-out.
+const coverPhotos: Record<string, string> = {
+  'Stone Island × Supreme': '/brands/cover-stone-island.webp',
+  Yeezy: '/brands/cover-yeezy.webp',
+  'Fear of God': '/brands/cover-fear-of-god.webp',
+  'New Balance': '/brands/cover-new-balance.webp',
+  UGG: '/brands/cover-ugg.webp',
+  'Stüssy': '/brands/cover-stussy.webp',
+  'Acme Exclusive': '/brands/cover-acme-exclusive.webp',
+  Nike: '/brands/cover-nike.webp',
+  Adidas: '/brands/cover-adidas.webp',
+  Jordan: '/brands/cover-jordan.webp',
+  ASICS: '/brands/cover-asics.webp',
+  Essentials: '/brands/cover-essentials.webp',
+};
+---
+
+<BaseLayout title="Brands · ACME" description="Shop authenticated products from Jordan, Nike, Yeezy, New Balance, ASICS and more.">
+  <EtherealShadow>
+  <div class="wrap pt-10">
+    <span class="eyebrow" data-en="The houses">Οι οίκοι</span>
+    <h1 class="mt-3 font-display text-4xl font-900 tracking-tight md:text-5xl" data-en="Brands">Μάρκες</h1>
+    <p class="mt-2 text-sm text-muted" data-en="Thirteen of the most coveted names, every pair authenticated.">Δεκατρία από τα πιο περιζήτητα ονόματα, κάθε ζευγάρι πιστοποιημένο.</p>
+  </div>
+
+  <div class="wrap grid grid-cols-2 gap-4 py-10 md:grid-cols-3 lg:grid-cols-4">
+    {
+      brands.map((b) => {
+        const photo = coverPhotos[b.name];
+        const cover = coverMap[b.name];
+        return (
+          <a
+            href={`/shop?brand=${encodeURIComponent(b.name)}`}
+            class="brand-card group relative block overflow-hidden rounded-2xl border border-line"
+          >
+            {photo ? (
+              <div class="relative aspect-[4/3] overflow-hidden bg-noir">
+                <img
+                  src={photo}
+                  alt={b.name}
+                  loading="lazy"
+                  class="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.07]"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent"></div>
+              </div>
+            ) : (
+              <div class="brand-plate relative aspect-[4/3]">
+                {cover && (
+                  <img
+                    src={cover}
+                    alt={b.name}
+                    loading="lazy"
+                    class="brand-shoe absolute inset-0 h-full w-full object-contain p-[14%] transition-transform duration-700 group-hover:scale-[1.07]"
+                  />
+                )}
+              </div>
+            )}
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4">
+              <p class="font-display text-lg font-800 text-white">{b.name}</p>
+              <p class="text-xs text-white/70">{b.count} <span data-en="styles">σχέδια</span></p>
+            </div>
+          </a>
+        );
+      })
+    }
+  </div>
+  </EtherealShadow>
+</BaseLayout>
+
+<style>
+  /* Dark near-black → tiffany gradient behind the floating cut-out shoe */
+  .brand-plate {
+    background:
+      radial-gradient(115% 100% at 50% 14%, rgba(0, 192, 182, 0.22), rgba(0, 192, 182, 0.05) 46%, transparent 72%),
+      linear-gradient(180deg, #16161b 0%, #0c0c0e 100%);
+    isolation: isolate;
+  }
+  .brand-shoe {
+    filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55));
+  }
+  .brand-card {
+    transition:
+      border-color 0.4s var(--ease-lux),
+      box-shadow 0.4s var(--ease-lux),
+      transform 0.4s var(--ease-lux);
+  }
+  .brand-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 192, 182, 0.45);
+    box-shadow:
+      0 26px 50px -24px rgba(0, 0, 0, 0.75),
+      0 18px 50px -28px rgba(0, 192, 182, 0.5);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-card,
+    .brand-shoe {
+      transition: none;
+    }
+    .brand-card:hover {
+      transform: none;
+    }
+  }
+</style>

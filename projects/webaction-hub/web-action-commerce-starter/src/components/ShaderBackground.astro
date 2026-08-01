@@ -1,0 +1,102 @@
+---
+/**
+ * Animated shader backdrop — adaptation of the @react-three/fiber "paper shaders"
+ * mesh-gradient component, rebuilt with raw WebGL (no three.js / R3F dependency)
+ * and themed tiffany over near-black so content stays readable. Renders at a low
+ * internal resolution (the gradient is soft) and CSS-stretches to fill the region.
+ * Falls back to the dark base if WebGL is unavailable, and pauses for reduced-motion.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['shader-wrap relative isolate', className]}>
+  <canvas data-shader-canvas class="shader-canvas" aria-hidden="true"></canvas>
+  <slot />
+</div>
+
+<script is:inline>
+  (function () {
+    const canvas = document.querySelector('[data-shader-canvas]');
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: false });
+    if (!gl) return;
+
+    const vs = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+    const fs = [
+      'precision highp float;',
+      'uniform float u_time; uniform vec2 u_res;',
+      'void main(){',
+      '  vec2 uv = gl_FragCoord.xy / u_res;',
+      '  float t = u_time * 0.22;',
+      '  float n = sin(uv.x*7.0 + t) * cos(uv.y*5.0 + t*0.8);',
+      '  n += sin(uv.x*13.0 - t*1.7) * cos(uv.y*9.0 + t*1.1) * 0.5;',
+      '  n = n*0.5 + 0.5;',
+      '  vec3 deep = vec3(0.0, 0.085, 0.08);',
+      '  vec3 tiff = vec3(0.0, 0.42, 0.39);',
+      '  vec3 col = mix(deep, tiff, n) * 0.55;',
+      '  col += vec3(0.039, 0.039, 0.043);',
+      '  gl_FragColor = vec4(col, 1.0);',
+      '}',
+    ].join('\n');
+
+    function compile(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    }
+    const prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'a');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const uTime = gl.getUniformLocation(prog, 'u_time');
+    const uRes = gl.getUniformLocation(prog, 'u_res');
+
+    function resize() {
+      const w = Math.min(640, Math.max(2, Math.round(canvas.clientWidth / 2)));
+      const h = Math.min(900, Math.max(2, Math.round(canvas.clientHeight / 2)));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+    }
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+    resize();
+
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function frame(ms) {
+      gl.uniform1f(uTime, ms * 0.001);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>
+
+<style>
+  .shader-wrap { position: relative; }
+  .shader-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: var(--color-base);
+    pointer-events: none;
+  }
+</style>

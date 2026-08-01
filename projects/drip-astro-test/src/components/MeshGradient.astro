@@ -1,0 +1,77 @@
+---
+/**
+ * Mesh-gradient statement band — adaptation of the @react-three/fiber "paper
+ * shaders" MeshGradient, rebuilt with raw WebGL (no three.js / R3F) and themed
+ * tiffany blue + milky white. Renders a flowing animated gradient behind a
+ * centered slot. Low internal resolution (soft gradient), reduced-motion safe.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<section class:list={['mesh-band relative isolate overflow-hidden border-y border-line', className]}>
+  <canvas data-mesh-canvas class="mesh-canvas" aria-hidden="true"></canvas>
+  <div class="wrap relative z-10 flex min-h-[52vh] flex-col items-center justify-center py-20 text-center">
+    <slot />
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    const canvas = document.querySelector('[data-mesh-canvas]');
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl', { antialias: false });
+    if (!gl) return;
+    const vs = 'attribute vec2 a; void main(){ gl_Position = vec4(a,0.0,1.0); }';
+    const fs = [
+      'precision highp float;',
+      'uniform float u_time; uniform vec2 u_res;',
+      'void main(){',
+      '  vec2 uv = gl_FragCoord.xy / u_res;',
+      '  float t = u_time * 0.2;',
+      '  float n = sin(uv.x*6.0 + t) * cos(uv.y*5.0 + t*0.9);',
+      '  n += sin(uv.x*11.0 - t*1.6) * cos(uv.y*8.0 + t) * 0.5;',
+      '  n = n*0.5 + 0.5;',
+      '  vec3 milk = vec3(0.965, 0.97, 0.955);',
+      '  vec3 tiff = vec3(0.0, 0.61, 0.56);',
+      '  vec3 col = mix(milk, tiff, smoothstep(0.18, 0.82, n));',
+      '  col = mix(col, vec3(1.0), pow(max(0.0, n-0.72), 2.0) * 1.6);',
+      '  gl_FragColor = vec4(col, 1.0);',
+      '}',
+    ].join('\n');
+    function compile(t, s) { const sh = gl.createShader(t); gl.shaderSource(sh, s); gl.compileShader(sh); return sh; }
+    const p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p); gl.useProgram(p);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(p, 'a');
+    gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uTime = gl.getUniformLocation(p, 'u_time'), uRes = gl.getUniformLocation(p, 'u_res');
+    function resize() {
+      const w = Math.min(560, Math.max(2, (canvas.clientWidth/2)|0));
+      const h = Math.min(420, Math.max(2, (canvas.clientHeight/2)|0));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0,0,w,h); }
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+    }
+    new ResizeObserver(resize).observe(canvas); resize();
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function frame(ms){ gl.uniform1f(uTime, ms*0.001); gl.drawArrays(gl.TRIANGLES,0,3); if(!reduce) requestAnimationFrame(frame); }
+    requestAnimationFrame(frame);
+  })();
+</script>
+
+<style>
+  .mesh-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>

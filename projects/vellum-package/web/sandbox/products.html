@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Products - Vellum sandbox (product layer smoke test)</title>
+  <style>
+    body{margin:0;font-family:system-ui,sans-serif;background:#faf8f4;color:#1c1a17}
+    .wrap{max-width:880px;margin:0 auto;padding:40px 24px}
+    h1{font-weight:500;font-size:26px;margin:0 0 20px}
+    #grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .pcard{background:#fff;border:1px solid #e6e0d6;border-radius:12px;overflow:hidden}
+    .pcard__media img{width:100%;height:170px;object-fit:cover;display:block;background:#ece7df}
+    .pcard__name{font-size:14px;font-weight:600;margin:10px 12px 2px}
+    .pcard__price{font-size:13px;color:#7d766b;margin:0 12px 12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 data-content="shop.title">The collection</h1>
+    <div id="grid"></div>
+  </div>
+
+  <script>
+    // a tiny live catalog + card factory, standing in for a real storefront's
+    window.SITE_PRODUCTS = [
+      { handle: "aria-top",   title: "Aria Top",   category: "Tops",    gender: "Women", images: ["data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI3NCI+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9Ijc0IiBmaWxsPSIjOGE1MzAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MiUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BPC90ZXh0Pjwvc3ZnPg=="] },
+      { handle: "breeze-skirt", title: "Breeze Skirt", category: "Bottoms", gender: "Women", images: ["data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI3NCI+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9Ijc0IiBmaWxsPSIjM2E0ZmQwIi8+PHRleHQgeD0iNTAlIiB5PSI1MiUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CPC90ZXh0Pjwvc3ZnPg=="] },
+      { handle: "cove-dress", title: "Cove Dress", category: "Dresses", gender: "Women", images: ["data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI3NCI+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9Ijc0IiBmaWxsPSIjMmY3ZDViIi8+PHRleHQgeD0iNTAlIiB5PSI1MiUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5DPC90ZXh0Pjwvc3ZnPg=="] }
+    ];
+    (function render() {
+      document.getElementById("grid").innerHTML = window.SITE_PRODUCTS.map(function (p) {
+        return '<article class="pcard" data-handle="' + p.handle + '">' +
+          '<div class="pcard__media"><img src="' + p.images[0] + '" alt=""></div>' +
+          '<h3 class="pcard__name">' + p.title + '</h3>' +
+          '<p class="pcard__price">EUR 90</p>' +
+        '</article>';
+      }).join("");
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config-products.js"></script>
+  <script src="/vellum-content.js" defer></script>
+  <script>try{if(sessionStorage.getItem('vlm-armed')==='1'){
+    var l=document.createElement('link');l.rel='stylesheet';l.href='/vellum-edit-mode.css';document.head.appendChild(l);
+    var s=document.createElement('script');s.src='/vellum-edit-mode.js';s.defer=true;document.body.appendChild(s);
+  }}catch(e){}</script>
+</body>
+</html>

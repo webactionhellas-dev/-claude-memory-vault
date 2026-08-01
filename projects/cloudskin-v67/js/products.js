@@ -1,0 +1,641 @@
+/* CLOUDSKIN, REAL catalog - prices in AED, synced to Shopify (store base currency AED) */
+window.CLOUDSKIN_PRODUCTS = [
+  {
+    "handle": "zz-test-payment-check-delete-after",
+    "title": "Test Checkout · €1",
+    "color": "White",
+    "colors": ["White"],
+    "price": 1,
+    "compareAt": null,
+    "badge": "Test",
+    "bestSeller": false,
+    "isNew": true,
+    "category": "Test",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [],
+    "images": ["img/studio/studio-white-set.jpg", "img/studio/studio-white-set.jpg"],
+    "allImages": ["img/studio/studio-white-set.jpg"],
+    "swatches": [],
+    "blurb": "Temporary product used to verify PayPal checkout end to end. Safe to remove after testing.",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": { "White": "TEST-1" }
+  },
+  {
+    "handle": "the-performance-tank",
+    "title": "Performance Tank",
+    "color": "Black",
+    "colors": [
+      "Black",
+      "White Mist"
+    ],
+    "price": 286,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Lounge",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-performance-tank-1.jpg",
+      "img/shopify/the-performance-tank-2.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-performance-tank-1.jpg",
+      "img/shopify/the-performance-tank-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A lightweight tank designed for movement and performance. The Performance Tank is made from lightweight, quick-drying fabric that helps keep you cool and comfortable throughout the",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": {
+      "Black": "FE-14",
+      "White Mist": "FE-13"
+    }
+  },
+  {
+    "handle": "the-performance-tee",
+    "title": "Performance Tee",
+    "color": "Black",
+    "colors": [
+      "Black",
+      "White Mist"
+    ],
+    "price": 269,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Lounge",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-performance-tee-1.jpg",
+      "img/shopify/the-performance-tee-2.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-performance-tee-1.jpg",
+      "img/shopify/the-performance-tee-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A timeless sports bra designed for movement, comfort, and support. Crafted from our signature sculpting fabric, it offers a smooth, supportive fit with a soft second-skin feel. The",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": {
+      "Black": "FE-12",
+      "White Mist": "FE-11"
+    }
+  },
+  {
+    "handle": "the-flow-dress",
+    "title": "Flow Dress",
+    "color": "Black",
+    "colors": [
+      "Black"
+    ],
+    "price": 496,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-flow-dress-1.jpg",
+      "img/shopify/the-flow-dress-2.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-flow-dress-1.jpg",
+      "img/shopify/the-flow-dress-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A lightweight dress designed for movement and everyday wear. The Flow Dress features a racerback design with breathable mesh detailing for all-day comfort. Crafted from lightweight",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "Black": "FE-17"
+    }
+  },
+  {
+    "handle": "the-elevate-cropped-jacket-copy",
+    "title": "Drift Cropped Jacket",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 412,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "img/shopify/the-elevate-cropped-jacket-copy-1.jpg",
+      "img/shopify/the-elevate-cropped-jacket-copy-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-elevate-cropped-jacket-copy-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A lightweight layer designed for movement, style, and everyday versatility. The Drift Cropped Jacket combines effortless functionality with a modern cropped silhouette. Crafted fro",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-10"
+    }
+  },
+  {
+    "handle": "the-elevate-cropped-jacket",
+    "title": "Elevate Cropped Jacket",
+    "color": "Black",
+    "colors": [
+      "Black"
+    ],
+    "price": 454,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "img/shopify/the-elevate-cropped-jacket-1.jpg",
+      "img/shopify/the-elevate-cropped-jacket-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-elevate-cropped-jacket-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "The Elevate Cropped Jacket combines comfort and style in a modern cropped silhouette. Crafted from lightweight performance fabric, it features relaxed batwing sleeves that create a",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "Black": "FE-09"
+    }
+  },
+  {
+    "handle": "the-club-quarter-zip",
+    "title": "Club Quarter Zip",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 286,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-club-quarter-zip-1.jpg",
+      "img/shopify/the-club-quarter-zip-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-club-quarter-zip-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A lightweight layer designed to complement the collection. Crafted from breathable performance fabric, the Club Quarter Zip delivers lightweight comfort with a slim, ",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-15"
+    }
+  },
+  {
+    "handle": "the-club-skirt",
+    "title": "Club Skirt",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 286,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-club-skirt-1.jpg",
+      "img/shopify/the-club-skirt-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-club-skirt-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "Designed to move effortlessly between court and everyday life. The Club Skirt combines a lightweight textured mesh outer layer with supportive built-in shorts for the perfect balan",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-16"
+    }
+  },
+  {
+    "handle": "the-foundation-tank",
+    "title": "Foundation Tank",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 311,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Lounge",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-foundation-tank-1.jpg",
+      "img/shopify/the-foundation-tank-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-foundation-tank-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A refined essential designed for performance, comfort, and everyday wear. Crafted from our signature performance fabric, this supportive tank features a built-in bra for added supp",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-07"
+    }
+  },
+  {
+    "handle": "the-court-skirt",
+    "title": "Court Skirt",
+    "color": "White",
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "price": 328,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-court-skirt-1.jpg",
+      "img/shopify/the-court-skirt-2.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-court-skirt-1.jpg",
+      "img/shopify/the-court-skirt-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A modern court essential designed for performance and everyday wear. Crafted from a lightweight performance fabric, The Court Skirt combines a flattering silhouette with all-day co",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-08",
+      "Black": "FE-06"
+    }
+  },
+  {
+    "handle": "the-sculpt-bra",
+    "title": "Sculpt Bra",
+    "color": "Black",
+    "colors": [
+      "Black"
+    ],
+    "price": 315,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Sports Bras",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-sculpt-bra-1.jpg",
+      "img/shopify/the-sculpt-bra-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-sculpt-bra-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "Designed for support without compromise. Crafted from our signature performance fabric, The Sculpt Bra delivers high support with a smooth, sculpting fit that feels secure through ",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "Black": "FE-05"
+    }
+  },
+  {
+    "handle": "the-signature-skirtt",
+    "title": "Signature Skirt",
+    "color": "White",
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "price": 370,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Apparel",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-signature-skirtt-1.jpg",
+      "img/shopify/the-signature-skirtt-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-signature-skirtt-1.jpg",
+      "img/shopify/the-signature-skirtt-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "Designed for effortless movement on and off the court. The Flow Court Skirt combines a flattering silhouette with lightweight layered detailing for a refined, feminine look. Featur",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "White": "FE-04",
+      "Black": "FE-02"
+    }
+  },
+  {
+    "handle": "the-signature-bra",
+    "title": "Signature Bra",
+    "color": "Black",
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "price": 353,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Sports Bras",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-signature-bra-1.jpg",
+      "img/shopify/the-signature-bra-2.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-signature-bra-1.jpg",
+      "img/shopify/the-signature-bra-2.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A timeless sports bra designed for movement, comfort, and support. Crafted from our signature sculpting fabric, it offers a smooth, supportive fit with a soft second-skin feel. The",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "WELCOME",
+    "skus": {
+      "Black": "FE-01",
+      "White": "FE-03"
+    }
+  },
+  {
+    "handle": "the-form-bra",
+    "title": "Form Bra",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 286,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Bras",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-form-bra-1.jpg",
+      "img/shopify/the-form-bra-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-form-bra-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "Effortless support, elevated comfort. Built-in padded cups and a clean, flattering silhouette deliver medium support that moves with you.",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": {
+      "White": "FE-18"
+    }
+  },
+  {
+    "handle": "the-ace-dress",
+    "title": "Ace Dress",
+    "color": "White",
+    "colors": [
+      "White"
+    ],
+    "price": 538,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Dresses",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M"
+    ],
+    "images": [
+      "img/shopify/the-ace-dress-1.jpg",
+      "img/shopify/the-ace-dress-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-ace-dress-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A refined court-to-club dress with a sculpting silhouette, contrast piping and a structured high neckline with front zip. Built-in bra and shorts with side pockets.",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": {
+      "White": "FE-19"
+    }
+  },
+  {
+    "handle": "the-performance-shorts",
+    "title": "Performance Shorts",
+    "color": "Black",
+    "colors": [
+      "Black"
+    ],
+    "price": 311,
+    "compareAt": null,
+    "badge": null,
+    "bestSeller": false,
+    "isNew": false,
+    "category": "Shorts",
+    "fabric": null,
+    "activities": [],
+    "lengths": [],
+    "rise": null,
+    "support": null,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "images": [
+      "img/shopify/the-performance-shorts-1.jpg",
+      "img/shopify/the-performance-shorts-1.jpg"
+    ],
+    "allImages": [
+      "img/shopify/the-performance-shorts-1.jpg"
+    ],
+    "swatches": [],
+    "blurb": "A lightweight, quick-drying short with a streamlined athletic cut. Elastic waistband with adjustable drawcord and functional side pockets, secure and easy on and off the court.",
+    "rating": null,
+    "reviewCount": 0,
+    "vendor": "CLOUDSKIN",
+    "skus": {
+      "Black": "FE-20"
+    }
+  }
+];

@@ -1,0 +1,121 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import { requireAdmin } from '@/lib/admin-guard';
+import { supabaseAdmin, adminReady } from '@/lib/supabase-admin';
+import { ADMIN_EDITABLE } from '@/lib/store-config';
+
+export const prerender = false;
+
+const g = await requireAdmin(Astro.cookies, Astro.request);
+if (!g.ok) return Astro.redirect('/login?next=/admin/content');
+if (!ADMIN_EDITABLE) return Astro.redirect('/admin/products');
+
+let rows: { key: string; section: string; label: string; el: string; en: string }[] = [];
+if (adminReady()) {
+  const { data } = await supabaseAdmin
+    .from('site_content')
+    .select('key,section,label,el,en')
+    .order('section', { ascending: true })
+    .order('key', { ascending: true });
+  rows = data ?? [];
+}
+
+// group by section, preserving order
+const groups: { section: string; items: typeof rows }[] = [];
+for (const r of rows) {
+  let grp = groups.find((x) => x.section === r.section);
+  if (!grp) { grp = { section: r.section, items: [] }; groups.push(grp); }
+  grp.items.push(r);
+}
+---
+
+<BaseLayout title="Content · Admin · ACME" noindex>
+  <AdminNav active="content" email={g.user?.email} />
+
+  <section class="wrap py-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="font-display text-2xl font-900 tracking-tight text-ink">Site text</h1>
+        <p class="mt-1 text-sm text-faint">Edit the site copy in Greek and English. Leave a field blank to keep the built-in default.</p>
+      </div>
+      <button data-save class="btn btn-fill">Save changes</button>
+    </div>
+
+    {rows.length === 0 && (
+      <p class="mt-8 text-sm text-muted">No editable content found.</p>
+    )}
+
+    <form data-content-form class="mt-8 space-y-10">
+      {groups.map((grp) => (
+        <div>
+          <h2 class="font-display text-lg font-800 text-accent-soft">{grp.section}</h2>
+          <div class="mt-4 space-y-5">
+            {grp.items.map((it) => (
+              <div class="rounded-2xl border border-line bg-raised/40 p-4" data-field data-key={it.key}>
+                <p class="text-xs font-600 uppercase tracking-wide text-faint">{it.label || it.key}</p>
+                <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                  <label class="block">
+                    <span class="text-[11px] font-600 text-muted">Ελληνικά (EL)</span>
+                    <textarea data-cel rows="2" class="mt-1 w-full rounded-xl border border-line bg-base px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none">{it.el}</textarea>
+                  </label>
+                  <label class="block">
+                    <span class="text-[11px] font-600 text-muted">English (EN)</span>
+                    <textarea data-cen rows="2" class="mt-1 w-full rounded-xl border border-line bg-base px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none">{it.en}</textarea>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </form>
+  </section>
+
+  <script>
+    const btn = document.querySelector('[data-save]') as HTMLButtonElement | null;
+    const toast = (msg: string) => {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.className = 'fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-accent px-5 py-2.5 text-sm font-600 text-on-accent shadow-lg';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    };
+
+    btn?.addEventListener('click', async () => {
+      const items = [...document.querySelectorAll('[data-field]')]
+        .map((f) => {
+          const elBox = f.querySelector('[data-cel]') as HTMLTextAreaElement | null;
+          const enBox = f.querySelector('[data-cen]') as HTMLTextAreaElement | null;
+          const key = (f as HTMLElement).dataset.key;
+          if (!key || !elBox || !enBox) return null;
+          return { key, el: elBox.value, en: enBox.value };
+        })
+        .filter((x): x is { key: string; el: string; en: string } => x !== null);
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      try {
+        const res = await fetch('/api/admin/content', {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ items }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          btn.textContent = 'Saved ✓';
+          toast(`Saved ${data.updated} item(s).`);
+          setTimeout(() => { btn.disabled = false; btn.textContent = original; }, 1200);
+        } else {
+          toast(data.error || 'Save failed.');
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      } catch {
+        toast('Could not save.');
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  </script>
+</BaseLayout>

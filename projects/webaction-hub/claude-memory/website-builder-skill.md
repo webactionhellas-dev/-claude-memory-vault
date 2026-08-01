@@ -1,0 +1,20 @@
+---
+name: website-builder-skill
+description: "The website-builder skill + subagent that automate Mike's whole site-building workflow"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: a550575a-1043-4bff-a5b5-f0935761b1b5
+---
+
+Mike's repeatable website workflow (from [[dionyssos-hotel-site]], [[greencleaners-site]], [[unicorn-tattoo-site]], [[mykonos-prestige-site]], [[eposburger-site]], [[trattoria-capanna-site]], [[drip-store-site]]) is now captured as reusable tooling so a one-line brief replaces dozens of commands:
+
+- **Skill** `C:\Users\mikef\.claude\skills\website-builder\` — SKILL.md pipeline (Phase 0 discovery → Checkpoint 1 design brief → scaffold → bilingual content → sections/pages → assets → perf → verify+quality-gate → Checkpoint 2 review → memory) + 6 references (`stacks.md`, `asset-sourcing.md`, `design-systems.md`, `image-processing.md`, `quality-gate.md`, `environment.md`). Encodes the two stacks, named-design-system method, distinctive-type/lettering guidance, Greek-capable fonts, no-em-dash / native-Greek rules, and every machine trap ([[preview-screenshot-timeout]], [[css-fixed-backdrop-filter-trap]], [[nextjs-flight-length-prefix-trap]], framer-in-headless, next/image quality allowlist, Maps pb embed).
+- **Bundled scripts** `scripts/` (do the deterministic work once = precise + low-token): `imgtools.py` (cutout with auto flat-bg knockout vs AI/rembg, logokit favicon/apple/og+mono, enhance, optimize, check) — writes a `_CHECK.png` composite over checker/white/black/brand to Read and confirm NO halo before wiring; `perf_audit.py` (asset weight/dimension/load audit → PASS/WARN/FAIL + json, exit 1 on fail). Deps installed + tested 2026-07-05: Pillow, numpy, **rembg** (`isnet-general-use` model pre-warmed), ffmpeg; border-connected knockout preserves enclosed brand colours (verified).
+- **Subagents** `C:\Users\mikef\.claude\agents\`: `website-builder.md` — hand it a brief; loads the skill + [[autonomous-execution]], runs checkpointed, can run several in parallel. `site-qa.md` — independent read-only reviewer for the final quality gate (fresh eyes, mostly runs the scripts, returns PASS/FAIL). `backend-integrator.md` — Supabase (uses Supabase MCP)/Shopify/WooCommerce/Stripe/Resend expert (reuses [[drip-astro-v2-site]], [[drip-store-site]], [[unicorn-tattoo-site]], [[greencleaners-site]] patterns). `deploy-launch.md` — Vercel deploy (uses Vercel MCP) + launch-readiness expert; deploy is gated (preview first, prod only on explicit go).
+- **Standing rule** `C:\Users\mikef\.claude\CLAUDE.md` (created 2026-07-05) makes this whole pipeline fire on EVERY website build/rebuild/launch — per Mike's "every time I build a website I want these agents and skills used". Also carries the hard rules (no em-dashes, native Greek, gated deploy, least tokens).
+- **Also built** the [[autonomous-execution]] skill (discipline layer the builder composes with).
+
+Design decisions Mike chose (2026-07-05): **checkpointed** autonomy (approve design brief, then autonomous build, then review; deploy is never automatic); agent **picks the stack per brief** (Next.js 15 premium for marketing/multi-page/e-commerce, single-file HTML for quick landing pages); **no-website businesses are a first-class discovery path** — source branding/photos/content from Instagram or Facebook. Mike then asked (2026-07-05) for: flawless PNG-logo/background-removal, site design matched exactly to the business aesthetic with **unique fonts + excellent lettering**, an automatic **speed/file-size check** (fast + sharp, no bugs), a **multi-check quality gate that only offers the final result when everything is perfect functionally + aesthetically**, all skills wired to **work together every build with the least tokens** — delivered via the bundled scripts + quality gate + site-qa agent above.
+
+**How to apply:** when Mike says "build/rebuild a site for <business>", use the website-builder agent (or invoke the skill). Not yet battle-tested on a real build — refine the skill/references as new lessons land, one lesson per file, updating not duplicating.

@@ -1,0 +1,223 @@
+{% capture email_title %}{% if payment_terms %}Review and confirm to complete your order{% else %}Complete your purchase{% endif %}{% endcapture %}
+{% capture email_body %}{% if item_count > 1 %}These items will be reserved for you until {{ reserve_inventory_until | date: format: 'date_at_time' }}.{% else %}This item will be reserved for you until {{ reserve_inventory_until | date: format: 'date_at_time' }}.{% endif %}{% endcapture %}
+{% assign accent_color = shop.email_accent_color | default: '#171512' %}
+{% if payment_terms %}{% assign cta_label = 'Review and confirm' %}{% else %}{% assign cta_label = 'Complete your purchase' %}{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light only">
+  <title>{{ email_title }}</title>
+  <link rel="stylesheet" type="text/css" href="/assets/notifications/styles.css">
+  <!--[if mso]>
+  <style type="text/css">
+    body, table, td, p, a, span { font-family: Helvetica, Arial, sans-serif !important; }
+    .cs-headline { font-family: Georgia, 'Times New Roman', serif !important; }
+  </style>
+  <![endif]-->
+  <style type="text/css">
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #efeae1; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { text-decoration: none; }
+    .cs-headline { font-family: Georgia, 'Times New Roman', serif; }
+    @media only screen and (max-width: 620px) {
+      .cs-container { width: 100% !important; }
+      .cs-pad { padding-left: 26px !important; padding-right: 26px !important; }
+      .cs-pad-top { padding-top: 34px !important; }
+      .cs-headline { font-size: 29px !important; line-height: 1.18 !important; }
+      .cs-thumb { width: 60px !important; }
+      .cs-thumb img { width: 60px !important; height: 60px !important; }
+      .cs-item-title { font-size: 15px !important; }
+      .cs-summary-pad { padding-left: 26px !important; padding-right: 26px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#efeae1;">
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#efeae1;">
+    Your CloudSkin invoice {{ name }} is ready to review.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efeae1;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <!--[if mso]>
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td>
+        <![endif]-->
+        <table role="presentation" class="cs-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#f7f4ef;">
+
+          <!-- WORDMARK + HAIRLINE -->
+          <tr>
+            <td class="cs-pad cs-pad-top" align="center" style="padding:44px 48px 26px 48px;">
+              <div class="cs-headline" style="font-family: Helvetica, Arial, sans-serif; font-size:19px; font-weight:600; letter-spacing:6px; color:#171512; text-transform:uppercase;">CLOUDSKIN</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td></tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- LABEL + HEADLINE + BODY + CTA -->
+          <tr>
+            <td class="cs-pad" style="padding:38px 48px 8px 48px;">
+              <p style="margin:0 0 14px 0; font-family: Helvetica, Arial, sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:#857d72;">Invoice {{ name }}</p>
+              <h1 class="cs-headline" style="margin:0 0 20px 0; font-family: Georgia, 'Times New Roman', serif; font-style:italic; font-weight:400; font-size:34px; line-height:1.16; letter-spacing:-0.4px; color:#171512;">{{ email_title }}</h1>
+              <p style="margin:0; font-family: Helvetica, Arial, sans-serif; font-size:15px; line-height:1.7; color:#55504a;">Thank you for choosing CloudSkin. Your invoice is ready below. Take a moment to review the details, then confirm whenever you are ready to complete your order.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="cs-pad" style="padding:28px 48px 6px 48px;">
+              <!--[if mso]>
+              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ invoice_url }}" style="height:52px;v-text-anchor:middle;width:300px;" arcsize="8%" strokecolor="{{ accent_color }}" fillcolor="{{ accent_color }}">
+                <w:anchorlock/>
+                <center style="color:#ffffff;font-family:Helvetica,Arial,sans-serif;font-size:15px;letter-spacing:0.5px;">{{ cta_label }}</center>
+              </v:roundrect>
+              <![endif]-->
+              <!--[if !mso]><!-- -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" bgcolor="{{ accent_color }}" style="border-radius:4px; background-color:{{ accent_color }};">
+                    <a href="{{ invoice_url }}" target="_blank" style="display:inline-block; padding:16px 42px; font-family: Helvetica, Arial, sans-serif; font-size:15px; letter-spacing:0.5px; color:#ffffff; background-color:{{ accent_color }}; border-radius:4px;">{{ cta_label }}</a>
+                  </td>
+                </tr>
+              </table>
+              <!--<![endif]-->
+            </td>
+          </tr>
+
+          {% if reserve_inventory_until %}
+          <tr>
+            <td class="cs-pad" style="padding:18px 48px 6px 48px;">
+              <p style="margin:0; font-family: Helvetica, Arial, sans-serif; font-size:13px; line-height:1.6; color:#857d72;">{{ email_body }}</p>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- DIVIDER -->
+          <tr>
+            <td style="padding:30px 48px 0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td></tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- LINE ITEMS -->
+          <tr>
+            <td class="cs-pad" style="padding:26px 48px 6px 48px;">
+              <p style="margin:0 0 6px 0; font-family: Helvetica, Arial, sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:#857d72;">Order summary</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="cs-pad" style="padding:0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                {% for line in subtotal_line_items %}
+                <tr>
+                  <td class="cs-thumb" valign="top" width="72" style="padding:18px 0; width:72px;">
+                    {% if line.image %}
+                    <img src="{{ line.image | img_url: 'compact_cropped' }}" width="72" height="72" alt="{{ line.title | escape }}" style="display:block; width:72px; height:72px; border-radius:4px; background-color:#e5ddd0; object-fit:cover;">
+                    {% else %}
+                    <div style="width:72px; height:72px; border-radius:4px; background-color:#e5ddd0;">&nbsp;</div>
+                    {% endif %}
+                  </td>
+                  <td valign="top" style="padding:18px 12px 18px 18px;">
+                    <p class="cs-item-title" style="margin:0 0 4px 0; font-family: Helvetica, Arial, sans-serif; font-size:15px; font-weight:600; line-height:1.4; color:#171512;">{{ line.title }}</p>
+                    {% unless line.variant.title == 'Default Title' or line.variant.title == blank %}
+                    <p style="margin:0 0 4px 0; font-family: Helvetica, Arial, sans-serif; font-size:13px; line-height:1.5; color:#857d72;">{{ line.variant.title }}</p>
+                    {% endunless %}
+                    <p style="margin:0; font-family: Helvetica, Arial, sans-serif; font-size:13px; line-height:1.5; color:#857d72;">Qty {{ line.quantity }}</p>
+                  </td>
+                  <td valign="top" align="right" style="padding:18px 0; font-family: Helvetica, Arial, sans-serif; font-size:15px; font-weight:600; color:#171512; white-space:nowrap;">{{ line.line_price | money }}</td>
+                </tr>
+                <tr>
+                  <td colspan="3" style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- INVOICE TOTALS -->
+          <tr>
+            <td class="cs-summary-pad" style="padding:20px 48px 0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:5px 0; font-family: Helvetica, Arial, sans-serif; font-size:14px; color:#55504a;">Subtotal</td>
+                  <td align="right" style="padding:5px 0; font-family: Helvetica, Arial, sans-serif; font-size:14px; color:#171512;">{{ subtotal_price | money }}</td>
+                </tr>
+                {% if shipping_price %}
+                <tr>
+                  <td style="padding:5px 0; font-family: Helvetica, Arial, sans-serif; font-size:14px; color:#55504a;">Shipping</td>
+                  <td align="right" style="padding:5px 0; font-family: Helvetica, Arial, sans-serif; font-size:14px; color:#171512;">{{ shipping_price | money }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td colspan="2" style="padding:12px 0 0 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr><td style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td></tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 0 0 0; font-family: Georgia, 'Times New Roman', serif; font-style:italic; font-size:17px; color:#171512;">Total</td>
+                  <td align="right" style="padding:14px 0 0 0; font-family: Helvetica, Arial, sans-serif; font-size:19px; font-weight:700; color:#171512;">{{ total_price | money }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- SHIPPING ADDRESS -->
+          {% if shipping_address %}
+          <tr>
+            <td style="padding:30px 48px 0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="cs-pad" style="padding:26px 48px 0 48px;">
+              <p style="margin:0 0 10px 0; font-family: Helvetica, Arial, sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:#857d72;">Shipping to</p>
+              <p style="margin:0; font-family: Helvetica, Arial, sans-serif; font-size:14px; line-height:1.7; color:#55504a;">
+                {% if shipping_address.name %}{{ shipping_address.name }}<br>{% endif %}
+                {% if shipping_address.address1 != blank %}{{ shipping_address.address1 }}<br>{% endif %}
+                {% if shipping_address.address2 != blank %}{{ shipping_address.address2 }}<br>{% endif %}
+                {{ shipping_address.city }}{% if shipping_address.province_code != blank %}, {{ shipping_address.province_code }}{% endif %} {{ shipping_address.zip }}<br>
+                {{ shipping_address.country }}
+              </p>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="padding:40px 48px 0 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr><td style="border-top:1px solid #e6e0d6; font-size:0; line-height:0;">&nbsp;</td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td class="cs-pad" align="center" style="padding:26px 48px 46px 48px;">
+              <p style="margin:0 0 6px 0; font-family: Helvetica, Arial, sans-serif; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:#171512;">CloudSkin</p>
+              <p style="margin:0; font-family: Helvetica, Arial, sans-serif; font-size:12px; line-height:1.6; color:#857d72;">This invoice was sent by {{ shop.name }}.<br>If you have any questions, simply reply to this email.</p>
+            </td>
+          </tr>
+
+        </table>
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

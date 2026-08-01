@@ -1,0 +1,190 @@
+---
+import Icon from './Icon.astro';
+import FallingPattern from './FallingPattern.astro';
+
+// Adapted from the mvpblocks footer (footer-column + glow demo) — re-themed to the
+// ACME palette (tiffany / black / grey), bilingual (Greek default + data-en),
+// with real store links and the Your City location.
+
+const cols = [
+  {
+    title: 'Κατάστημα',
+    en: 'Shop',
+    links: [
+      { label: 'Όλα τα products', en: 'All Products', href: '/shop?category=products' },
+      { label: 'Νέες Παραλαβές', en: 'New Arrivals', href: '/shop?category=new-arrivals' },
+      { label: 'Δημοφιλέστερα', en: 'Best Sellers', href: '/shop?sort=rating' },
+    ],
+  },
+  {
+    title: 'Μάρκες',
+    en: 'Brands',
+    links: [
+      { label: 'Jordan', en: 'Jordan', href: '/shop?brand=Jordan' },
+      { label: 'Nike', en: 'Nike', href: '/shop?brand=Nike' },
+      { label: 'Yeezy', en: 'Yeezy', href: '/shop?brand=Yeezy' },
+      { label: 'New Balance', en: 'New Balance', href: '/shop?brand=New+Balance' },
+    ],
+  },
+  {
+    title: 'Βοήθεια',
+    en: 'Help',
+    links: [
+      { label: 'Πιστοποίηση', en: 'Authentication', href: '/about#authentication' },
+      { label: 'Αποστολή & Παράδοση', en: 'Shipping & Delivery', href: '/about#shipping' },
+      { label: 'Επιστροφές', en: 'Returns', href: '/about#returns' },
+      { label: 'Οδηγός μεγεθών', en: 'Size Guide', href: '/about#sizing' },
+    ],
+  },
+];
+
+const social = [
+  {
+    label: 'Instagram',
+    href: 'https://instagram.com/yourstore',
+    path: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>',
+  },
+  {
+    label: 'TikTok',
+    href: 'https://tiktok.com/@yourstore',
+    path: '<path d="M16 8.5a5.5 5.5 0 0 0 4 1.7V7a3.5 3.5 0 0 1-3-3h-3v11.6a2.5 2.5 0 1 1-2-2.45V9.6a5.5 5.5 0 1 0 4 5.3z" fill="currentColor" stroke="none"/>',
+  },
+  {
+    label: 'Facebook',
+    href: 'https://facebook.com/profile.php?id=61567921258089',
+    path: '<path d="M14 9h3l.5-3H14V4.5c0-.85.3-1.5 1.6-1.5H17.6V.2A22 22 0 0 0 14.6 0C11.9 0 10 1.6 10 4.2V6H7v3h3v9h4z" fill="currentColor" stroke="none"/>',
+  },
+];
+
+const contact = [
+  { en: 'hello@acme-store.example', text: 'hello@acme-store.example', href: 'mailto:hello@acme-store.example', icon: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7L22 6"/>' },
+  { en: '+30 212 121 2147', text: '+30 212 121 2147', href: 'tel:+302121212147', icon: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>' },
+  { en: 'Kassaveti 4, Kifisia 145 62, Your City', text: 'Κασσαβέτη 4, Κηφισιά 145 62, Αθήνα', href: 'https://maps.google.com/?q=Kassaveti+4,+Kifisia+145+62,+Your City', isAddress: true, icon: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
+];
+
+const year = 2026;
+---
+
+<footer class="footer-glow relative isolate overflow-hidden border-t border-line bg-raised">
+  <!-- Animated tiffany "falling pattern" backdrop -->
+  <FallingPattern />
+  <!-- tiffany glow blobs for extra depth -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute -bottom-24 right-1/4 h-80 w-80 rounded-full bg-accent/10 blur-3xl"></div>
+  </div>
+
+  <div class="wrap grid gap-12 py-16 lg:grid-cols-3 lg:py-20">
+    <!-- Brand + description + socials + newsletter -->
+    <div>
+      <div class="flex items-center gap-2.5">
+        <img src="/acme-logo.png" alt="ACME" width="148" height="73" class="h-9 w-auto" />
+        <span class="mt-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-faint" data-en="Your City">Αθήνα</span>
+      </div>
+      <p
+        class="mt-5 max-w-md text-sm leading-relaxed text-muted"
+        data-en="Your City' definitive address for authenticated luxury products and streetwear, founded in Kifisia in 2023. Every pair is verified in-house before it reaches you."
+      >
+        Η κορυφαία διεύθυνση της Αθήνας για αυθεντικά πολυτελή products και streetwear, με έδρα την
+        Κηφισιά από το 2023. Κάθε ζευγάρι πιστοποιείται εσωτερικά προτού φτάσει σε εσάς.
+      </p>
+
+      <ul class="mt-7 flex gap-3">
+        {
+          social.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                class="flex h-10 w-10 items-center justify-center rounded-full border border-line text-accent transition-all duration-300 hover:-translate-y-0.5 hover:border-accent hover:bg-accent hover:text-on-accent"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" set:html={s.path} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <form class="mt-8 max-w-sm" data-newsletter>
+        <label class="text-[12px] font-semibold uppercase tracking-[0.18em] text-accent-soft" data-en="Join the list">Γίνετε μέλη</label>
+        <div class="mt-2 flex items-center gap-2 border-b border-line-strong pb-1 focus-within:border-accent">
+          <input
+            type="email"
+            required
+            placeholder="you@email.com"
+            class="h-9 flex-1 bg-transparent text-sm text-ink caret-accent placeholder:text-faint focus:outline-none"
+          />
+          <button type="submit" class="text-accent transition-colors hover:text-accent-soft" aria-label="Subscribe">
+            <Icon name="arrow" size={20} />
+          </button>
+        </div>
+        <p data-newsletter-msg class="mt-2 hidden text-xs text-success" data-en="Thanks, you’re on the list.">Ευχαριστούμε, είστε στη λίστα.</p>
+      </form>
+    </div>
+
+    <!-- Link + contact columns -->
+    <div class="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-2">
+      {
+        cols.map((col) => (
+          <div>
+            <h3 class="text-[12px] font-700 uppercase tracking-[0.18em] text-accent-soft" data-en={col.en}>{col.title}</h3>
+            <ul class="mt-5 space-y-3">
+              {col.links.map((l) => (
+                <li>
+                  <a href={l.href} class="text-sm text-muted transition-colors hover:text-accent-soft" data-en={l.en}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      <!-- Contact column with store location -->
+      <div>
+        <h3 class="text-[12px] font-700 uppercase tracking-[0.18em] text-accent-soft" data-en="Contact">Επικοινωνία</h3>
+        <ul class="mt-5 space-y-4">
+          {
+            contact.map((c) => (
+              <li>
+                <a href={c.href} class="group flex items-start gap-2.5 text-sm text-muted transition-colors hover:text-accent-soft" target={c.isAddress ? '_blank' : undefined} rel={c.isAddress ? 'noopener noreferrer' : undefined}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-5 shrink-0 text-accent" set:html={c.icon} />
+                  {c.isAddress ? (
+                    <address class="not-italic" data-en={c.en}>{c.text}</address>
+                  ) : (
+                    <span data-en={c.en}>{c.text}</span>
+                  )}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-line">
+    <div class="wrap flex flex-col items-center justify-between gap-4 py-6 text-xs text-faint md:flex-row">
+      <p>© {year} ACME Your City · <span data-en="All rights reserved.">Με επιφύλαξη παντός δικαιώματος.</span> · <a href="/login" class="transition-colors hover:text-accent-soft" data-en="Owner login">Διαχείριση</a></p>
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1.5 text-accent-soft"><Icon name="shield" size={15} /> <span data-en="Secure checkout">Ασφαλείς συναλλαγές</span></span>
+        <span>Visa</span>
+        <span>Mastercard</span>
+        <span>Apple Pay</span>
+        <span>Klarna</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelector('[data-newsletter]')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    form.querySelector('[data-newsletter-msg]')?.classList.remove('hidden');
+    form.reset();
+  });
+</script>

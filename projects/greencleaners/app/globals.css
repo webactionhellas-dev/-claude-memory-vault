@@ -1,0 +1,243 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm bone paper (deepened so cards sit on it) */
+    --background: 40 24% 93%;
+    --foreground: 168 32% 12%;
+
+    --card: 40 33% 98%;
+    --card-foreground: 168 32% 12%;
+
+    --popover: 40 33% 98%;
+    --popover-foreground: 168 32% 12%;
+
+    /* Sunken paper, for tonal banding */
+    --sunken: 40 22% 90%;
+
+    /* Deep forest green */
+    --primary: 162 72% 16%;
+    --primary-foreground: 40 38% 97%;
+
+    /* Sage-tinted surface */
+    --secondary: 145 26% 91%;
+    --secondary-foreground: 162 60% 16%;
+
+    --muted: 150 18% 92%;
+    --muted-foreground: 168 12% 36%;
+
+    --accent: 138 28% 88%;
+    --accent-foreground: 162 60% 16%;
+
+    /* Gold foil (darkened for AA text contrast on paper) */
+    --gold: 38 56% 42%;
+    --gold-foreground: 40 38% 97%;
+
+    /* Fresh sage */
+    --sage: 132 28% 77%;
+    --sage-foreground: 162 60% 16%;
+
+    /* Near-black pine, for dramatic dark sections */
+    --ink: 166 56% 7%;
+    --ink-foreground: 40 30% 95%;
+
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 20% 86%;
+    --input: 150 20% 83%;
+    --ring: 162 71% 24%;
+
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01", "cv01", "cv11";
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.18);
+    color: hsl(var(--primary));
+  }
+
+  /* Visible focus indicator on bare links (buttons carry their own ring) */
+  a:focus-visible {
+    outline: 2px solid hsl(var(--gold));
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Global film grain for tactile depth */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .section {
+    @apply py-20 md:py-28;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary/75;
+  }
+
+  .display {
+    @apply font-serif font-medium leading-[1.02] tracking-[-0.015em];
+  }
+
+  /* Oversized editorial section index, e.g. "01" */
+  .section-index {
+    @apply font-serif text-[clamp(3.5rem,9vw,7rem)] font-medium leading-none text-primary/15;
+    font-feature-settings: "lnum", "tnum";
+  }
+
+  .gold-rule::after {
+    content: "";
+    @apply mt-5 block h-px w-20 bg-gradient-to-r from-gold via-gold/60 to-transparent;
+  }
+
+  .glass-nav {
+    background-color: hsl(var(--background) / 0.85);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+  }
+  /* Solid fallback where backdrop-filter is unsupported */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-nav {
+      background-color: hsl(var(--background) / 0.97);
+    }
+  }
+
+  .noise {
+    position: relative;
+  }
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Edge vignette to focus dark sections inward */
+  .dark-vignette::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(115% 80% at 50% 0%, transparent 38%, hsl(var(--ink) / 0.6) 100%);
+  }
+
+  .aurora {
+    @apply pointer-events-none absolute rounded-full blur-3xl motion-safe:animate-aurora;
+    will-change: transform;
+  }
+
+  /* Gold light sweep, plays only on hover */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 40%;
+    transform: translateX(-140%) skewX(-12deg);
+    background: linear-gradient(100deg, transparent, hsl(var(--gold) / 0.35), transparent);
+  }
+  .sheen:hover::after {
+    @apply motion-safe:animate-sheen;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .tnum {
+    font-feature-settings: "tnum", "lnum";
+    font-variant-numeric: tabular-nums;
+  }
+  .container-tight {
+    @apply container max-w-5xl;
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+  /* Gold-to-bone text fill for dark sections */
+  .text-gold-gradient {
+    background: linear-gradient(180deg, hsl(42 60% 72%), hsl(var(--gold)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* ---- Leaflet brand tweaks ---- */
+.leaflet-container {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  background: hsl(var(--secondary));
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px -12px rgba(10, 77, 60, 0.28);
+}
+.leaflet-popup-content {
+  margin: 0.85rem 1rem;
+}
+.leaflet-bar a,
+.leaflet-control-zoom a {
+  border-radius: 0.5rem !important;
+  color: hsl(var(--primary)) !important;
+}
+.leaflet-control-attribution {
+  font-size: 10px;
+  background: hsl(var(--background) / 0.8) !important;
+}

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dionyssos Hotel Skopelos — A Family-Kept Hotel Above the Rooftops of Skopelos Town</title>
+<meta name="description" content="Dionyssos Hotel sits in a quiet garden above the rooftops of Skopelos Town — a pool under the pines, balconies over the Aegean, and the harbour five minutes away on foot. Book direct for the best rate." />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Dionyssos Hotel Skopelos" />
+<meta property="og:description" content="A family-kept hotel above the rooftops of Skopelos Town. Pool, gardens, sea-view balconies — five minutes on foot from the harbour." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/img/dionyssos-air-26.jpg" />
+
+<!-- Schema.org: Hotel -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  "name": "Dionyssos Hotel Skopelos",
+  "description": "Family-run hotel in Skopelos Town, Sporades, with swimming pool, pool bar, gardens and sea-view rooms. Walking distance to the harbour and old town.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Skopelos Town",
+    "addressRegion": "Sporades",
+    "postalCode": "37003",
+    "addressCountry": "GR"
+  },
+  "telephone": "+30 24240 23210",
+  "email": "res@dionyssoshotel.gr",
+  "amenityFeature": [
+    {"@type": "LocationFeatureSpecification", "name": "Outdoor swimming pool"},
+    {"@type": "LocationFeatureSpecification", "name": "Pool bar"},
+    {"@type": "LocationFeatureSpecification", "name": "Free WiFi"},
+    {"@type": "LocationFeatureSpecification", "name": "Free parking"},
+    {"@type": "LocationFeatureSpecification", "name": "Breakfast"},
+    {"@type": "LocationFeatureSpecification", "name": "Conference rooms"}
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+
+<!-- ====================== HEADER ====================== -->
+<header class="header" id="header">
+  <a class="brand" href="#top">Dionyssos<small>Skopelos &middot; Greece</small></a>
+
+  <nav class="nav" aria-label="Primary">
+    <a href="#rooms">Stay</a>
+    <a href="#day">Pool &amp; Bar</a>
+    <a href="#weddings">Weddings</a>
+    <a href="#skopelos">Skopelos</a>
+    <a href="#gallery">Gallery</a>
+    <div class="lang" aria-label="Language">
+      <a href="#" class="is-active" aria-current="true">EN</a>
+      <a href="#">ΕΛ</a>
+    </div>
+    <a class="btn" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Reserve</a>
+  </nav>
+
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+    Menu
+    <span class="lines"><span></span><span></span></span>
+  </button>
+</header>
+
+<!-- mobile full-screen menu -->
+<div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+  <button class="menu-close" id="menuClose">Close</button>
+  <nav aria-label="Mobile">
+    <a href="#rooms">Stay</a>
+    <a href="#day">Pool &amp; Bar</a>
+    <a href="#weddings">Weddings &amp; Events</a>
+    <a href="#skopelos">Skopelos</a>
+    <a href="#gallery">Gallery</a>
+    <a href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Reserve →</a>
+  </nav>
+  <div class="menu-meta">
+    +30 24240 23210<br />
+    res@dionyssoshotel.gr<br />
+    Skopelos Town, Sporades 37003
+  </div>
+</div>
+
+<main id="top">
+
+  <!-- ====================== HERO ====================== -->
+  <section class="hero">
+    <div class="hero__media">
+      <img src="assets/img/dionyssos-air-26.jpg" alt="Aerial view over the white rooftops of Skopelos Town meeting the deep blue Aegean Sea" fetchpriority="high" />
+    </div>
+
+    <div class="hero__inner">
+      <p class="eyebrow" data-hero="1">Skopelos Town &middot; Sporades &middot; Greece</p>
+      <h1 class="h-xl" data-hero="2">Where Skopelos slows to the pace of summer</h1>
+      <p class="hero__sub" data-hero="3">A family-kept hotel in a garden above the old town — the harbour five minutes away on foot, the noise of the world considerably further.</p>
+      <div class="hero__cta" data-hero="4">
+        <a class="btn btn--solid-light" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Check availability</a>
+        <a class="btn btn--light" href="#estate">Explore the hotel <span class="arrow">→</span></a>
+      </div>
+    </div>
+
+    <a class="hero__scroll" href="#estate">Scroll</a>
+
+    <!-- availability bar → posts to the hotel's existing booking engine -->
+    <div class="booking-bar">
+      <form action="https://dionyssos.reserve-online.net" method="get" target="_blank">
+        <div class="booking-field">
+          <label for="checkin">Arrival</label>
+          <input type="date" id="checkin" name="checkin" required />
+        </div>
+        <div class="booking-field">
+          <label for="checkout">Departure</label>
+          <input type="date" id="checkout" name="checkout" required />
+        </div>
+        <div class="booking-field">
+          <label for="guests">Guests</label>
+          <select id="guests" name="adults">
+            <option value="2" selected>2 guests</option>
+            <option value="1">1 guest</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+          </select>
+        </div>
+        <button class="btn" type="submit">Book direct</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ====================== MANIFESTO ====================== -->
+  <section class="section manifesto" id="estate">
+    <p class="eyebrow eyebrow--bare reveal">The Dionyssos</p>
+    <p class="statement reveal" style="--d:.08s">For three generations of summers, guests have climbed the same stone steps from the harbour — to a garden of pines and bougainvillea, <em>a pool that holds the sky,</em> and rooms that open onto the rooftops of one of Greece's most beautiful towns.</p>
+    <p class="lede reveal" style="--d:.16s">No lobbies of marble, no formality for its own sake. Just the island, arranged comfortably around you.</p>
+
+    <div class="trust reveal" style="--d:.22s">
+      <div><span class="num">5<sup>min</sup></span><span class="cap">Walk to the harbour</span></div>
+      <div><span class="num">3</span><span class="cap">Generations of hosts</span></div>
+      <div><span class="num">40<sup>+</sup></span><span class="cap">Countries of returning guests</span></div>
+      <div><span class="num">350</span><span class="cap">Guests at a poolside reception</span></div>
+    </div>
+  </section>
+
+  <!-- ====================== THE ESTATE ====================== -->
+  <section class="section estate">
+    <div class="estate__media reveal">
+      <div class="frame">
+        <img src="assets/img/dionyssos-air-13.jpg" alt="The Dionyssos Hotel and its swimming pool from above, white town houses climbing the hill behind" loading="lazy" />
+      </div>
+      <p class="caption">The hotel from above — the town rising behind it.</p>
+    </div>
+    <div class="estate__body">
+      <p class="eyebrow reveal">The Setting</p>
+      <h2 class="h-lg reveal" style="--d:.08s">A terrace of gardens between the town and the sea</h2>
+      <p class="lede reveal" style="--d:.14s">The Dionyssos stands just above Skopelos Town, built in the island's own manner — whitewashed walls, timber balconies, terracotta roofs — around a quiet pool terrace shaded by palms and old pines.</p>
+      <ul class="estate__facts reveal" style="--d:.2s">
+        <li><strong>Position</strong><span>The edge of the old town — everything on foot, nothing underfoot</span></li>
+        <li><strong>Pool &amp; bar</strong><span>Open dawn to midnight, cocktails where you swim</span></li>
+        <li><strong>Balconies</strong><span>Over the pool, the rooftops, or the open Aegean</span></li>
+        <li><strong>Breakfast</strong><span>Greek, generous, unhurried — in the garden or on your balcony</span></li>
+      </ul>
+      <a class="text-link reveal" style="--d:.26s" href="#rooms">Discover the rooms</a>
+    </div>
+  </section>
+
+  <!-- ====================== ROOMS ====================== -->
+  <section class="section" id="rooms">
+    <div class="rooms-head">
+      <div>
+        <p class="eyebrow reveal">Stay</p>
+        <h2 class="h-lg reveal" style="--d:.08s">Rooms that open onto the island</h2>
+      </div>
+      <a class="text-link reveal" style="--d:.14s" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Check rates &amp; availability</a>
+    </div>
+
+    <div class="rooms">
+      <a class="room-card reveal" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">
+        <div class="media">
+          <span class="no">No. 01</span>
+          <img src="assets/img/Dionyssos-TwinRooVV13.jpg" alt="Twin room with handmade Skopelitan wooden furniture and balcony doors open to the hills" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>The Garden Room</h3>
+          <p class="desc">Handmade Skopelitan furniture, cool tiled floors, and a balcony turned to the gardens and the hills — the quiet side of the house.</p>
+          <p class="meta"><span>20 m²</span><span>Sleeps 2</span><span>Balcony</span></p>
+          <span class="go">View the room <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <a class="room-card reveal" style="--d:.1s" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">
+        <div class="media">
+          <span class="no">No. 02</span>
+          <img src="assets/img/Dionyssos-Twin-RoomSSPV8.jpg" alt="Double room with balcony overlooking the swimming pool and a slice of the Aegean" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>The Pool &amp; Sea Room</h3>
+          <p class="desc">Morning light off the water, twice — the pool below your balcony and the Aegean beyond the rooftops. The house favourite.</p>
+          <p class="meta"><span>20 m²</span><span>Sleeps 2</span><span>Sea &amp; pool view</span></p>
+          <span class="go">View the room <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <a class="room-card reveal" style="--d:.2s" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">
+        <div class="media">
+          <span class="no">No. 03</span>
+          <img src="assets/img/DionyssosTwinRoomSSV10.jpg" alt="Balcony breakfast table set above the pool with Skopelos bay in the distance" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>The Sea View Room</h3>
+          <p class="desc">The town's rooftops stepping down to the harbour, and the sea holding the horizon. Breakfast on this balcony takes twice as long, deliberately.</p>
+          <p class="meta"><span>20 m²</span><span>Sleeps 2</span><span>Sea view</span></p>
+          <span class="go">View the room <span class="arrow">→</span></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ====================== FULL-BLEED BREAK ====================== -->
+  <section class="break" data-parallax>
+    <img class="bg" src="assets/img/Dionyssos-Twin-Room-S-S-P-V-1b.jpg" alt="Breakfast of coffee, juice and pastries on a wooden balcony table, overlooking the pool, the town and the mountains of Skopelos" loading="lazy" />
+    <blockquote>
+      <p>Breakfast arrives on your balcony with the whole of Skopelos below it.</p>
+      <cite>Mornings at the Dionyssos</cite>
+    </blockquote>
+  </section>
+
+  <!-- ====================== THE DAY ====================== -->
+  <section class="section" id="day">
+    <div class="day-head">
+      <p class="eyebrow eyebrow--bare reveal">Pool &middot; Bar &middot; Garden</p>
+      <h2 class="h-lg reveal" style="--d:.08s">The shape of a day here</h2>
+    </div>
+
+    <div class="day">
+      <article class="day-card reveal">
+        <div class="media">
+          <img src="assets/img/DionyssosBreakfast23-scaled.jpg" alt="Greek breakfast spread at the Dionyssos" loading="lazy" />
+        </div>
+        <span class="hour">8:30 — morning</span>
+        <h3>Slow Greek breakfast</h3>
+        <p>Local honey and yoghurt, warm bread, island fruit and proper coffee — in the garden, by the pool, or sent up to your balcony.</p>
+      </article>
+
+      <article class="day-card reveal" style="--d:.12s">
+        <div class="media">
+          <img src="assets/img/Dionyssos-Pool-20b1.jpg" alt="The swimming pool of the Dionyssos surrounded by palms and sun loungers" loading="lazy" />
+        </div>
+        <span class="hour">2:00 — afternoon</span>
+        <h3>The pool under the pines</h3>
+        <p>Salt-rinsed afternoons between swims, a book going unread on a lounger, lunch and cold drinks arriving from the pool bar.</p>
+      </article>
+
+      <article class="day-card reveal" style="--d:.24s">
+        <div class="media">
+          <img src="assets/img/DionyssosPool40.jpg" alt="The pool glowing blue at night with the lit pool bar behind" loading="lazy" />
+        </div>
+        <span class="hour">9:00 — evening</span>
+        <h3>Cocktails after dark</h3>
+        <p>The pool turns electric blue, the town lights come on below, and the bar pours until the conversation ends — not before.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================== WEDDINGS ====================== -->
+  <section class="weddings" id="weddings">
+    <div class="section">
+      <figure class="weddings__media reveal">
+        <img src="assets/img/WeddingReceptionBrideGroom.jpg" alt="Bride and groom standing by candlelight at the edge of the pool, reflected in the still water" loading="lazy" />
+      </figure>
+      <div>
+        <p class="eyebrow reveal">Weddings &amp; Celebrations</p>
+        <h2 class="h-lg reveal" style="--d:.08s">Married by the water, under the island sky</h2>
+        <p class="lede reveal" style="--d:.14s">Candlelight on still water, tables under the palms, and the town glittering below. The Dionyssos has hosted Skopelos weddings for decades — and still treats each one as the only one.</p>
+        <ul class="weddings__points reveal" style="--d:.2s">
+          <li><span class="n">I.</span>Poolside ceremonies and receptions for up to 350 guests</li>
+          <li><span class="n">II.</span>Menus built with you — island cooking, family recipes, open fire</li>
+          <li><span class="n">III.</span>Your guests sleep where they celebrate — no midnight transfers</li>
+          <li><span class="n">IV.</span>Conference &amp; gathering rooms for up to 80, for quieter occasions</li>
+        </ul>
+        <a class="btn btn--light reveal" style="--d:.26s" href="mailto:res@dionyssoshotel.gr?subject=Wedding%20enquiry">Plan your day <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== SKOPELOS ====================== -->
+  <section class="section skopelos" id="skopelos">
+    <div class="skopelos__grid">
+      <div class="skopelos__intro">
+        <p class="eyebrow reveal">The Island</p>
+        <h2 class="h-lg reveal" style="--d:.08s">Skopelos, the green island of the Aegean</h2>
+        <p class="lede reveal" style="--d:.14s">Pine forests that run all the way to the water, a town of white houses and slate roofs stacked above the harbour, and beaches the cinema made famous but the ferries kept honest. You are five minutes from all of it.</p>
+        <a class="text-link reveal" style="--d:.2s" href="#contact">Ask us anything — we grew up here</a>
+      </div>
+      <div>
+        <figure class="skopelos__media reveal">
+          <img src="assets/img/DionyssosVeranta2.jpg" alt="The hotel terraces overlooking Skopelos bay, mountains across the water" loading="lazy" />
+        </figure>
+        <ul class="poi">
+          <li class="reveal">
+            <div><h3>The Old Town &amp; Harbour</h3><p>Alleys of whitewash and bougainvillea, tavernas on the waterfront, and over a hundred churches between them.</p></div>
+            <span class="dist">5 min walk</span>
+          </li>
+          <li class="reveal" style="--d:.06s">
+            <div><h3>Agios Ioannis Chapel</h3><p>The chapel on the rock from <em>Mamma Mia!</em> — 198 steps, and a view that explains the whole film.</p></div>
+            <span class="dist">30 min drive</span>
+          </li>
+          <li class="reveal" style="--d:.12s">
+            <div><h3>Stafilos &amp; Panormos</h3><p>Pine-fringed bays of clear, calm water — the island's beloved swimming beaches, minutes from town.</p></div>
+            <span class="dist">10–20 min drive</span>
+          </li>
+          <li class="reveal" style="--d:.18s">
+            <div><h3>The Pine Forests</h3><p>Skopelos is the greenest island in the Aegean — walking trails leave from town and disappear into resin-scented shade.</p></div>
+            <span class="dist">From the door</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== REVIEWS ====================== -->
+  <!-- NOTE: representative quotes drawn from recurring themes in real guest reviews
+       (staff warmth, cleanliness, location, view). Replace with verified review feed
+       (Booking.com / Google / TripAdvisor widget) before launch. -->
+  <section class="reviews">
+    <div class="section">
+      <p class="eyebrow eyebrow--bare reveal">Guest Book</p>
+      <h2 class="h-lg reveal" style="--d:.08s">Word travels home with our guests</h2>
+
+      <div class="review-grid">
+        <article class="review reveal">
+          <span class="stars" aria-label="5 stars">★★★★★</span>
+          <p>“The staff treated us like family returning, not customers arriving. By day two the barman knew our order; by day four we were planning next year.”</p>
+          <footer>Couple from the UK — July</footer>
+        </article>
+        <article class="review reveal" style="--d:.1s">
+          <span class="stars" aria-label="5 stars">★★★★★</span>
+          <p>“Spotless rooms, and that balcony — breakfast over the pool with the town and the sea behind it. We stopped setting an alarm entirely.”</p>
+          <footer>Family from Germany — August</footer>
+        </article>
+        <article class="review reveal" style="--d:.2s">
+          <span class="stars" aria-label="5 stars">★★★★★</span>
+          <p>“Five minutes down to the harbour for dinner, five minutes back up to absolute quiet. The location is impossible to improve on.”</p>
+          <footer>Guests from Athens — June</footer>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== GALLERY ====================== -->
+  <section class="section--flush" id="gallery" style="padding-top: var(--section-gap); padding-bottom: var(--section-gap);">
+    <div class="gallery-head">
+      <div>
+        <p class="eyebrow reveal">Gallery</p>
+        <h2 class="h-lg reveal" style="--d:.08s">Postcards from the terrace</h2>
+      </div>
+      <span class="eyebrow eyebrow--bare reveal" style="--d:.14s">Drag to wander →</span>
+    </div>
+    <div class="gallery-strip" id="galleryStrip">
+      <figure><img src="assets/img/dionyssosair52.jpg" alt="Aerial view of the hotel, pool and town" loading="lazy" /><figcaption>The hotel &amp; the town behind</figcaption></figure>
+      <figure><img src="assets/img/DionyssoPool-Coctail2.jpg" alt="A blue cocktail at the edge of the pool" loading="lazy" /><figcaption>Pool bar, two o'clock</figcaption></figure>
+      <figure><img src="assets/img/DionyssosGarden1.jpg" alt="Garden path between pines and flowerbeds" loading="lazy" /><figcaption>The garden path</figcaption></figure>
+      <figure><img src="assets/img/DionyssosPool49.jpg" alt="The pool and sun loungers" loading="lazy" /><figcaption>The pool under the pines</figcaption></figure>
+      <figure><img src="assets/img/BreakfastRoomFruits.jpg" alt="Fresh fruit at the breakfast room" loading="lazy" /><figcaption>Breakfast, island-grown</figcaption></figure>
+      <figure><img src="assets/img/dionyssos-air-68.jpg" alt="Top-down aerial of the hotel rooftops and pool" loading="lazy" /><figcaption>Terracotta from above</figcaption></figure>
+      <figure><img src="assets/img/DionyssosPool26.jpg" alt="Poolside loungers in the afternoon sun" loading="lazy" /><figcaption>Afternoon, unscheduled</figcaption></figure>
+      <figure><img src="assets/img/DionyssosBathroom5.jpg" alt="Bathroom detail" loading="lazy" /><figcaption>Simple, spotless</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ====================== FINALE ====================== -->
+  <section class="finale" data-parallax id="contact">
+    <img class="bg" src="assets/img/DionyssosPool40.jpg" alt="" loading="lazy" aria-hidden="true" />
+    <div class="finale__inner">
+      <p class="eyebrow eyebrow--bare reveal">Book Direct</p>
+      <h2 class="h-xl reveal" style="--d:.08s">Your summer is already waiting above the rooftops</h2>
+      <ul class="perks reveal" style="--d:.16s">
+        <li>Best rate, guaranteed direct</li>
+        <li>Flexible, human booking terms</li>
+        <li>You deal with the family, not a platform</li>
+      </ul>
+      <div class="finale__cta reveal" style="--d:.22s">
+        <a class="btn btn--solid-light" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Check availability</a>
+        <a class="btn btn--light" href="tel:+302424023210">+30 24240 23210</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ====================== FOOTER ====================== -->
+<footer class="footer">
+  <div class="section">
+    <p class="footer__word">Dionyssos<span>.</span></p>
+
+    <div class="footer__grid">
+      <div>
+        <h4>Find us</h4>
+        <address class="addr">
+          Skopelos Town, Sporades 37003, Greece<br />
+          <a href="tel:+302424023210">+30 24240 23210</a>
+          <a href="mailto:res@dionyssoshotel.gr">res@dionyssoshotel.gr</a>
+        </address>
+      </div>
+      <div>
+        <h4>The hotel</h4>
+        <ul>
+          <li><a href="#rooms">Rooms</a></li>
+          <li><a href="#day">Pool &amp; Bar</a></li>
+          <li><a href="#weddings">Weddings &amp; Events</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Plan</h4>
+        <ul>
+          <li><a href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Book direct</a></li>
+          <li><a href="#skopelos">Getting to Skopelos</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <span>© Dionyssos Hotel Skopelos · MH.T.E. 0726K013A0179700</span>
+      <span><a href="#">Terms &amp; conditions</a> · <a href="#">Privacy</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- mobile sticky action bar -->
+<div class="stickybar" id="stickybar">
+  <a class="call" href="tel:+302424023210">Call us</a>
+  <a class="book" href="https://dionyssos.reserve-online.net" target="_blank" rel="noopener">Reserve</a>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

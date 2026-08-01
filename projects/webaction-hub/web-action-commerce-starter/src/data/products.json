@@ -1,0 +1,200 @@
+[
+  {
+    "slug": "aero-runner",
+    "name": "Aero Runner",
+    "brand": "Acme",
+    "price": 129,
+    "compareAtPrice": 159,
+    "category": "footwear",
+    "categories": [
+      "footwear"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "sizes": [
+      "40",
+      "41",
+      "42",
+      "43",
+      "44"
+    ],
+    "description": "Lightweight everyday runner with a breathable knit upper.",
+    "materials": "Recycled knit, rubber outsole",
+    "badge": "new",
+    "rating": 4.6,
+    "reviews": 38,
+    "inStock": true,
+    "releaseDate": "2026-01-15",
+    "featured": true,
+    "trending": true,
+    "images": [
+      "sample-1.jpg"
+    ],
+    "plateColor": "#f2f2f2"
+  },
+  {
+    "slug": "trail-boot",
+    "name": "Trail Boot",
+    "brand": "Acme",
+    "price": 189,
+    "compareAtPrice": null,
+    "category": "footwear",
+    "categories": [
+      "footwear"
+    ],
+    "colors": [
+      "Sand"
+    ],
+    "sizes": [
+      "41",
+      "42",
+      "43",
+      "44",
+      "45"
+    ],
+    "description": "All-terrain boot with a waterproof membrane and grippy lugs.",
+    "materials": "Nubuck, recycled lining",
+    "badge": null,
+    "rating": 4.4,
+    "reviews": 21,
+    "inStock": true,
+    "releaseDate": "2025-11-02",
+    "featured": false,
+    "trending": true,
+    "images": [
+      "sample-2.jpg"
+    ],
+    "plateColor": "#efe9e1"
+  },
+  {
+    "slug": "core-tee",
+    "name": "Core Tee",
+    "brand": "Acme",
+    "price": 39,
+    "compareAtPrice": 49,
+    "category": "apparel",
+    "categories": [
+      "apparel"
+    ],
+    "colors": [
+      "Black",
+      "Bone",
+      "Olive"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "description": "Heavyweight organic-cotton tee with a clean boxy cut.",
+    "materials": "100% organic cotton",
+    "badge": "sale",
+    "rating": 4.8,
+    "reviews": 64,
+    "inStock": true,
+    "releaseDate": "2026-02-10",
+    "featured": true,
+    "trending": false,
+    "images": [
+      "sample-3.jpg"
+    ],
+    "plateColor": "#ffffff"
+  },
+  {
+    "slug": "field-jacket",
+    "name": "Field Jacket",
+    "brand": "Northwind",
+    "price": 219,
+    "compareAtPrice": null,
+    "category": "apparel",
+    "categories": [
+      "apparel"
+    ],
+    "colors": [
+      "Slate"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "description": "Water-repellent field jacket with a modern relaxed silhouette.",
+    "materials": "Recycled ripstop",
+    "badge": "new",
+    "rating": 4.5,
+    "reviews": 12,
+    "inStock": true,
+    "releaseDate": "2026-03-01",
+    "featured": false,
+    "trending": false,
+    "images": [
+      "sample-1.jpg"
+    ],
+    "plateColor": "#eceef0"
+  },
+  {
+    "slug": "day-pack",
+    "name": "Day Pack",
+    "brand": "Northwind",
+    "price": 89,
+    "compareAtPrice": 109,
+    "category": "accessories",
+    "categories": [
+      "accessories"
+    ],
+    "colors": [
+      "Black"
+    ],
+    "sizes": [
+      "One Size"
+    ],
+    "description": "Streamlined 18L pack with a padded laptop sleeve.",
+    "materials": "Recycled polyester",
+    "badge": "sale",
+    "rating": 4.7,
+    "reviews": 47,
+    "inStock": true,
+    "releaseDate": "2025-09-20",
+    "featured": true,
+    "trending": true,
+    "images": [
+      "sample-2.jpg"
+    ],
+    "plateColor": "#f4f4f4"
+  },
+  {
+    "slug": "knit-beanie",
+    "name": "Knit Beanie",
+    "brand": "Contoso",
+    "price": 29,
+    "compareAtPrice": null,
+    "category": "accessories",
+    "categories": [
+      "accessories"
+    ],
+    "colors": [
+      "Charcoal",
+      "Cream"
+    ],
+    "sizes": [
+      "One Size"
+    ],
+    "description": "Soft rib-knit beanie in a warm merino blend.",
+    "materials": "Merino wool blend",
+    "badge": null,
+    "rating": 4.3,
+    "reviews": 9,
+    "inStock": false,
+    "releaseDate": "2025-10-05",
+    "featured": false,
+    "trending": false,
+    "images": [
+      "sample-3.jpg"
+    ],
+    "plateColor": "#fbfbfb"
+  }
+]

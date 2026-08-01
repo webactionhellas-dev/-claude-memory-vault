@@ -1,0 +1,48 @@
+---
+// Renders a product photo whether it's a bundled asset (filename → Astro's
+// responsive <Image> pipeline) or an owner-uploaded Supabase Storage URL
+// (plain <img>). Lets data-driven pages mix both seamlessly.
+import { Image } from 'astro:assets';
+import { resolveImage, isRemoteImage } from '@/lib/images';
+
+interface Props {
+  image: string | undefined;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto' | 'low';
+  class?: string;
+  id?: string;
+}
+const {
+  image,
+  alt,
+  widths = [260, 520],
+  sizes,
+  loading = 'lazy',
+  fetchpriority,
+  class: className,
+  id,
+} = Astro.props;
+
+const meta = resolveImage(image);
+const url = isRemoteImage(image) ? image : undefined;
+---
+
+{
+  meta ? (
+    <Image
+      src={meta}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      class={className}
+      id={id}
+    />
+  ) : url ? (
+    <img src={url} alt={alt} loading={loading} fetchpriority={fetchpriority} class={className} id={id} />
+  ) : null
+}

@@ -1,0 +1,684 @@
+/* =====================================================================
+   VELLUM - on-canvas edit-mode layer for CloudSkin  (PROTOTYPE / OFFLINE)
+   ---------------------------------------------------------------------
+   A translucent "tracing layer" laid over the REAL CloudSkin pages.
+   Direction A (Nami, approved): selection mini-toolbar + passe-partout
+   frame + Vellum Blue tool accent (#3a4fd0), clearly a tool, never the
+   brand. Everything here is namespaced `vlm-` / `#cs-edit-root` so it
+   NEVER collides with CloudSkin's own classes (.chip, .card, .grid...)
+   or tokens. All editor chrome mounts in #cs-edit-root, a DIRECT child
+   of <body>, so the sticky/backdrop-filter header can never trap it.
+   ===================================================================== */
+
+/* DEMO-ONLY: hide the cookie consent bar/modal so it can never cover the
+   "Edit this page" entry (it does not dismiss in the offline sandbox).
+   Not part of the Vellum product. */
+.cconsent, .cprefs { display: none !important; }
+
+:root{
+  --vlm:#3a4fd0;              /* tool accent - pops on cream */
+  --vlm-deep:#232f8a;        /* text on tint (AA on paper) */
+  --vlm-ink:#171512;
+  --vlm-soft:#6f685d;
+  --vlm-paper:#f7f4ef;
+  --vlm-line:rgba(58,79,208,.55);
+  --vlm-tint:rgba(58,79,208,.10);
+  --vlm-tint-2:rgba(58,79,208,.16);
+  --vlm-hair:rgba(23,21,18,.12);
+  --vlm-hair-2:rgba(23,21,18,.18);
+  --vlm-ok:#2f7d5b;
+  --vlm-shadow:0 14px 44px -14px rgba(23,21,18,.34);
+  --vlm-shadow-soft:0 6px 22px -10px rgba(23,21,18,.24);
+  --vlm-font:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+  --vlm-r:10px;
+  --vlm-z:9000;
+}
+
+/* the mount point: a fixed, click-through umbrella above the whole site.
+   individual pieces re-enable pointer events as needed. */
+#cs-edit-root{position:fixed;inset:0;z-index:var(--vlm-z);pointer-events:none;
+  font-family:var(--vlm-font);-webkit-font-smoothing:antialiased;}
+#cs-edit-root *{box-sizing:border-box;}
+#cs-edit-root button{font-family:inherit;}
+
+/* ---------------------------------------------------------------------
+   ENTRY PILL (public view)
+   --------------------------------------------------------------------- */
+.vlm-pill{
+  position:fixed;right:20px;bottom:20px;z-index:calc(var(--vlm-z) + 5);
+  display:inline-flex;align-items:center;gap:9px;pointer-events:auto;
+  background:var(--vlm-ink);color:var(--vlm-paper);
+  border:none;border-radius:100px;cursor:pointer;
+  font-size:13px;letter-spacing:.01em;padding:12px 18px 12px 16px;
+  box-shadow:var(--vlm-shadow);transition:transform .25s ease, box-shadow .25s ease;}
+.vlm-pill:hover{transform:translateY(-2px);box-shadow:0 18px 48px -14px rgba(23,21,18,.5);}
+.vlm-pill .vlm-dot{width:7px;height:7px;border-radius:50%;background:var(--vlm);
+  box-shadow:0 0 0 4px var(--vlm-tint);}
+body.vlm-mode .vlm-pill{display:none;}
+
+/* ---------------------------------------------------------------------
+   PASSE-PARTOUT FRAME + faint cool veil (only in edit mode)
+   --------------------------------------------------------------------- */
+.vlm-frame{position:fixed;inset:0;pointer-events:none;display:none;
+  z-index:calc(var(--vlm-z) - 20);border-radius:5px;}
+body.vlm-mode .vlm-frame{display:block;
+  box-shadow:inset 0 0 0 3px var(--vlm), inset 0 0 0 4px rgba(255,255,255,.5);}
+.vlm-frame::after{content:"";position:absolute;inset:0;background:var(--vlm);opacity:.025;}
+
+/* ---------------------------------------------------------------------
+   FLOATING RINGS (hover + selection) - never clipped, never shift layout
+   --------------------------------------------------------------------- */
+.vlm-ring{position:fixed;pointer-events:none;border-radius:9px;
+  opacity:0;transition:opacity .14s ease, transform .12s ease;
+  z-index:calc(var(--vlm-z) + 1);}
+.vlm-ring--hover{box-shadow:0 0 0 1.5px var(--vlm-line);}
+.vlm-ring--sel{box-shadow:0 0 0 2px var(--vlm);background:var(--vlm-tint);}
+.vlm-ring.on{opacity:1;}
+
+/* the hover chip (type label) rides the top-left of the hover ring */
+.vlm-chip{position:fixed;display:inline-flex;align-items:center;gap:6px;pointer-events:none;
+  background:var(--vlm);color:#fff;font-size:11px;letter-spacing:.03em;font-weight:500;
+  padding:4px 9px;border-radius:100px;white-space:nowrap;
+  box-shadow:var(--vlm-shadow-soft);z-index:calc(var(--vlm-z) + 2);
+  opacity:0;transform:translateY(2px);transition:opacity .14s ease, transform .14s ease;}
+.vlm-chip.on{opacity:1;transform:none;}
+.vlm-chip svg{width:12px;height:12px;}
+
+/* "Outline editables" map mode - faint persistent hint on every editable */
+body.vlm-mode.vlm-map [data-vlm-ed]{outline:1px dashed rgba(58,79,208,.42);outline-offset:-1px;}
+body.vlm-mode.vlm-map [data-vlm-ed].pcard{outline-offset:-2px;}
+
+/* editables get a pointer in edit mode */
+body.vlm-mode [data-vlm-ed]{cursor:pointer;}
+body.vlm-mode [data-vlm-ed].vlm-editing{cursor:text;}
+
+/* ---------------------------------------------------------------------
+   TEXT EDITING (words only, no rich toolbar) - legible on any background
+   --------------------------------------------------------------------- */
+body.vlm-mode .vlm-editing{
+  outline:2px solid var(--vlm) !important;outline-offset:3px;
+  background:#fff !important;color:#171512 !important;
+  border-radius:4px;box-shadow:var(--vlm-shadow-soft);
+  -webkit-text-fill-color:#171512;caret-color:var(--vlm);}
+body.vlm-mode .vlm-editing *{color:#171512 !important;-webkit-text-fill-color:#171512;}
+body.vlm-mode .vlm-editing::selection,
+body.vlm-mode .vlm-editing *::selection{background:var(--vlm-tint-2);}
+
+/* small floating hint under the element while editing text */
+.vlm-hint{position:fixed;pointer-events:none;z-index:calc(var(--vlm-z) + 3);
+  font-size:11px;color:var(--vlm-soft);background:#fff;border:1px solid var(--vlm-hair);
+  padding:6px 10px;border-radius:8px;box-shadow:var(--vlm-shadow-soft);white-space:nowrap;
+  display:none;align-items:center;gap:7px;}
+.vlm-hint.on{display:inline-flex;}
+.vlm-hint b{color:var(--vlm-ink);font-weight:600;}
+
+/* the "Saved" tick that blinks after a commit */
+.vlm-saved{position:fixed;pointer-events:none;z-index:calc(var(--vlm-z) + 3);
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--vlm-ink);color:#fff;font-size:11px;letter-spacing:.02em;
+  padding:5px 10px;border-radius:100px;box-shadow:var(--vlm-shadow-soft);
+  opacity:0;transform:translateY(4px);transition:opacity .2s ease, transform .2s ease;}
+.vlm-saved.on{opacity:1;transform:none;}
+.vlm-saved svg{width:12px;height:12px;color:#7fe3b0;}
+
+/* ---------------------------------------------------------------------
+   IMAGE OVERLAY (Replace photo / Adjust focus) + progress + focal puck
+   --------------------------------------------------------------------- */
+.vlm-imgtools{position:fixed;pointer-events:none;z-index:calc(var(--vlm-z) + 2);
+  display:none;border-radius:3px;overflow:hidden;}
+.vlm-imgtools.on{display:block;}
+.vlm-imgtools__scrim{position:absolute;inset:0;background:rgba(23,21,18,.30);
+  transition:background .25s ease;}
+.vlm-imgtools__cta{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;pointer-events:none;}
+.vlm-imgbtn{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;
+  background:#fff;color:var(--vlm-ink);border:none;border-radius:100px;cursor:pointer;
+  font-size:13px;letter-spacing:.01em;padding:11px 18px;box-shadow:var(--vlm-shadow-soft);
+  transition:transform .18s ease;}
+.vlm-imgbtn:hover{transform:translateY(-1px);}
+.vlm-imgbtn svg{width:15px;height:15px;}
+.vlm-imgbtn--ghost{background:rgba(255,255,255,.16);color:#fff;box-shadow:none;
+  border:1px solid rgba(255,255,255,.45);}
+.vlm-focal{position:absolute;width:28px;height:28px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 0 0 2px var(--vlm),0 2px 10px rgba(0,0,0,.4);
+  left:50%;top:50%;transform:translate(-50%,-50%);display:none;cursor:grab;pointer-events:auto;
+  touch-action:none;}
+.vlm-focal::after{content:"";position:absolute;inset:10px;border-radius:50%;background:var(--vlm);}
+.vlm-imgtools.focusing .vlm-focal{display:block;}
+.vlm-imgtools.focusing .vlm-imgtools__scrim{background:rgba(23,21,18,.12);}
+.vlm-imgtools.focusing .vlm-imgtools__cta{opacity:0;}
+.vlm-prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.3);
+  display:none;}
+.vlm-prog i{display:block;height:100%;width:0;background:var(--vlm);transition:width .18s linear;}
+.vlm-imgtools.uploading .vlm-prog{display:block;}
+.vlm-imgtools.uploading .vlm-imgtools__scrim{background:rgba(23,21,18,.5);}
+.vlm-imgtools.uploading .vlm-imgtools__cta{opacity:0;}
+.vlm-imgtools__label{position:absolute;top:10px;left:10px;background:rgba(23,21,18,.7);
+  color:#fff;font-size:11px;letter-spacing:.02em;padding:4px 9px;border-radius:100px;}
+/* cross-fade a freshly-applied image */
+.vlm-imgfade{animation:vlmFade .5s ease;}
+@keyframes vlmFade{from{opacity:.15;}to{opacity:1;}}
+
+/* ---- REPOSITION MODE (auto for full-bleed object-fit:cover images) ----
+   The focal puck is shown immediately with a clear "Drag the dot to reposition" hint,
+   and the Replace button is kept reachable at the TOP of the frame (so it never sits under
+   the puck). The old "Adjust focus" toggle is redundant here and hidden. ---- */
+.vlm-imgtools.vlm-repos .vlm-focal{display:block;}
+.vlm-imgtools.vlm-repos .vlm-imgtools__scrim{background:rgba(23,21,18,.20);}   /* lighter so the photo reads while reframing */
+.vlm-imgtools.vlm-repos .vlm-imgtools__cta{justify-content:flex-start;padding-top:16px;}
+.vlm-imgtools.vlm-repos [data-vlm-adjust]{display:none;}
+.vlm-imgtools__drag{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;
+  display:none;align-items:center;gap:6px;pointer-events:none;
+  background:rgba(23,21,18,.74);color:#fff;font:500 11px/1 var(--vlm-font);letter-spacing:.02em;
+  padding:7px 12px;border-radius:100px;white-space:nowrap;box-shadow:var(--vlm-shadow-soft);}
+.vlm-imgtools__drag svg{width:13px;height:13px;}
+.vlm-imgtools.vlm-repos .vlm-imgtools__drag{display:inline-flex;}
+.vlm-imgtools.has-fade .vlm-imgtools__drag{bottom:64px;}   /* sit above the fade strip when both show (hero) */
+
+/* ---- FADE SLIDER (hero scrim strength) - docked to the bottom edge of the image overlay ---- */
+.vlm-fade{position:absolute;left:0;right:0;bottom:0;z-index:5;display:none;align-items:center;gap:12px;
+  padding:12px 15px;pointer-events:auto;
+  background:linear-gradient(0deg,rgba(23,21,18,.9),rgba(23,21,18,.4));}
+.vlm-imgtools.has-fade .vlm-fade{display:flex;}
+.vlm-fade__lab{flex:0 0 auto;font:600 11px/1 var(--vlm-font);letter-spacing:.09em;text-transform:uppercase;color:#fff;}
+.vlm-fade__range{flex:1;min-width:0;height:4px;cursor:pointer;accent-color:var(--vlm);}
+.vlm-fade__val{flex:0 0 auto;min-width:40px;text-align:right;font:600 12.5px/1 var(--vlm-font);color:#fff;font-variant-numeric:tabular-nums;}
+
+/* ---------------------------------------------------------------------
+   SHARED FLYOUT (link toolbar / merch panel base)
+   --------------------------------------------------------------------- */
+.vlm-flyout{position:fixed;z-index:calc(var(--vlm-z) + 4);pointer-events:auto;
+  background:#fff;border:1px solid var(--vlm-hair);border-radius:14px;
+  box-shadow:var(--vlm-shadow);display:none;
+  opacity:0;transform:translateY(6px);transition:opacity .16s ease, transform .16s ease;}
+.vlm-flyout.on{display:block;opacity:1;transform:none;}
+
+/* --- LINK toolbar --- */
+.vlm-linkbar{padding:6px;display:flex;align-items:center;gap:2px;white-space:nowrap;}
+.vlm-linkbar__label{font-size:11px;color:var(--vlm-soft);letter-spacing:.02em;padding:0 6px 0 8px;}
+.vlm-linkbtn{display:inline-flex;align-items:center;gap:7px;background:var(--vlm-tint);
+  border:none;cursor:pointer;font-size:12.5px;color:var(--vlm-deep);font-weight:500;
+  padding:8px 12px;border-radius:8px;}
+.vlm-linkbtn:hover{background:var(--vlm-tint-2);}
+.vlm-linkbtn svg{width:13px;height:13px;}
+.vlm-linkpop{width:288px;overflow:hidden;}
+.vlm-linkpop__head{padding:13px 14px 8px;font-size:11px;letter-spacing:.06em;
+  color:var(--vlm-soft);text-transform:uppercase;}
+.vlm-linkpop input{width:calc(100% - 24px);margin:0 12px 8px;padding:9px 11px;
+  border:1px solid var(--vlm-hair-2);border-radius:8px;font:inherit;font-size:13px;outline:none;}
+.vlm-linkpop input:focus{border-color:var(--vlm);box-shadow:0 0 0 3px var(--vlm-tint);}
+.vlm-lpgroup{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--vlm-soft);
+  padding:9px 14px 4px;}
+.vlm-lpopt{display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;cursor:pointer;font-size:13.5px;color:var(--vlm-ink);}
+.vlm-lpopt:hover{background:var(--vlm-tint);}
+.vlm-lpopt.on{color:var(--vlm-deep);font-weight:500;}
+.vlm-lpopt .vlm-tick{width:14px;height:14px;color:var(--vlm);opacity:0;flex:0 0 auto;}
+.vlm-lpopt.on .vlm-tick{opacity:1;}
+.vlm-lplist{max-height:280px;overflow-y:auto;padding-bottom:6px;}
+
+/* ---------------------------------------------------------------------
+   MERCHANDISING PANEL (re-merchandise a product card in place)
+   --------------------------------------------------------------------- */
+.vlm-merch{width:296px;overflow:hidden;}
+.vlm-merch__head{padding:14px 16px 12px;border-bottom:1px solid var(--vlm-hair);}
+.vlm-merch__eyebrow{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--vlm-deep);font-weight:600;margin-bottom:4px;}
+.vlm-merch__eyebrow svg{width:13px;height:13px;}
+.vlm-merch__title{font-size:15px;font-weight:600;color:var(--vlm-ink);line-height:1.25;}
+.vlm-merch__body{padding:6px 16px 14px;max-height:min(70vh,520px);overflow-y:auto;}
+.vlm-merch__sec{padding:12px 0 4px;border-bottom:1px solid var(--vlm-hair);}
+.vlm-merch__sec:last-child{border-bottom:none;}
+.vlm-merch__lab{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--vlm-soft);
+  margin-bottom:9px;display:block;}
+.vlm-seg{display:flex;flex-wrap:wrap;gap:6px;}
+.vlm-seg button{flex:1 1 auto;min-width:56px;background:#f5f3ef;border:1px solid var(--vlm-hair);
+  cursor:pointer;font-size:12.5px;color:var(--vlm-ink);padding:8px 10px;border-radius:8px;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;}
+.vlm-seg button:hover{border-color:var(--vlm-line);}
+.vlm-seg button.on{background:var(--vlm);border-color:var(--vlm);color:#fff;}
+.vlm-toggles{display:flex;flex-direction:column;gap:7px;}
+.vlm-tgl{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:#f5f3ef;border:1px solid var(--vlm-hair);border-radius:9px;padding:8px 11px;cursor:pointer;
+  transition:background .15s ease, border-color .15s ease;}
+.vlm-tgl:hover{border-color:var(--vlm-line);}
+.vlm-tgl span{font-size:12.5px;color:var(--vlm-ink);}
+.vlm-tgl.on{background:var(--vlm-tint);border-color:var(--vlm-line);}
+.vlm-tgl.on span{color:var(--vlm-deep);font-weight:500;}
+.vlm-sw{width:32px;height:19px;border-radius:100px;background:var(--vlm-hair-2);position:relative;
+  flex:0 0 auto;transition:background .2s ease;}
+.vlm-sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s ease;}
+.vlm-tgl.on .vlm-sw{background:var(--vlm);}
+.vlm-tgl.on .vlm-sw::after{transform:translateX(13px);}
+/* visibility + reorder row */
+.vlm-merch__row{display:flex;align-items:center;gap:8px;padding:12px 0 4px;}
+.vlm-mbtn{display:inline-flex;align-items:center;gap:7px;background:#f5f3ef;border:1px solid var(--vlm-hair);
+  cursor:pointer;font-size:12.5px;color:var(--vlm-ink);padding:8px 11px;border-radius:9px;
+  transition:background .15s ease, border-color .15s ease;}
+.vlm-mbtn:hover{border-color:var(--vlm-line);background:var(--vlm-tint);}
+.vlm-mbtn svg{width:15px;height:15px;}
+.vlm-mbtn.on{background:var(--vlm-tint);border-color:var(--vlm-line);color:var(--vlm-deep);}
+.vlm-grip{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--vlm-soft);
+  font-size:11.5px;cursor:grab;padding:8px 10px;border-radius:9px;border:1px dashed var(--vlm-hair-2);
+  user-select:none;touch-action:none;}
+.vlm-grip:hover{color:var(--vlm-ink);border-color:var(--vlm-line);}
+.vlm-grip:active{cursor:grabbing;background:var(--vlm-tint);}
+.vlm-grip svg{width:15px;height:15px;}
+.vlm-merch__note{font-size:11px;color:var(--vlm-soft);line-height:1.5;padding:12px 0 2px;}
+.vlm-merch__hint{font-size:11px;color:var(--vlm-soft);line-height:1.5;padding:9px 0 2px;}
+
+/* hidden card treatment (hidden != gone in edit mode) */
+[data-vlm-ed].vlm-hidden{opacity:.34;filter:saturate(.55);}
+.vlm-hidetag{position:fixed;pointer-events:none;z-index:calc(var(--vlm-z) + 2);
+  display:none;align-items:center;gap:6px;
+  background:#fff;border:1px solid var(--vlm-hair);border-radius:100px;
+  font-size:11px;color:var(--vlm-soft);padding:5px 11px;box-shadow:var(--vlm-shadow-soft);}
+.vlm-hidetag.on{display:inline-flex;}
+.vlm-hidetag svg{width:12px;height:12px;}
+
+/* drag state on the card being reordered */
+[data-vlm-ed].vlm-dragging{opacity:.45;}
+
+/* ---------------------------------------------------------------------
+   THE VELLUM BAR (global controls only - docked bottom-center)
+   --------------------------------------------------------------------- */
+.vlm-bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  z-index:calc(var(--vlm-z) + 6);pointer-events:auto;display:none;align-items:center;gap:4px;
+  background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+  backdrop-filter:blur(16px) saturate(1.4);
+  border:1px solid var(--vlm-hair);border-radius:100px;
+  padding:7px 8px 7px 15px;box-shadow:var(--vlm-shadow);max-width:calc(100vw - 24px);}
+body.vlm-mode .vlm-bar{display:flex;}
+.vlm-mark{display:flex;align-items:center;gap:9px;padding-right:6px;}
+.vlm-glyph{width:21px;height:21px;border-radius:6px;background:var(--vlm);position:relative;flex:0 0 auto;}
+.vlm-glyph::after{content:"";position:absolute;inset:4px 4px auto 4px;height:2px;background:#fff;
+  border-radius:2px;box-shadow:0 4px 0 rgba(255,255,255,.65),0 8px 0 rgba(255,255,255,.4);}
+.vlm-mark b{font-size:12.5px;letter-spacing:.02em;color:var(--vlm-ink);}
+.vlm-mark small{display:block;font-size:11px;color:var(--vlm-soft);margin-top:-1px;}
+.vlm-vsave{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--vlm-soft);
+  padding:0 14px;border-left:1px solid var(--vlm-hair);border-right:1px solid var(--vlm-hair);margin:0 4px;}
+.vlm-sdot{width:8px;height:8px;border-radius:50%;background:var(--vlm-ok);transition:background .2s;}
+.vlm-vsave.saving .vlm-sdot{background:var(--vlm);animation:vlmPulse 1s infinite;}
+@keyframes vlmPulse{50%{opacity:.35;}}
+.vlm-vtoggle{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--vlm-ink);
+  background:none;border:none;cursor:pointer;padding:9px 12px;border-radius:100px;}
+.vlm-vtoggle:hover{background:var(--vlm-tint);}
+.vlm-vtoggle .vlm-sw2{width:30px;height:18px;border-radius:100px;background:var(--vlm-hair-2);
+  position:relative;transition:background .2s;flex:0 0 auto;}
+.vlm-vtoggle .vlm-sw2::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;
+  border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.vlm-vtoggle.on .vlm-sw2{background:var(--vlm);}
+.vlm-vtoggle.on .vlm-sw2::after{transform:translateX(12px);}
+.vlm-done{background:var(--vlm-ink);color:var(--vlm-paper);border:none;cursor:pointer;
+  font-size:13px;letter-spacing:.02em;padding:11px 20px;border-radius:100px;margin-left:6px;}
+.vlm-done:hover{background:#000;}
+@media(max-width:640px){
+  .vlm-mark small,.vlm-vtoggle-label{display:none;}
+  .vlm-bar{left:12px;right:12px;transform:none;justify-content:space-between;}
+}
+/* tightest phones: keep everything on one row inside the pill */
+@media(max-width:420px){
+  .vlm-bar{padding:6px 6px 6px 11px;gap:2px;}
+  .vlm-stext{display:none;}                 /* the green dot alone carries the save state */
+  .vlm-vsave{padding:0 10px;margin:0 2px;}
+  .vlm-vtoggle{padding:9px 8px;}
+  .vlm-done{padding:10px 15px;margin-left:2px;}
+}
+/* very tight phones (<=380): icon-only bar so Done can never clip. The bar overflowed
+   ~48px at 320 because the "Editing" wordmark + Products/Edits text labels ran past the
+   pill; the glyph and button icons (with title tooltips) carry the meaning instead. */
+@media(max-width:380px){
+  .vlm-mark b{display:none;}                 /* glyph icon alone is the brand mark */
+  .vlm-barbtn__l{display:none;}              /* Products / Edits -> icon-only, title tooltip stays */
+  .vlm-barbtn{padding-left:9px;padding-right:9px;}
+  .vlm-done{padding:10px 14px;}
+}
+
+/* ---------------------------------------------------------------------
+   FIRST-RUN NUDGE TOAST
+   --------------------------------------------------------------------- */
+.vlm-nudge{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(8px);
+  z-index:calc(var(--vlm-z) + 6);pointer-events:none;
+  background:var(--vlm-ink);color:var(--vlm-paper);font-size:13px;letter-spacing:.01em;
+  padding:11px 18px;border-radius:100px;box-shadow:var(--vlm-shadow);
+  display:none;opacity:0;transition:opacity .35s ease, transform .35s ease;
+  align-items:center;gap:9px;max-width:calc(100vw - 28px);text-align:center;}
+.vlm-nudge .vlm-kk{width:6px;height:6px;border-radius:50%;background:var(--vlm);flex:0 0 auto;}
+.vlm-nudge.on{display:inline-flex;opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------------------------------------------------------------------
+   UNLOCK CARD (reuses the studio_auth idea - validated LOCALLY, no auth)
+   --------------------------------------------------------------------- */
+.vlm-lock{position:fixed;inset:0;z-index:calc(var(--vlm-z) + 40);pointer-events:auto;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(30,27,22,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.vlm-lock.on{display:flex;}
+.vlm-lockcard{background:var(--vlm-paper);border-radius:16px;padding:38px 36px 30px;
+  width:min(92vw,384px);box-shadow:0 32px 84px -20px rgba(0,0,0,.55);text-align:center;
+  animation:vlmPop .35s cubic-bezier(.2,.9,.2,1);}
+@keyframes vlmPop{from{opacity:0;transform:translateY(12px) scale(.98);}to{opacity:1;transform:none;}}
+.vlm-lockcard .vlm-glyph{width:36px;height:36px;border-radius:10px;margin:0 auto 18px;}
+.vlm-lockcard .vlm-glyph::after{inset:8px 8px auto 8px;height:3px;
+  box-shadow:0 6px 0 rgba(255,255,255,.65),0 12px 0 rgba(255,255,255,.4);}
+.vlm-lockcard h3{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:25px;
+  color:var(--vlm-ink);margin-bottom:6px;}
+.vlm-lockcard p{font-size:13px;color:var(--vlm-soft);margin-bottom:22px;line-height:1.5;}
+.vlm-lockcard input{width:100%;padding:13px 15px;border:1px solid var(--vlm-hair-2);border-radius:10px;
+  font:inherit;font-size:14px;text-align:center;letter-spacing:.06em;outline:none;margin-bottom:12px;}
+.vlm-lockcard input:focus{border-color:var(--vlm);box-shadow:0 0 0 3px var(--vlm-tint);}
+.vlm-lockcard .vlm-unlock{width:100%;background:var(--vlm-ink);color:var(--vlm-paper);border:none;
+  cursor:pointer;font-size:14px;padding:13px;border-radius:10px;letter-spacing:.02em;}
+.vlm-lockcard .vlm-unlock:hover{background:#000;}
+.vlm-lockcard .vlm-cancel{background:none;border:none;color:var(--vlm-soft);margin-top:10px;
+  padding:8px;font-size:12.5px;cursor:pointer;}
+.vlm-lockerr{color:#a23b2b;font-size:12px;margin:-4px 0 12px;display:none;}
+.vlm-lockerr.on{display:block;}
+.vlm-locknote{font-size:11px;color:var(--vlm-soft);margin-top:14px;opacity:.85;line-height:1.5;}
+
+/* ---------------------------------------------------------------------
+   TEACHING PULSE (one-time stagger across editables on first entry)
+   --------------------------------------------------------------------- */
+.vlm-pulse{animation:vlmBreathe 1s ease;}
+@keyframes vlmBreathe{
+  0%{box-shadow:0 0 0 0 var(--vlm-tint);}
+  40%{box-shadow:0 0 0 3px var(--vlm);}
+  100%{box-shadow:0 0 0 0 rgba(58,79,208,0);}
+}
+
+@media (prefers-reduced-motion: reduce){
+  #cs-edit-root *,.vlm-pulse{animation:none !important;transition:none !important;}
+}
+
+/* ===================================================================
+   PDP GALLERY EDITING (sub-pictures: reorder / set main / replace / add)
+   Only visible inside edit mode (body.vlm-mode).
+   =================================================================== */
+.vlm-galcap{display:none;}
+body.vlm-mode .vlm-galcap{display:block;grid-column:1 / -1;font:600 11px/1.35 var(--vlm-font);letter-spacing:.01em;
+  color:var(--vlm-deep);background:var(--vlm-tint);border:1px solid var(--vlm-line);
+  border-radius:8px;padding:6px 9px;margin:0 0 10px;text-transform:none;}
+body.vlm-mode #thumbs button[data-vlm-gal]{position:relative;cursor:grab;touch-action:none;}
+body.vlm-mode #thumbs button[data-vlm-gal].vlm-galdrag{cursor:grabbing;opacity:.8;
+  outline:2px solid var(--vlm);outline-offset:2px;transform:scale(.95);
+  box-shadow:var(--vlm-shadow);z-index:3;}
+body.vlm-mode #thumbs button[data-vlm-gal].on{outline:2px solid var(--vlm);outline-offset:2px;}
+.vlm-galtools{display:none;}
+body.vlm-mode .vlm-galtools{position:absolute;top:5px;left:5px;right:5px;z-index:2;
+  display:flex;gap:5px;justify-content:space-between;pointer-events:none;
+  opacity:0;transition:opacity .16s;}
+body.vlm-mode #thumbs button[data-vlm-gal]:hover .vlm-galtools,
+body.vlm-mode #thumbs button[data-vlm-gal].on .vlm-galtools{opacity:1;}
+.vlm-galmain,.vlm-galrep{pointer-events:auto;width:26px;height:26px;display:inline-flex;
+  align-items:center;justify-content:center;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.94);color:var(--vlm-ink);border:1px solid var(--vlm-hair-2);
+  box-shadow:var(--vlm-shadow-soft);font-size:14px;line-height:1;transition:background .14s,color .14s,transform .14s;}
+.vlm-galmain:hover,.vlm-galrep:hover{background:#fff;color:var(--vlm-deep);transform:translateY(-1px);}
+.vlm-galrep svg{width:14px;height:14px;}
+.vlm-galmain.is-main{background:var(--vlm);color:#fff;border-color:var(--vlm);box-shadow:var(--vlm-shadow-soft);}
+/* single-photo galleries hide the site's thumbstrip (.gallery--single) - but the
+   editor lives IN that strip (Add tile / star / replace / remove), so restore it
+   in edit mode. Mirrors main.css .gallery grid (66px rail desktop, stacked <=1000px). */
+body.vlm-mode .gallery--single{grid-template-columns:66px 1fr;}
+body.vlm-mode .gallery--single .gallery__thumbs{display:flex;}
+@media (max-width:1000px){
+  body.vlm-mode .gallery--single{grid-template-columns:1fr;}
+}
+
+/* remove-photo control: bottom-right of each thumb (top row holds star + replace) */
+.vlm-galrm{display:none;}
+body.vlm-mode .vlm-galrm{position:absolute;right:5px;bottom:5px;z-index:2;width:24px;height:24px;
+  display:inline-flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.94);color:#a23b2b;border:1px solid var(--vlm-hair-2);
+  box-shadow:var(--vlm-shadow-soft);pointer-events:auto;
+  opacity:0;transition:opacity .16s,transform .14s,background .14s;}
+body.vlm-mode #thumbs button[data-vlm-gal]:hover .vlm-galrm,
+body.vlm-mode #thumbs button[data-vlm-gal].on .vlm-galrm{opacity:1;}
+body.vlm-mode .vlm-galrm:hover{background:#fff;transform:translateY(-1px);}
+.vlm-galrm svg{width:12px;height:12px;}
+body.vlm-mode .vlm-galrm.is-off{opacity:0 !important;pointer-events:none;}
+.vlm-add{display:none;}
+body.vlm-mode .vlm-add[disabled]{opacity:.4;cursor:default;}
+body.vlm-mode .vlm-add{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;pointer-events:auto;background:var(--vlm-tint);
+  border:1.5px dashed var(--vlm-line);border-radius:var(--vlm-r);color:var(--vlm-deep);
+  font:600 10px/1.1 var(--vlm-font);aspect-ratio:1/1;min-height:56px;transition:background .16s;}
+body.vlm-mode .vlm-add:hover{background:var(--vlm-tint-2);}
+.vlm-add__plus{font-size:22px;font-weight:400;line-height:1;}
+
+/* ---- a mega-menu whose poster is being edited stays open (the pointer leaves
+   the nav the moment it moves onto the editor overlay, so :hover alone drops) ---- */
+body.vlm-mode .nav__item.vlm-pin-open .mega{opacity:1 !important;visibility:visible !important;
+  transform:none !important;transition-delay:0s !important;}
+
+/* ---- covered hero images: neutralise the container (bg, gradient pseudo, non-editable
+   logo) so the picture is reachable, and re-enable only the editable elements inside ---- */
+body.vlm-mode .vlm-clickthru-sec{pointer-events:none;}
+/* Re-enable the editable descendants AND any real interactive control (rail arrows,
+   add-to-bag, links) so a click-through section never dead-locks the page's own buttons. */
+body.vlm-mode .vlm-clickthru-sec [data-vlm-ed],
+body.vlm-mode .vlm-clickthru-sec a[href],
+body.vlm-mode .vlm-clickthru-sec button,
+body.vlm-mode .vlm-clickthru-sec [role="button"]{pointer-events:auto;}
+
+/* ---- "Edit this product's page" button in the merch panel ---- */
+.vlm-merch__open{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:8px;
+  width:calc(100% - 28px);margin:0 14px 12px;padding:11px 14px;cursor:pointer;
+  background:var(--vlm);color:#fff;border:none;border-radius:9px;
+  font:600 13px/1 var(--vlm-font);letter-spacing:.01em;box-shadow:var(--vlm-shadow-soft);
+  transition:filter .14s,transform .14s;}
+.vlm-merch__open:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.vlm-merch__open svg{width:16px;height:16px;}
+
+/* ---- colour with no owner photo yet: flag the catalogue default, don't pass it off as hers ---- */
+body.vlm-mode .vlm-gal-nophoto .vlm-galcap{color:#8a5300;background:rgba(180,120,0,.12);
+  border-color:rgba(180,120,0,.5);}
+body.vlm-mode .vlm-gal-nophoto #thumbs button[data-vlm-gal]{outline:1.5px dashed rgba(180,120,0,.65);
+  outline-offset:2px;opacity:.9;}
+body.vlm-mode .vlm-gal-nophoto #thumbs button[data-vlm-gal]::after{content:"Default";position:absolute;
+  left:5px;bottom:5px;z-index:2;font:600 9px/1 var(--vlm-font);letter-spacing:.03em;
+  color:#fff;background:rgba(138,83,0,.92);padding:3px 5px;border-radius:5px;text-transform:uppercase;}
+body.vlm-mode .vlm-gal-nophoto .vlm-add{border-color:rgba(180,120,0,.7);background:rgba(180,120,0,.12);
+  color:#8a5300;}
+
+/* =====================================================================
+   PHASE 2  -  text-hint microcopy, live badge preview, bar buttons,
+   per-field revert, drawers (Products / Edits / Complete the Look).
+   ===================================================================== */
+
+/* ---- text hint: base line + stacked microcopy (features 5 + 6) ---- */
+.vlm-hint{flex-direction:column;align-items:flex-start;gap:4px;white-space:normal;max-width:min(88vw,320px);}
+.vlm-hint__base{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.vlm-hint__sub{position:relative;padding-left:12px;font-size:10.5px;color:var(--vlm-soft);line-height:1.3;}
+.vlm-hint__sub::before{content:"";position:absolute;left:3px;top:6px;width:3px;height:3px;border-radius:50%;background:var(--vlm-line);}
+
+/* ---- (removed) editor-only badge preview on product cards ---- The New / Best Seller chips were
+   removed: shoppers never see card badges (shell.js renders only a Sale badge), so they misled the
+   owner into thinking the chips were customer-facing. syncBadges() now only strips any stale chip. */
+
+/* ---- extra Vellum-bar buttons (Products / Edits) ---- */
+.vlm-barbtn{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--vlm-ink);
+  background:none;border:none;cursor:pointer;padding:9px 12px;border-radius:100px;white-space:nowrap;}
+.vlm-barbtn:hover{background:var(--vlm-tint);}
+.vlm-barbtn svg{width:16px;height:16px;flex:0 0 auto;}
+.vlm-editsbadge{display:none;min-width:16px;height:16px;padding:0 4px;border-radius:100px;background:var(--vlm);
+  color:#fff;font-size:10px;font-weight:600;line-height:16px;text-align:center;}
+.vlm-editsbadge.on{display:inline-block;}
+
+/* ---- per-field "Revert to original" pill ---- */
+.vlm-revert{position:fixed;z-index:calc(var(--vlm-z) + 3);pointer-events:auto;display:none;align-items:center;gap:6px;
+  background:var(--vlm-ink);color:var(--vlm-paper);border:none;border-radius:100px;cursor:pointer;
+  font-size:11.5px;letter-spacing:.01em;padding:7px 12px;box-shadow:var(--vlm-shadow);}
+.vlm-revert.on{display:inline-flex;}
+.vlm-revert:hover{background:#000;}
+.vlm-revert svg{width:13px;height:13px;}
+
+/* ---- scrim + drawer shell (Products / Edits / Complete the Look) ---- */
+.vlm-scrim{position:fixed;inset:0;z-index:calc(var(--vlm-z) + 7);pointer-events:none;opacity:0;
+  background:rgba(23,21,18,.34);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  transition:opacity .22s ease;}
+.vlm-scrim.on{opacity:1;pointer-events:auto;}
+.vlm-drawer{position:fixed;top:0;right:0;height:100%;width:min(384px,92vw);z-index:calc(var(--vlm-z) + 8);
+  pointer-events:auto;display:flex;flex-direction:column;background:var(--vlm-paper);
+  border-left:1px solid var(--vlm-hair);box-shadow:-24px 0 64px -32px rgba(0,0,0,.5);
+  transform:translateX(101%);transition:transform .34s cubic-bezier(.2,.85,.2,1);}
+.vlm-drawer.on{transform:none;}
+.vlm-drawer__head{display:flex;align-items:flex-start;gap:12px;padding:18px 18px 14px;border-bottom:1px solid var(--vlm-hair);}
+.vlm-drawer__ttl{flex:1;min-width:0;}
+.vlm-drawer__ttl b{display:block;font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:19px;color:var(--vlm-ink);}
+.vlm-drawer__ttl small{display:block;font-size:11.5px;color:var(--vlm-soft);margin-top:2px;line-height:1.4;}
+.vlm-drawer__x{flex:0 0 auto;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;background:#f0ede7;border:1px solid var(--vlm-hair);color:var(--vlm-ink);cursor:pointer;}
+.vlm-drawer__x:hover{background:#e8e4dc;}
+.vlm-drawer__x svg{width:15px;height:15px;}
+.vlm-drawer__search{padding:12px 16px 4px;}
+.vlm-drawer__search input{width:100%;padding:10px 13px;border:1px solid var(--vlm-hair-2);border-radius:9px;
+  font:inherit;font-size:13px;outline:none;background:#fff;}
+.vlm-drawer__search input:focus{border-color:var(--vlm);box-shadow:0 0 0 3px var(--vlm-tint);}
+.vlm-drawer__body{flex:1;min-height:0;overflow-y:auto;padding:10px 14px 16px;}
+.vlm-drawer__foot{padding:11px 18px;border-top:1px solid var(--vlm-hair);font-size:11px;color:var(--vlm-soft);line-height:1.5;}
+.vlm-drawer__tools{padding:12px 16px 4px;}
+.vlm-drawer__actions{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-top:1px solid var(--vlm-hair);}
+.vlm-drawer__empty{padding:34px 16px;text-align:center;font-size:12.5px;color:var(--vlm-soft);line-height:1.6;}
+
+/* ---- Your edits rows ---- */
+.vlm-revertall{display:inline-flex;align-items:center;gap:7px;width:100%;justify-content:center;
+  background:#f0ede7;border:1px solid var(--vlm-hair-2);border-radius:9px;cursor:pointer;
+  font-size:12.5px;color:var(--vlm-ink);padding:9px 12px;}
+.vlm-revertall:hover{border-color:var(--vlm-line);background:var(--vlm-tint);color:var(--vlm-deep);}
+.vlm-revertall svg{width:14px;height:14px;}
+.vlm-erow{display:flex;align-items:flex-start;gap:10px;padding:11px 8px;border-bottom:1px solid var(--vlm-hair);}
+.vlm-erow:last-child{border-bottom:none;}
+.vlm-erow__ic{flex:0 0 auto;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:8px;background:var(--vlm-tint);color:var(--vlm-deep);margin-top:1px;}
+.vlm-erow__ic svg{width:15px;height:15px;}
+.vlm-erow__main{flex:1;min-width:0;}
+.vlm-erow__k{display:block;font-size:12.5px;font-weight:600;color:var(--vlm-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vlm-erow__k i{font-style:normal;font-weight:400;color:var(--vlm-soft);}
+.vlm-erow__chg{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11.5px;color:var(--vlm-soft);flex-wrap:wrap;}
+.vlm-erow__chg s{color:var(--vlm-soft);opacity:.8;}
+.vlm-erow__chg b{color:var(--vlm-deep);font-weight:600;}
+.vlm-erow__chg em{font-style:italic;opacity:.7;}
+.vlm-erow__chg svg{width:13px;height:13px;color:var(--vlm-line);flex:0 0 auto;}
+.vlm-erow__rev{flex:0 0 auto;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:8px;background:none;border:1px solid var(--vlm-hair);color:var(--vlm-soft);cursor:pointer;margin-top:1px;}
+.vlm-erow__rev:hover{border-color:var(--vlm-line);color:var(--vlm-deep);background:var(--vlm-tint);}
+.vlm-erow__rev svg{width:14px;height:14px;}
+
+/* ---- Products rows (order + quick toggles) ---- */
+.vlm-prow{display:flex;align-items:center;gap:9px;padding:8px 6px;border-radius:10px;border:1px solid transparent;}
+.vlm-prow + .vlm-prow{margin-top:2px;}
+.vlm-prow:hover{background:#fff;border-color:var(--vlm-hair);}
+.vlm-prow.vlm-prow--drag{background:#fff;border-color:var(--vlm);box-shadow:var(--vlm-shadow);opacity:.96;}
+.vlm-prow.is-hidden{opacity:.5;}
+.vlm-prow__grip{flex:0 0 auto;color:var(--vlm-soft);cursor:grab;display:inline-flex;touch-action:none;}
+.vlm-prow__grip:active{cursor:grabbing;}
+.vlm-prow__grip svg{width:16px;height:16px;}
+.vlm-prow__thumb{flex:0 0 auto;width:42px;height:52px;object-fit:cover;border-radius:6px;background:#ece7df;}
+.vlm-prow__info{flex:1;min-width:0;}
+.vlm-prow__name{display:block;font-size:12.5px;font-weight:600;color:var(--vlm-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vlm-prow__cat{display:block;font-size:11px;color:var(--vlm-soft);margin-top:1px;}
+.vlm-prow__tog{flex:0 0 auto;display:flex;align-items:center;gap:4px;}
+.vlm-prow__tog button{background:#f0ede7;border:1px solid var(--vlm-hair);border-radius:7px;cursor:pointer;
+  font:600 10.5px/1 var(--vlm-font);letter-spacing:.02em;color:var(--vlm-soft);padding:6px 7px;
+  transition:background .14s,border-color .14s,color .14s;}
+.vlm-prow__tog button:hover{border-color:var(--vlm-line);}
+.vlm-prow__tog button.on{background:var(--vlm);border-color:var(--vlm);color:#fff;}
+.vlm-prow__hide{display:inline-flex;align-items:center;justify-content:center;}
+.vlm-prow__hide svg{width:14px;height:14px;}
+.vlm-prow__hide.on{background:var(--vlm-ink);border-color:var(--vlm-ink);color:#fff;}
+
+/* ---- Complete the Look picker ---- */
+.vlm-ctl__chips{padding:12px 16px 2px;display:flex;flex-direction:column;gap:6px;}
+.vlm-ctlchip{display:flex;align-items:center;gap:4px;background:var(--vlm-tint);border:1px solid var(--vlm-line);
+  border-radius:9px;padding:4px 5px 4px 4px;}
+.vlm-ctlchip__n{flex:1;min-width:0;font-size:12.5px;color:var(--vlm-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;}
+.vlm-ctlchip__n b{color:var(--vlm-deep);margin-right:3px;}
+.vlm-ctlchip__mv,.vlm-ctlchip__rm{flex:0 0 auto;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:6px;background:rgba(255,255,255,.7);border:1px solid var(--vlm-hair);color:var(--vlm-deep);cursor:pointer;}
+.vlm-ctlchip__mv:hover,.vlm-ctlchip__rm:hover{background:#fff;}
+.vlm-ctlchip__mv[disabled]{opacity:.35;cursor:default;}
+.vlm-ctlchip__rm{color:#a23b2b;}
+.vlm-ctlchip__mv svg,.vlm-ctlchip__rm svg{width:13px;height:13px;}
+.vlm-ctl__empty{padding:10px 16px;font-size:12px;color:var(--vlm-soft);line-height:1.5;}
+.vlm-ctl__meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 16px 2px;}
+.vlm-ctl__count{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--vlm-soft);}
+.vlm-ctl__auto{background:none;border:none;color:var(--vlm-deep);cursor:pointer;font-size:12px;text-decoration:underline;
+  text-underline-offset:2px;padding:4px 2px;}
+.vlm-ctl__auto:hover{color:var(--vlm);}
+.vlm-ctlrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:1px solid transparent;
+  border-radius:9px;cursor:pointer;padding:6px;}
+.vlm-ctlrow:hover{background:#fff;border-color:var(--vlm-hair);}
+.vlm-ctlrow.on{background:var(--vlm-tint);border-color:var(--vlm-line);}
+.vlm-ctlrow.is-disabled{opacity:.4;cursor:default;}
+.vlm-ctlrow img{flex:0 0 auto;width:38px;height:46px;object-fit:cover;border-radius:6px;background:#ece7df;}
+.vlm-ctlrow__n{flex:1;min-width:0;font-size:12.5px;color:var(--vlm-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vlm-ctlrow__add{flex:0 0 auto;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;background:#f0ede7;border:1px solid var(--vlm-hair);color:var(--vlm-soft);font-size:15px;line-height:1;}
+.vlm-ctlrow.on .vlm-ctlrow__add{background:var(--vlm);border-color:var(--vlm);color:#fff;}
+.vlm-ctlrow__add svg{width:13px;height:13px;}
+.vlm-ctl__note{font-size:11.5px;color:var(--vlm-soft);}
+.vlm-ctl__apply{background:var(--vlm-ink);color:var(--vlm-paper);border:none;border-radius:9px;cursor:pointer;
+  font:600 13px/1 var(--vlm-font);letter-spacing:.01em;padding:11px 22px;}
+.vlm-ctl__apply:hover{background:#000;}
+
+/* ---- "Edit Complete the Look" affordance on the PDP rail ---- */
+.vlm-ctledit{display:none;}
+body.vlm-mode .vlm-ctledit{display:inline-flex;align-items:center;gap:7px;margin:2px 0 14px;pointer-events:auto;
+  background:var(--vlm);color:#fff;border:none;border-radius:100px;cursor:pointer;
+  font:600 12px/1 var(--vlm-font);letter-spacing:.01em;padding:9px 15px;box-shadow:var(--vlm-shadow-soft);
+  transition:filter .14s,transform .14s;}
+body.vlm-mode .vlm-ctledit:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.vlm-ctledit svg{width:14px;height:14px;}
+
+/* the bar stays put behind the scrim while a drawer is open; its buttons are
+   inert (scrim intercepts) - no layout change needed. */
+
+/* ---------------------------------------------------------------------
+   FEATURE 7  -  touch + small-screen fit (390 / 360 / 320)
+   --------------------------------------------------------------------- */
+@media (hover:none){
+  /* gallery thumb tools always visible (not hover-gated) */
+  body.vlm-mode .vlm-galtools,
+  body.vlm-mode #thumbs button[data-vlm-gal] .vlm-galrm{opacity:1;}
+  /* the hover chip is meaningless without a pointer - suppress it */
+  .vlm-chip{display:none !important;}
+  /* drawers become bottom sheets */
+  .vlm-drawer{top:auto;left:0;right:0;bottom:0;width:auto;height:auto;max-height:88vh;
+    border-left:none;border-top:1px solid var(--vlm-hair);border-radius:18px 18px 0 0;
+    transform:translateY(101%);box-shadow:0 -24px 64px -32px rgba(0,0,0,.5);}
+  .vlm-drawer.on{transform:none;}
+}
+/* tablet-and-down: bar buttons keep their icons, drop their labels */
+@media(max-width:640px){
+  .vlm-barbtn__l{display:none;}
+  .vlm-barbtn{padding:9px 10px;}
+}
+/* small phones: drawers + panels go edge to edge and stay usable */
+@media(max-width:430px){
+  .vlm-drawer{width:100vw;max-width:100vw;}
+  .vlm-merch{width:min(94vw,300px);}
+  .vlm-linkpop{width:min(94vw,300px);}
+  .vlm-prow__tog button{padding:6px 6px;}
+  .vlm-revert{font-size:11px;padding:6px 10px;}
+}
+@media(max-width:360px){
+  .vlm-drawer__head{padding:15px 14px 12px;}
+  .vlm-drawer__body{padding:8px 11px 14px;}
+  .vlm-prow{gap:7px;padding:7px 4px;}
+  .vlm-prow__thumb{width:36px;height:46px;}
+  .vlm-ctl__apply{padding:11px 16px;}
+}
+
+/* ============================================================
+   Editor: reveal ALL content immediately.
+   The shopper-facing scroll reveal (.reveal starts at opacity:0 and
+   only .reveal.in shows it) otherwise hides editables that have not
+   been scrolled into view - most visibly the Our Story campaign
+   photos, which read as "missing from the studio". This file loads
+   ONLY when the editor is armed, so shoppers are never affected.
+   ============================================================ */
+.reveal { opacity: 1 !important; transform: none !important; }
+.reveal-img::after { transform: translateY(-101%) !important; }
+.reveal-img > img { transform: none !important; }

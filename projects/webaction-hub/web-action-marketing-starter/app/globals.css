@@ -1,0 +1,267 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   MYKONOS PRESTIGE VILLAS, "Aegean Whitewash" design system
+   Whitewashed white · soft Cycladic blue · deep sea navy
+   Fonts: PP Hatton (display) + Averta (body)
+   ============================================================ */
+
+@layer base {
+  :root {
+    --azure: #6699c7;
+    --azure-deep: #3a6c9e;
+    --aegean: #1b4266;
+    --ink: #1b3145;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-whisper font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Custom Cycladic-blue cursor. A colored arrow by default and a colored hand
+     over interactive elements — the browser still swaps them contextually, so it
+     stays reactive exactly as before; only the colour changes. A subtle dark
+     outline keeps it legible over both the white sections and the dark hero. */
+  html,
+  body {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M3%202%20L3%2020%20L8%2015.5%20L11%2021.5%20L13.6%2020.4%20L10.6%2014.7%20L17%2014.7%20Z'%20fill='%23A2C4D4'%20stroke='%2333566B'%20stroke-width='1.4'%20stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+  }
+  a,
+  button,
+  summary,
+  label[for],
+  [role="button"],
+  .cursor-pointer,
+  input[type="submit"],
+  input[type="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='26'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M10%202.2c-.9%200-1.6%20.7-1.6%201.6v8.05L6.9%2010.4a1.7%201.7%200%200%200-2.5%202.3l3.2%204.4A5.2%205.2%200%200%200%2011.8%2019.4h1.9a4.8%204.8%200%200%200%204.8-4.8V9.3c0-.85-.7-1.55-1.55-1.55-.28%200-.54%20.07-.77%20.2a1.55%201.55%200%200%200-2.3-1.03%201.55%201.55%200%200%200-2.35-1V3.8c0-.9-.7-1.6-1.55-1.6Z'%20fill='%23A2C4D4'%20stroke='%2333566B'%20stroke-width='1.2'%20stroke-linejoin='round'/%3E%3C/svg%3E") 9 2, pointer;
+  }
+  /* Keep the text caret on real text fields */
+  input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  [contenteditable="true"] {
+    cursor: text;
+  }
+
+  ::selection {
+    background: var(--azure);
+    color: #fff;
+  }
+
+  /* Slim azure-on-white scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #eaf2f8;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(#bad4ea, #6699c7);
+    border-radius: 999px;
+    border: 2px solid #eef5fb;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-aegean;
+    text-wrap: balance;
+    font-weight: 300;
+  }
+}
+
+@layer components {
+  /* ---- Typographic accents ---------------------------------- */
+
+  .eyebrow {
+    @apply inline-flex items-center gap-3 text-[0.7rem] uppercase tracking-luxe text-azure-deep;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply block h-px w-8 bg-azure/60;
+  }
+
+  /* Soft sea gradient for headline emphasis */
+  .text-sea-gradient {
+    background: linear-gradient(100deg, #6699c7 0%, #1b4266 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-haze to-transparent;
+  }
+
+  /* ---- Buttons ---------------------------------------------- */
+
+  /* Premium rectangular CTA: light-blue gradient, glassy inner highlight, sheen */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden
+      rounded-sm bg-gradient-to-b from-[#9BC0E0] to-[#5E92C4] px-9 py-4
+      text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white
+      transition-all duration-300;
+    text-shadow: 0 1px 2px rgba(20, 50, 82, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(94, 146, 196, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+  }
+  .btn-primary:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 18px 42px -12px rgba(58, 108, 158, 0.62),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+    filter: brightness(1.05);
+  }
+  .btn-primary::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+    transition: transform 0.7s ease;
+  }
+  .btn-primary:hover::after {
+    @apply translate-x-full;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm border
+      border-ink/25 px-8 py-4 text-[0.7rem] font-medium uppercase
+      tracking-[0.18em] text-ink/80 transition-all duration-300 hover:border-azure hover:text-azure;
+  }
+
+  /* On dark surfaces (hero video) */
+  .btn-ghost-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm border
+      border-white/50 px-8 py-4 text-[0.7rem] font-medium uppercase
+      tracking-[0.18em] text-white transition-all duration-300 hover:border-white hover:bg-white/10;
+  }
+
+  /* ---- Section framing -------------------------------------- */
+
+  .section {
+    @apply relative py-24 md:py-32;
+  }
+
+  /* Elegant labeled placeholder tile, reads as art-direction, not a broken image. */
+  .ph {
+    @apply relative flex items-end overflow-hidden bg-mist;
+    background-image: radial-gradient(
+        120% 120% at 20% 12%,
+        rgba(102, 153, 199, 0.16),
+        transparent 55%
+      ),
+      radial-gradient(120% 120% at 90% 92%, rgba(186, 212, 234, 0.6), transparent 60%);
+  }
+  .ph::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/media/placeholders/cycladic.svg");
+    background-size: 230px;
+    background-position: center;
+    opacity: 0.22;
+  }
+  .ph-tag {
+    @apply relative z-10 m-3 rounded-full border border-azure/25 bg-white/75
+      px-3 py-1 text-[0.6rem] uppercase tracking-wide2 text-azure-deep backdrop-blur-sm;
+  }
+
+  /* Whitewashed panel/card */
+  .glass {
+    @apply border border-haze bg-white shadow-soft;
+  }
+}
+
+@layer utilities {
+  .tracking-luxe {
+    letter-spacing: 0.26em;
+  }
+  /* Soft dark scrim used only where text sits over the hero video */
+  .vignette {
+    box-shadow: inset 0 0 220px 0 rgba(10, 26, 38, 0.3);
+  }
+  /* Keeps white hero text legible over bright imagery */
+  .text-shadow-hero {
+    text-shadow: 0 2px 26px rgba(8, 20, 32, 0.55), 0 1px 4px rgba(8, 20, 32, 0.45);
+  }
+  /* Soft-feathered image edges: fades all four sides to transparent so the
+     photo melts into the whitewash background — an airy, dreamy aesthetic. */
+  .img-soft-edges {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 11%, #000 89%, transparent),
+      linear-gradient(to bottom, transparent, #000 11%, #000 89%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent, #000 11%, #000 89%, transparent),
+      linear-gradient(to bottom, transparent, #000 11%, #000 89%, transparent);
+    mask-composite: intersect;
+  }
+  /* Pre-rendered, dithered hero veil — see gen-hero-veil.mjs. A single RGBA
+     image whose alpha follows a C2-smooth smootherstep curve (no slope-kink
+     Mach bands) with ~1 LSB triangular dither baked in (no 8-bit stepping).
+     Replaces the old CSS gradient veil + grain layers. Tiled horizontally at
+     native width so the dither stays crisp; stretched to the hero height. */
+  .hero-veil-img {
+    background-image: url("/media/hero-veil.png?v=5");
+    background-size: 256px 100%;
+    background-repeat: repeat-x;
+    background-position: top center;
+  }
+
+  /* Stronger, more even scrim behind hero copy over bright photos/video.
+     Falls off gradually all the way to the edges (no hard transparent ring)
+     so it blends smoothly with the flat scrim and veil underneath. */
+  .hero-scrim {
+    background: radial-gradient(
+        135% 105% at 50% 52%,
+        rgba(8, 20, 32, 0.5) 0%,
+        rgba(8, 20, 32, 0.36) 28%,
+        rgba(8, 20, 32, 0.2) 50%,
+        rgba(8, 20, 32, 0.08) 72%,
+        rgba(8, 20, 32, 0.02) 88%,
+        transparent 100%
+      );
+  }
+}
+
+/* Greek typography. The brand fonts have no Greek, and next/font's metric
+   fallback for them DOES cover Greek, so Greek glyphs would be intercepted by a
+   default system serif before reaching our Greek fonts. On Greek pages, route
+   titles + body straight to the Greek fonts so they match the English style.
+   Unlayered on purpose so it beats Tailwind's layered .font-display / .font-sans. */
+html[lang="el"] body,
+html[lang="el"] .font-sans {
+  font-family: var(--font-greek-body), system-ui, sans-serif;
+}
+html[lang="el"] .font-display,
+html[lang="el"] h1,
+html[lang="el"] h2,
+html[lang="el"] h3,
+html[lang="el"] h4 {
+  font-family: var(--font-greek-display), Georgia, serif;
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

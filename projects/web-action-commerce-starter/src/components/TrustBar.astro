@@ -1,0 +1,149 @@
+---
+import Icon from './Icon.astro';
+
+const items = [
+  { icon: 'shield', title: '100% Πιστοποιημένα', ten: '100% Authenticated' },
+  { icon: 'truck', title: 'Δωρεάν Παράδοση 24ω Αθήνα', ten: 'Free 24h Your City Delivery' },
+  { icon: 'refresh', title: 'Επιστροφές 14 Ημερών', ten: '14-Day Returns' },
+  { icon: 'star', title: 'Βαθμολογία 4.9 / 5', ten: 'Rated 4.9 / 5' },
+] as const;
+---
+
+<section class="trustbar border-y border-line bg-raised/60">
+  <div class="wrap grid grid-cols-2 gap-3 py-7 sm:gap-4 lg:grid-cols-4">
+    {
+      items.map((it, i) => (
+        <div class="trust-item group" style={`--d:${i * 90}ms`} tabindex="0">
+          <span class="trust-icon">
+            <Icon name={it.icon} size={20} />
+          </span>
+          <div class="min-w-0">
+            <p class="text-sm font-700 leading-snug text-ink transition-colors duration-300 group-hover:text-accent-soft" data-en={it.ten}>{it.title}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .trust-item {
+    position: relative;
+    display: flex;
+    /* Mobile: icon stacked above the text so the title gets the badge's full
+       width (a horizontal icon+text layout left only ~70px and clipped the
+       longer Greek words like "Πιστοποιημένα"). */
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.55rem;
+    padding: 1rem 0.6rem;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    background: transparent;
+    outline: none;
+    overflow: hidden;
+    transition:
+      transform 0.4s var(--ease-lux),
+      background 0.4s,
+      border-color 0.4s,
+      box-shadow 0.4s var(--ease-lux);
+    /* staggered entrance */
+    opacity: 0;
+    transform: translateY(14px);
+    animation: trust-in 0.6s var(--ease-lux) forwards;
+    animation-delay: var(--d);
+  }
+  @keyframes trust-in {
+    to { opacity: 1; transform: none; }
+  }
+
+  /* sliding tiffany sheen on hover */
+  .trust-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(0, 192, 182, 0.14) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--ease-lux);
+    pointer-events: none;
+  }
+
+  .trust-item:hover,
+  .trust-item:focus-visible {
+    transform: translateY(-4px);
+    background: rgba(0, 192, 182, 0.06);
+    border-color: rgba(0, 192, 182, 0.28);
+    box-shadow: 0 16px 40px -22px rgba(0, 192, 182, 0.65);
+  }
+  .trust-item:hover::before,
+  .trust-item:focus-visible::before {
+    transform: translateX(120%);
+  }
+
+  .trust-icon {
+    position: relative;
+    display: flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-accent);
+    transition:
+      color 0.4s,
+      border-color 0.4s,
+      background 0.4s,
+      transform 0.5s var(--ease-lux),
+      box-shadow 0.4s;
+  }
+  .trust-item:hover .trust-icon,
+  .trust-item:focus-visible .trust-icon {
+    color: var(--color-on-accent);
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    border-color: transparent;
+    transform: rotate(-8deg) scale(1.08);
+    box-shadow: 0 0 0 6px rgba(0, 192, 182, 0.12);
+  }
+
+  /* gentle idle pulse ring to draw the eye */
+  .trust-icon::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 192, 182, 0.45);
+    opacity: 0;
+    animation: trust-pulse 3.2s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes trust-pulse {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.12); }
+  }
+
+  /* Title: let long Greek words break instead of overflowing + being clipped. */
+  .trust-item p {
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  /* Desktop: restore the horizontal icon-beside-text layout. */
+  @media (min-width: 640px) {
+    .trust-item {
+      flex-direction: row;
+      text-align: left;
+      gap: 0.85rem;
+      padding: 0.9rem 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trust-item { opacity: 1; transform: none; animation: none; }
+    .trust-icon::after { animation: none; }
+    .trust-item::before { display: none; }
+  }
+</style>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W&A · Web Action — Refined Identity</title>
+<link rel="icon" href="emblem-favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0E1A3C; --navy-deep:#0A1330; --navy-soft:#16264f;
+    --ivory:#F4F2EA; --ink:#1a2238; --mute:#6E7D9E; --line:rgba(244,242,234,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Jost',system-ui,sans-serif;color:var(--ivory);
+    background:radial-gradient(1000px 700px at 80% -10%,#16264f55,transparent 60%),var(--navy-deep);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+  .serif{font-family:'Cormorant Garamond',Georgia,serif}
+  .kick{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:#9fb0d6;font-weight:400}
+
+  header{text-align:center;padding:76px 0 50px;position:relative}
+  .ring-bg{position:absolute;inset:0;z-index:-1;opacity:.5;
+    background:radial-gradient(circle at 50% 34%,transparent 0,transparent 168px,var(--line) 169px,transparent 171px),
+              radial-gradient(circle at 50% 34%,transparent 0,transparent 210px,var(--line) 211px,transparent 213px)}
+  .hero-emblem{filter:drop-shadow(0 30px 70px rgba(8,14,40,.7))}
+  header h1{font-weight:600;font-size:clamp(40px,7vw,76px);letter-spacing:.5px;margin-top:22px}
+  header h1 i{font-weight:500}
+  header .sub{letter-spacing:7px;font-size:13px;color:#9fb0d6;margin-top:6px}
+  header p{max-width:500px;margin:22px auto 0;color:#aebad8;font-weight:300;line-height:1.7;font-size:15.5px}
+
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  .sh{display:flex;align-items:baseline;gap:14px;margin-bottom:28px}
+  .sh h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px}
+  .sh span{font-size:11px;letter-spacing:3px;color:var(--mute);text-transform:uppercase}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+  .card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02)}
+  .stage{display:flex;align-items:center;justify-content:center;min-height:180px;padding:26px}
+  .on-white{background:#F4F2EA}.on-navy{background:linear-gradient(160deg,#16264f,#0A1330)}
+  .lbl{font-size:11px;letter-spacing:1.5px;color:var(--mute);text-transform:uppercase;
+    padding:11px 15px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+
+  /* recolor helpers for mono variants */
+  .mono-ivory svg circle{fill:transparent!important;stroke:#F4F2EA!important;stroke-opacity:.9!important}
+  .mono-ivory svg text,.mono-ivory svg line{fill:#F4F2EA!important;stroke:#F4F2EA!important;fill-opacity:1!important;stroke-opacity:.8!important}
+  .mono-navy svg circle{fill:transparent!important;stroke:#0E1A3C!important;stroke-opacity:.9!important}
+  .mono-navy svg text,.mono-navy svg line{fill:#0E1A3C!important;stroke:#0E1A3C!important;fill-opacity:1!important;stroke-opacity:.8!important}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line);border-radius:16px;padding:26px;background:rgba(255,255,255,.02)}
+  .panel h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin-bottom:10px}
+  .panel p{color:#aebad8;font-weight:300;font-size:13.5px;line-height:1.7}
+
+  .sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .chip{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .chip .c{height:88px}.chip .m{padding:11px 14px;background:rgba(255,255,255,.03)}
+  .chip b{font-size:13px;font-weight:500}.chip code{display:block;font-size:11px;color:var(--mute);margin-top:3px;letter-spacing:1px}
+
+  /* context mocks */
+  .siteheader{border:1px solid var(--line);border-radius:14px 14px 0 0;overflow:hidden}
+  .siteheader .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:#0c1430}
+  .siteheader .nav{display:flex;gap:22px;color:#9fb0d6;font-size:12.5px;letter-spacing:1px}
+  .siteheader .cta{border:1px solid #2c3c66;border-radius:999px;padding:7px 16px;font-size:12px;color:var(--ivory)}
+  .biz{aspect-ratio:1.62;border-radius:14px;background:linear-gradient(150deg,#16264f,#0A1330);border:1px solid var(--line);
+    padding:22px;display:flex;flex-direction:column;justify-content:space-between}
+  .biz .nm{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600}
+  .biz .rl{color:#9fb0d6;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+  .biz .ct{font-size:11.5px;color:#aebad8;letter-spacing:.5px}
+
+  footer{padding:46px 0 64px;text-align:center;color:var(--mute);font-size:11px;letter-spacing:3px;text-transform:uppercase;border-top:1px solid var(--line)}
+  .emblem-sm{width:90px}.emblem-md{width:120px}.emblem-lg{width:188px}
+</style>
+</head>
+<body>
+
+<!-- reusable emblem -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="navy" cx="50%" cy="38%" r="75%"><stop offset="0" stop-color="#16264f"/><stop offset="1" stop-color="#0A1330"/></radialGradient>
+  <symbol id="emblem" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="100" fill="url(#navy)"/>
+    <circle cx="100" cy="100" r="92" fill="none" stroke="#F4F2EA" stroke-opacity="0.30" stroke-width="1.1"/>
+    <circle cx="100" cy="100" r="88.5" fill="none" stroke="#F4F2EA" stroke-opacity="0.12" stroke-width="0.8"/>
+    <text x="100" y="98" text-anchor="middle" fill="#F4F2EA" font-family="'Cormorant Garamond',Georgia,serif" font-weight="600" font-size="70" letter-spacing="-3">WA</text>
+    <line x1="46" y1="120" x2="66" y2="120" stroke="#F4F2EA" stroke-opacity="0.55" stroke-width="1"/>
+    <line x1="134" y1="120" x2="154" y2="120" stroke="#F4F2EA" stroke-opacity="0.55" stroke-width="1"/>
+    <text x="100" y="124.5" text-anchor="middle" fill="#F4F2EA" font-family="'Jost',sans-serif" font-weight="500" font-size="12.5" letter-spacing="5.5">WEB ACTION</text>
+    <text x="100.5" y="143" text-anchor="middle" fill="#F4F2EA" fill-opacity="0.78" font-family="'Jost',sans-serif" font-weight="400" font-size="6.6" letter-spacing="3.2">WEB &amp; APP DEVELOPMENT</text>
+  </symbol>
+</defs></svg>
+
+<header>
+  <div class="ring-bg"></div>
+  <div class="wrap">
+    <span class="kick">Identity Refinement</span>
+    <div style="margin-top:26px"><svg class="hero-emblem emblem-lg"><use href="#emblem"/></svg></div>
+    <h1 class="serif">Web <i>Action</i></h1>
+    <div class="sub">WEB &amp; APP DEVELOPMENT</div>
+    <p>The W&amp;A emblem, refined. Same navy &amp; ivory identity and circular badge — now with a high-contrast serif monogram, balanced ring system, and a deliberate type pairing in place of the default font.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="sh"><h2>Variations</h2><span>scalable svg</span></div>
+    <div class="grid">
+      <div class="card"><div class="stage on-navy"><svg class="emblem-md"><use href="#emblem"/></svg></div><div class="lbl"><span>Primary</span><span>full colour</span></div></div>
+      <div class="card"><div class="stage on-white"><svg class="emblem-md"><use href="#emblem"/></svg></div><div class="lbl"><span>On ivory</span><span>full colour</span></div></div>
+      <div class="card"><div class="stage on-navy mono-ivory"><svg class="emblem-md"><use href="#emblem"/></svg></div><div class="lbl"><span>Mono ivory</span><span>1-colour</span></div></div>
+      <div class="card"><div class="stage on-white mono-navy"><svg class="emblem-md"><use href="#emblem"/></svg></div><div class="lbl"><span>Mono navy</span><span>1-colour</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>Horizontal lockup</h2><span>for web headers</span></div>
+    <div class="card"><div class="stage on-white"><img src="emblem-lockup.svg" width="380" alt="Web Action horizontal lockup"></div><div class="lbl"><span>Emblem + wordmark</span><span>site header / email signature</span></div></div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>What changed</h2><span>refinements</span></div>
+    <div class="two">
+      <div class="panel"><h3>Type with intent</h3><p>The monogram is now set in <b style="color:#fff">Cormorant Garamond</b> — a high-contrast serif with genuine character — and the ampersand is an italic, slightly-raised accent so “W&amp;A” reads as a crafted ligature, not three flat letters. Caps and tagline use <b style="color:#fff">Jost</b>, a clean geometric sans, widely tracked.</p></div>
+      <div class="panel"><h3>Structure &amp; balance</h3><p>A two-weight hairline ring replaces the single heavy circle for depth, the monogram is optically centred, and “WEB ACTION” keeps its flanking rules but with corrected tracking and length. The badge stays perfectly legible from a 32px favicon up to signage.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>Colour</h2><span>your palette</span></div>
+    <div class="sw">
+      <div class="chip"><div class="c" style="background:#0E1A3C"></div><div class="m"><b>Deep Navy</b><code>#0E1A3C</code></div></div>
+      <div class="chip"><div class="c" style="background:#16264f"></div><div class="m"><b>Navy Highlight</b><code>#16264F</code></div></div>
+      <div class="chip"><div class="c" style="background:#0A1330"></div><div class="m"><b>Navy Shadow</b><code>#0A1330</code></div></div>
+      <div class="chip"><div class="c" style="background:#F4F2EA"></div><div class="m"><b>Ivory</b><code>#F4F2EA</code></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>In context</h2><span>where it lives</span></div>
+    <div class="two">
+      <div>
+        <div class="siteheader"><div class="bar">
+          <img src="emblem-lockup.svg" height="40" alt="" style="filter:brightness(0) invert(1);opacity:.95">
+          <div class="nav"><span>Work</span><span>Services</span><span>Studio</span><span class="cta">Start a project</span></div>
+        </div></div>
+        <div style="border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;min-height:120px;background:#0b1330;display:flex;align-items:center;padding:24px">
+          <div><div class="serif" style="font-size:30px">Websites &amp; apps that move.</div>
+          <div style="color:#9fb0d6;font-size:13px;margin-top:8px;font-weight:300">Web design &amp; development — Greece.</div></div>
+        </div>
+      </div>
+      <div class="biz">
+        <svg class="emblem-sm"><use href="#emblem"/></svg>
+        <div>
+          <div class="nm">Web Action</div>
+          <div class="rl">Web &amp; App Development</div>
+          <div class="ct" style="margin-top:10px">hello@webaction.gr · webactionhellas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>W&amp;A · Web Action · Refined Identity · Delivered as scalable SVG</footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+name: product-price-sync
+
+# Sync live Shopify product prices onto the storefront when Panos/Larissa
+# change a price in Shopify Admin.
+#
+# Chain: Shopify Admin price edit -> Shopify fires "products/update" webhook
+#        -> Supabase edge fn `shopify-product-webhook` (HMAC-verified)
+#        -> repository_dispatch (event "product-price-update") -> THIS job.
+# It re-fetches every product's current price from the public Storefront API
+# and writes ONLY the price/compareAt fields into js/products.js (every
+# hand-authored field - images, blurb, badges, sizes - is left untouched),
+# deploys, then commits the refreshed file so it persists across rebuilds.
+#
+# WHY THIS EXISTS: the storefront's displayed price was a static file only a
+# developer could edit; checkout alone re-priced live from Shopify. That gap
+# meant a Shopify Admin price change never reached what customers SAW. This
+# closes it end to end.
+
+on:
+  repository_dispatch:
+    types: [product-price-update]
+  workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
+
+# A burst of edits (e.g. saving several variants) collapses into one build.
+concurrency:
+  group: product-price-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # commit the refreshed js/products.js back to the repo
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sync prices from Shopify, then deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          node scripts/sync-prices-from-shopify.mjs
+          node scripts/deploy.mjs
+
+      - name: Persist refreshed js/products.js
+        if: always()
+        run: |
+          git config user.name "cloudskin-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add js/products.js || true
+          if git diff --cached --quiet; then
+            echo "No price changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(products): sync prices from Shopify [skip ci]"
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              echo "Price sync pushed."
+              exit 0
+            fi
+            echo "push attempt $i failed, retrying in 3s..."
+            sleep 3
+          done
+          echo "::warning::could not push the refreshed products.js after 3 tries (deploy still succeeded)."

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Vellum example - a tiny page wired end to end</title>
+  <!--
+    This page shows the COMPLETE Vellum integration on a minimal marketing
+    site (no products). Four moving parts, in this order:
+      1. supabase-js (UMD)              -> window.supabase
+      2. vellum.config.js               -> window.VELLUM_CFG
+      3. vellum-content.js (deferred)   -> applies saved overrides, fail-open
+      4. the armed-session lazy loader  -> tiny inline snippet at the end of
+         <body>; injects the editor CSS+JS ONLY when this tab was armed by
+         /creator. Public visitors never download the editor.
+    Editable elements just carry data-content* attributes; everything else
+    is a plain page.
+
+    Sandbox note: serve this folder with  node sandbox/serve.mjs  and the
+    server swaps the supabase-js CDN tag for sandbox/mock-backend.js and
+    vellum.config.js for sandbox/config.js, so the whole flow (creator gate,
+    editing, saving, upload, revert) runs offline against in-page stubs.
+  -->
+  <style>
+    :root{--ink:#1c1a17;--paper:#faf8f4;--muted:#7d766b;--line:#e6e0d6;--accent:#3a4fd0}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--paper);color:var(--ink);line-height:1.5}
+    .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+    header{padding:18px 0;border-bottom:1px solid var(--line)}
+    header .wrap{display:flex;align-items:center;justify-content:space-between}
+    .logo{font-size:15px;letter-spacing:.28em;text-transform:uppercase}
+    nav a{color:var(--muted);text-decoration:none;font-size:14px;margin-left:18px;font-family:system-ui,sans-serif}
+    .hero{padding:64px 0 48px}
+    .hero h1{font-size:clamp(30px,6vw,52px);font-weight:400;line-height:1.12;margin:0 0 14px;max-width:14ch}
+    .hero p{color:var(--muted);font-size:17px;max-width:52ch;margin:0 0 26px}
+    .cta{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;padding:13px 26px;border-radius:100px;font-family:system-ui,sans-serif;font-size:14px}
+    .hero img{width:100%;max-width:100%;height:340px;object-fit:cover;border-radius:14px;margin-top:38px;display:block;background:#e9e4da}
+    .band{margin:56px 0;border-radius:14px;padding:64px 32px;text-align:center;color:#fff;
+      /* the owner-swappable background layers UNDER the darkening gradient:
+         vellum-content.js / the editor only ever touch --vlm-bg */
+      background:linear-gradient(rgba(20,18,15,.55),rgba(20,18,15,.55)),
+                 var(--vlm-bg,url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMyYzMzNWEiLz48L3N2Zz4=")) center/cover}
+    .band h2{font-weight:400;font-size:26px;margin:0 0 8px}
+    .band p{margin:0;opacity:.85;font-size:15px}
+    footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:13px;font-family:system-ui,sans-serif}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <span class="logo" data-content="site.logo.text">EXAMPLE</span>
+      <nav>
+        <a href="/EXAMPLE.html">Home</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <h1 data-content="home.hero.title">A quiet atelier for considered objects</h1>
+        <p data-content="home.hero.lede">Every piece in the collection is made slowly, by hand, in small numbers. This paragraph, the heading above it, the photo below and the button here are all click-to-edit for the owner.</p>
+        <a class="cta" href="/about.html" data-content-link="home.hero.cta"><span data-content="home.hero.cta.label">Read our story</span></a>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iOTAiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iOTAiIGZpbGw9IiNkOGQwYzIiLz48dGV4dCB4PSI1MCUiIHk9IjUyJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPmRlZmF1bHQ8L3RleHQ+PC9zdmc+" alt="Atelier still life" data-content-img="home.hero.image">
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="band" data-content-bg="home.band.bg">
+        <h2 data-content="home.band.title">Visit the atelier</h2>
+        <p data-content="home.band.text">Open Tuesday to Saturday, 10:00 to 18:00.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap"><span data-content="site.footer.note">Made with care. All rights reserved.</span></div>
+  </footer>
+
+  <!-- 1 + 2 + 3: supabase-js, per-site config, the public applier -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="vellum.config.js"></script>
+  <script src="vellum-content.js" defer></script>
+
+  <!-- 4: the armed-session lazy loader (the DEFAULT integration pattern).
+       Public pages pay only for this snippet; the editor CSS+JS load ONLY
+       when the creator gate armed this tab. -->
+  <script>try{if(sessionStorage.getItem('vlm-armed')==='1'){
+    var l=document.createElement('link');l.rel='stylesheet';l.href='vellum-edit-mode.css';document.head.appendChild(l);
+    var s=document.createElement('script');s.src='vellum-edit-mode.js';s.defer=true;document.body.appendChild(s);
+  }}catch(e){}</script>
+</body>
+</html>

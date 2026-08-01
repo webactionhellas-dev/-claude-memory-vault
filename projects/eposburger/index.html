@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Epos Burger — Epic Smash Burgers</title>
+<meta name="description" content="Epos Burger — epic smash burgers. 100% beef, brioche buns, sauce made in-house. Glyfada, Athens Riviera. Order on Wolt." />
+<meta name="theme-color" content="#f3ccd6" />
+<link rel="canonical" href="https://www.eposburger.com/" />
+<link rel="icon" href="assets/logo.png" />
+<meta property="og:type" content="restaurant" />
+<meta property="og:title" content="Epos Burger — Epic Smash Burgers" />
+<meta property="og:description" content="100% beef. Brioche buns. Smashed to order." />
+<meta property="og:image" content="assets/burger-house.webp" />
+<meta property="og:url" content="https://www.eposburger.com/" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="assets/burger-house.webp" />
+
+<style>
+:root{
+  --pink:#f3ccd6;        /* brand pink (from logo) */
+  --pink-2:#efbecb;      /* deeper band */
+  --pink-3:#f9dee4;      /* light cards */
+  --ink:#4e4e57;         /* brand slate — headings & buttons */
+  --ink-deep:#3e3e46;    /* body text */
+  --muted:rgba(62,62,70,.66);
+  --muted-2:rgba(62,62,70,.42);
+  --line:rgba(62,62,70,.15);
+  --cream:#fff6f3;
+  --maxw:1200px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--pink);color:var(--ink-deep);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;
+  font-size:clamp(15px,1.04vw,17px);line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ink);color:var(--pink)}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;line-height:1.0;
+  letter-spacing:-.01em;color:var(--ink)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5em;font-family:"Hanken Grotesk";
+  font-weight:700;font-size:.93rem;padding:.82em 1.5em;border-radius:100px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--cream);cursor:pointer;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s,color .3s;will-change:transform}
+.btn svg{width:1.02em;height:1.02em;transition:transform .35s var(--ease)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 14px 24px -12px rgba(62,62,70,.5)}
+.btn:hover svg{transform:translate(3px,-3px)}
+.btn--ghost{background:transparent;color:var(--ink)}
+.btn--ghost:hover{background:rgba(62,62,70,.07)}
+
+.eyebrow{display:inline-flex;align-items:center;gap:.6em;font-size:.73rem;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:22px;height:1.5px;background:var(--ink);opacity:.5}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;
+  justify-content:space-between;padding:14px clamp(18px,4vw,44px);
+  transition:background .4s var(--ease),backdrop-filter .4s,padding .4s,box-shadow .4s}
+.nav.scrolled{background:rgba(243,204,214,.82);backdrop-filter:blur(14px) saturate(150%);
+  padding-top:9px;padding-bottom:9px;box-shadow:0 1px 0 var(--line)}
+.brand{display:flex;align-items:center}
+.brand img{height:50px;width:auto;transition:height .4s var(--ease)}
+.nav.scrolled .brand img{height:40px}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a.lnk{font-weight:600;font-size:.92rem;color:var(--muted);position:relative;transition:color .3s}
+.nav-links a.lnk::after{content:"";position:absolute;left:0;bottom:-5px;width:0;height:1.5px;
+  background:var(--ink);transition:width .35s var(--ease)}
+.nav-links a.lnk:hover{color:var(--ink)}
+.nav-links a.lnk:hover::after{width:100%}
+.burger-toggle{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+.burger-toggle span{width:24px;height:2px;background:var(--ink);transition:.3s var(--ease)}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;
+  padding:120px clamp(18px,4vw,44px) 50px;overflow:hidden}
+.hero-glow{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(56% 52% at 70% 44%, rgba(255,255,255,.5), transparent 60%),
+            radial-gradient(80% 70% at 28% 92%, rgba(239,190,203,.55), transparent 70%)}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;
+  display:grid;grid-template-columns:1fr 1.05fr;gap:24px;align-items:center}
+.hero-copy{max-width:520px}
+.hero h1{font-size:clamp(3.1rem,8.4vw,6.6rem);font-weight:700;margin:.18em 0 0}
+.hero h1 .pt{color:var(--ink)}
+.hero p.lede{font-size:clamp(1.02rem,1.4vw,1.18rem);color:var(--muted);max-width:34ch;margin:1.2em 0 1.8em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:13px}
+.tagline{margin-top:32px;font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--muted-2);
+  text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.tagline::before{content:"";width:18px;height:1.5px;background:var(--muted-2)}
+
+.hero-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:44vh}
+.fly-wrap{position:relative;width:min(48vw,560px);aspect-ratio:1/.66}
+.fly{position:absolute;inset:0;width:100%;height:auto;
+  filter:drop-shadow(0 24px 22px rgba(70,52,58,.20));will-change:transform}
+@keyframes rise{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:.7}100%{opacity:0;transform:translateY(-72px) scale(1.1)}}
+.sizzle{position:absolute;border-radius:50%;pointer-events:none;opacity:0;filter:blur(.4px)}
+
+/* marquee */
+.marquee{background:var(--ink);color:var(--pink);overflow:hidden;padding:12px 0;position:relative;z-index:3}
+.marquee-track{display:flex;width:max-content;animation:scroll 24s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{font-family:"Fredoka";font-weight:600;font-size:1.05rem;padding:0 22px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:22px}
+.marquee span::after{content:"●";font-size:.42em;opacity:.55}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:clamp(60px,10vh,124px) clamp(18px,4vw,44px)}
+.sec-head{margin-bottom:44px}
+.sec-head h2{font-size:clamp(2.2rem,5.2vw,4rem);font-weight:700}
+
+/* menu — burger in its own zone, text strictly below */
+.burgers{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.bcard{background:var(--pink-3);border-radius:26px;display:flex;flex-direction:column;
+  overflow:visible;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.bcard:hover{transform:translateY(-8px);box-shadow:0 28px 46px -28px rgba(62,40,48,.4)}
+.pic{height:240px;display:flex;align-items:center;justify-content:center;position:relative;overflow:visible}
+.bimg{width:80%;max-width:340px;height:auto;filter:drop-shadow(0 20px 18px rgba(70,52,58,.22));
+  transition:transform .6s var(--ease);will-change:transform;transform:translateY(-6px)}
+.bcard:hover .bimg{transform:translateY(-16px) rotate(-3deg) scale(1.05)}
+.meta{padding:4px 32px 30px}
+.btag{display:inline-block;font-size:.67rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cream);background:var(--ink);padding:.34em .8em;border-radius:100px;margin-bottom:12px}
+.bcard h3{font-size:clamp(1.7rem,2.6vw,2.2rem);font-weight:600;margin-bottom:.3em}
+.bcard .desc{color:var(--muted);font-size:.95rem;margin-bottom:16px;max-width:32ch}
+.bcard .row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border-top:1px solid var(--line);padding-top:16px}
+.price{font-family:"Fredoka";font-weight:600;font-size:1.7rem;color:var(--ink)}
+
+/* story */
+.story{background:var(--pink-2)}
+.story .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.story h2{font-size:clamp(1.9rem,4.4vw,3.2rem);font-weight:700;margin:.4em 0 .5em}
+.story p{color:var(--ink-deep);max-width:34ch;font-size:1.05rem}
+.story-visual{position:relative;display:flex;align-items:center;justify-content:center;min-height:52vh}
+.story-visual .fly{position:relative;width:min(46vw,340px);height:auto;max-width:84%;
+  filter:drop-shadow(0 30px 26px rgba(70,52,58,.24))}
+
+/* sides & drinks */
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,64px)}
+.menu-list h3{font-family:"Fredoka";font-weight:600;font-size:1.45rem;margin-bottom:16px}
+.li{display:flex;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.li .name{font-weight:600;color:var(--ink-deep)}
+.li .name small{display:block;color:var(--muted-2);font-weight:400;font-size:.82rem;margin-top:1px}
+.li .lead{flex:1}
+.li .p{font-family:"Fredoka";font-weight:600;color:var(--ink);white-space:nowrap}
+
+/* visit */
+.visit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.loc{border-radius:24px;padding:34px;background:var(--pink-3)}
+.loc .pin{font-size:.71rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.loc h3{font-family:"Fredoka";font-weight:600;font-size:1.8rem;margin:6px 0 16px}
+.loc .info{display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:.96rem}
+.loc .info b{color:var(--ink-deep);font-weight:600}
+.hours{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:grid;
+  grid-template-columns:auto 1fr;gap:5px 16px;font-size:.9rem}
+.hours dt{color:var(--muted-2);font-weight:600}
+.hours dd{text-align:right;color:var(--ink-deep)}
+.order-on{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.85rem;
+  padding:.6em 1.1em;border-radius:100px;border:1.5px solid var(--line);transition:.3s var(--ease)}
+.chip:hover{border-color:var(--ink);transform:translateY(-2px)}
+.chip .d{width:7px;height:7px;border-radius:50%;background:var(--ink);opacity:.6}
+.loc--side{display:flex;flex-direction:column;justify-content:center;background:var(--ink);color:var(--pink)}
+.loc--side .pin{color:rgba(243,204,214,.7)}
+.loc--side h3{color:var(--cream)}
+.loc--side p{color:rgba(243,204,214,.78);font-size:.96rem}
+
+/* cta */
+.cta{text-align:center}
+.cta h2{font-size:clamp(2.4rem,6.4vw,5rem);font-weight:700;margin-bottom:.2em}
+.cta p{color:var(--muted);max-width:34ch;margin:0 auto 26px}
+
+/* footer */
+footer{background:var(--ink);color:var(--pink)}
+.foot{max-width:var(--maxw);margin:0 auto;padding:56px clamp(18px,4vw,44px) 32px;
+  display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:36px;align-items:start}
+.foot .logo-foot{height:96px;width:auto;filter:brightness(0) invert(1);opacity:.92}
+.foot p{color:rgba(243,204,214,.7);max-width:28ch;margin-top:14px;font-size:.9rem}
+.fcol h4{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,204,214,.7);margin-bottom:14px}
+.fcol a{display:block;color:rgba(243,204,214,.78);padding:5px 0;transition:color .25s;font-size:.93rem}
+.fcol a:hover{color:var(--cream)}
+.foot-bottom{border-top:1px solid rgba(243,204,214,.16);padding:20px clamp(18px,4vw,44px);
+  max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;color:rgba(243,204,214,.5);font-size:.82rem}
+
+/* melting sauce dividers — upper section colour drips into the next */
+.story,#extras,footer{position:relative}
+.drip{position:absolute;top:0;left:0;width:100%;height:40px;line-height:0;pointer-events:none;
+  transform:translateY(-1px);z-index:4}
+.drip svg{width:100%;height:100%;display:block;fill:currentColor}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}
+.reveal[data-d="2"]{transition-delay:.18s}
+.reveal[data-d="3"]{transition-delay:.28s}
+
+@media(max-width:960px){
+  .hero-inner,.story .wrap,.lists,.visit-grid{grid-template-columns:1fr}
+  .hero-stage{order:-1;min-height:32vh;margin-bottom:6px}
+  .fly-wrap{width:min(78vw,420px)}
+  .foot{grid-template-columns:1fr 1fr}
+  .nav-links{position:fixed;inset:0 0 0 auto;width:min(78vw,300px);flex-direction:column;
+    align-items:flex-start;justify-content:center;gap:24px;padding:38px;background:var(--pink-3);
+    box-shadow:-20px 0 50px rgba(62,40,48,.2);transform:translateX(100%);transition:transform .45s var(--ease)}
+  .nav-links.open{transform:none}
+  .nav-links .btn{width:100%;justify-content:center}
+  .burger-toggle{display:flex;z-index:2}
+  .nav-links a.lnk{font-size:1.2rem}
+}
+@media(max-width:600px){
+  .burgers{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr}
+  .pic{height:210px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<path id="dripEdge" d="M0,6.0 L35.6,6.0 C54.5,8.5 59.7,26.5 70.0,26.5 C80.3,26.5 85.5,8.5 104.4,6.0 L207.7,6.0 C223.0,9.8 227.2,38.1 235.6,38.1 C243.9,38.1 248.1,9.8 263.4,6.0 L353.7,6.0 C368.8,9.7 372.9,37.2 381.2,37.2 C389.4,37.2 393.5,9.7 408.7,6.0 L466.5,6.0 C487.0,8.2 492.6,24.1 503.8,24.1 C515.0,24.1 520.6,8.2 541.1,6.0 L593.1,6.0 C613.5,10.9 619.0,46.8 630.1,46.8 C641.2,46.8 646.8,10.9 667.2,6.0 L727.0,6.0 C744.5,10.2 749.3,40.8 758.8,40.8 C768.3,40.8 773.1,10.2 790.6,6.0 L904.1,6.0 C926.7,9.3 932.8,33.9 945.1,33.9 C957.4,33.9 963.6,9.3 986.1,6.0 L1106.3,6.0 C1121.2,11.0 1125.3,47.8 1133.5,47.8 C1141.6,47.8 1145.7,11.0 1160.7,6.0 L1200,6.0 L1200,0 H0 Z"/>
+</defs></svg>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Epos Burger home"><img src="assets/logo.png" alt="Epos Burgers" /></a>
+  <div class="nav-links" id="navLinks">
+    <a class="lnk" href="#menu">Menu</a>
+    <a class="lnk" href="#story">Story</a>
+    <a class="lnk" href="#visit">Visit</a>
+    <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">
+      Order<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+    </a>
+  </div>
+  <button class="burger-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <h1 class="reveal" data-d="1">Epic smash <span class="pt">burgers.</span></h1>
+      <p class="lede reveal" data-d="2">100% beef, brioche buns, sauce made in-house.</p>
+      <div class="hero-cta reveal" data-d="2">
+        <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+        <a class="btn btn--ghost" href="#menu">See the menu</a>
+      </div>
+    </div>
+    <div class="hero-stage">
+      <div class="fly-wrap" id="flyWrap">
+        <img class="fly" id="heroBurger" src="assets/burger-house.webp" width="664" height="428"
+             alt="Epos House Cheeseburger with signature spicy mayo" fetchpriority="high" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>100% Beef</span><span>Brioche Buns</span><span>Smashed To Order</span><span>House Sauce</span><span>est. 2024</span>
+    <span>100% Beef</span><span>Brioche Buns</span><span>Smashed To Order</span><span>House Sauce</span><span>est. 2024</span>
+  </div>
+</div>
+
+<section id="menu">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">The lineup</span>
+      <h2 class="reveal" data-d="1">Two burgers, done right.</h2></div>
+    <div class="burgers">
+      <article class="bcard reveal" data-d="1">
+        <div class="pic"><img class="bimg" src="assets/burger-house.webp" width="664" height="428" loading="lazy" alt="House Cheeseburger"></div>
+        <div class="meta">
+          <span class="btag">House favourite</span>
+          <h3>House Cheeseburger</h3>
+          <p class="desc">Double smash, American cheese, signature spicy mayo and pickle relish.</p>
+          <div class="row"><span class="price">€9.50</span>
+            <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order</a></div>
+        </div>
+      </article>
+      <article class="bcard reveal" data-d="2">
+        <div class="pic"><img class="bimg" src="assets/burger-classic.webp" width="591" height="415" loading="lazy" alt="Classic Cheeseburger"></div>
+        <div class="meta">
+          <span class="btag">The original</span>
+          <h3>Classic Cheeseburger</h3>
+          <p class="desc">Double smash, American cheese, ketchup, mustard, pickles and onions.</p>
+          <div class="row"><span class="price">€9.50</span>
+            <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="drip" style="color:var(--pink)" aria-hidden="true"><svg viewBox="0 0 1200 50" preserveAspectRatio="none"><use href="#dripEdge"/></svg></div>
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The story</span>
+      <h2>Born on an island. Smashed in the city.</h2>
+      <p>Epos started on Antíparos, where one smash burger earned a cult following. Now it's landed in Glyfáda, with the same flat-top obsession and crispy edges.</p>
+    </div>
+    <div class="story-visual reveal" data-d="2">
+      <img class="fly" src="assets/burger-exploded.webp" width="668" height="851" alt="Epos cheeseburger ingredients, deconstructed">
+    </div>
+  </div>
+</section>
+
+<section id="extras">
+  <div class="drip" style="color:var(--pink-2)" aria-hidden="true"><svg viewBox="0 0 1200 50" preserveAspectRatio="none"><use href="#dripEdge"/></svg></div>
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">On the side</span>
+      <h2 class="reveal" data-d="1">Fries and drinks.</h2></div>
+    <div class="lists">
+      <div class="menu-list reveal" data-d="1">
+        <h3>Sides &amp; Dips</h3>
+        <div class="li"><span class="name">French Fries<small>Hand-cut, sea-salted</small></span><span class="lead"></span><span class="p">€5.00</span></div>
+        <div class="li"><span class="name">Sweet Chili / Truffle Mayo</span><span class="lead"></span><span class="p">€1.50</span></div>
+        <div class="li"><span class="name">Ketchup / Mustard / Mayo</span><span class="lead"></span><span class="p">€1.00</span></div>
+      </div>
+      <div class="menu-list reveal" data-d="2">
+        <h3>Drinks</h3>
+        <div class="li"><span class="name">Soft drinks<small>Coca-Cola, Sprite, Fanta</small></span><span class="lead"></span><span class="p">€2.00</span></div>
+        <div class="li"><span class="name">Mamos beer</span><span class="lead"></span><span class="p">€4.00</span></div>
+        <div class="li"><span class="name">Organic wine / Kombucha</span><span class="lead"></span><span class="p">€5.00</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="visit">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">Come get smashed</span>
+      <h2 class="reveal" data-d="1">Find us and feast.</h2></div>
+    <div class="visit-grid">
+      <div class="loc reveal" data-d="1">
+        <span class="pin">● Flagship · Glyfada</span>
+        <h3>Epos Glyfada</h3>
+        <div class="info">
+          <span><b>Giannitsopoulou 3</b>, Glyfada 166 74</span>
+          <span><b>Phone</b> <a href="tel:+302109681181" style="color:var(--ink)">+30 210 968 1181</a></span>
+        </div>
+        <dl class="hours">
+          <dt>Mon to Thu</dt><dd>17:30 to 00:00</dd>
+          <dt>Fri to Sat</dt><dd>12:30 to 01:30</dd>
+          <dt>Sunday</dt><dd>12:30 to 00:00</dd>
+        </dl>
+        <div class="order-on">
+          <a class="chip" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener"><span class="d"></span>Wolt</a>
+          <a class="chip" href="https://www.foody.com.cy/delivery/menu/epos-smash-burgers" target="_blank" rel="noopener"><span class="d"></span>Foody</a>
+          <a class="chip" href="#"><span class="d"></span>Bolt Food</a>
+        </div>
+      </div>
+      <div class="loc reveal" data-d="2">
+        <span class="pin">● Now open · Avana</span>
+        <h3>Epos Avana</h3>
+        <div class="info">
+          <span>Our newest spot, smashed to order all day.</span>
+        </div>
+        <dl class="hours">
+          <dt>Mon to Thu</dt><dd>12:00 to 00:30</dd>
+          <dt>Fri to Sat</dt><dd>12:00 to 01:30</dd>
+        </dl>
+        <div class="order-on">
+          <a class="chip" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener"><span class="d"></span>Wolt</a>
+          <a class="chip" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener"><span class="d"></span>Instagram</a>
+        </div>
+      </div>
+      <div class="loc loc--side reveal" data-d="3">
+        <span class="pin">● Where it began</span>
+        <h3>Epos Antíparos</h3>
+        <p>Antiparos Square (Chóra), Antíparos. The original island grill, open through the summer season.</p>
+        <div class="order-on">
+          <a class="chip" href="https://www.facebook.com/epossmashburgers" target="_blank" rel="noopener" style="border-color:rgba(243,204,214,.3);color:var(--pink)"><span class="d" style="background:var(--pink)"></span>Facebook</a>
+          <a class="chip" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener" style="border-color:rgba(243,204,214,.3);color:var(--pink)"><span class="d" style="background:var(--pink)"></span>Instagram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <span class="eyebrow reveal" style="justify-content:center">Hungry?</span>
+    <h2 class="reveal" data-d="1">Make it epic.</h2>
+    <p class="reveal" data-d="2">Your smash burger is two clicks away.</p>
+    <div class="reveal" data-d="2" style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap">
+      <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order on Wolt
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+      <a class="btn btn--ghost" href="tel:+302109681181">Call the shop</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="drip" style="color:var(--pink)" aria-hidden="true"><svg viewBox="0 0 1200 50" preserveAspectRatio="none"><use href="#dripEdge"/></svg></div>
+  <div class="foot">
+    <div><img class="logo-foot" src="assets/logo.png" alt="Epos Burgers" />
+      <p>Epic smash burgers on the Athens Riviera.</p></div>
+    <div class="fcol"><h4>Menu</h4>
+      <a href="#menu">House Cheeseburger</a><a href="#menu">Classic Cheeseburger</a><a href="#extras">Fries &amp; Drinks</a></div>
+    <div class="fcol"><h4>Order &amp; Follow</h4>
+      <a href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Wolt</a>
+      <a href="https://www.instagram.com/eposburger" target="_blank" rel="noopener">Instagram</a>
+      <a href="tel:+302109681181">+30 210 968 1181</a></div>
+  </div>
+  <div class="foot-bottom">
+    <span>© <span id="yr"></span> Epos Burger · Glyfada</span>
+    <span>Smashed to order · Made in Greece</span>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Epos Burger","description":"Epic smash burgers — 100% beef, brioche buns and signature sauces.","servesCuisine":["Smash Burgers","American"],"priceRange":"€€","url":"https://www.eposburger.com/","telephone":"+302109681181","address":{"@type":"PostalAddress","streetAddress":"Giannitsopoulou 3","addressLocality":"Glyfada","postalCode":"16674","addressCountry":"GR"},"openingHours":["Mo-Th 17:30-24:00","Fr-Sa 12:30-01:30","Su 12:30-24:00"]}
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  var nav = document.getElementById("nav");
+  function onScrollNav(){ nav.classList.toggle("scrolled", window.scrollY > 24); }
+  onScrollNav(); window.addEventListener("scroll", onScrollNav, {passive:true});
+
+  var toggle = document.getElementById("navToggle"), links = document.getElementById("navLinks");
+  toggle.addEventListener("click", function(){
+    var open = links.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", open ? "true":"false");
+  });
+  links.addEventListener("click", function(e){ if(e.target.closest("a")){ links.classList.remove("open"); toggle.setAttribute("aria-expanded","false"); }});
+
+  var io = new IntersectionObserver(function(en){
+    en.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }});
+  }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+
+  var floaters = Array.prototype.slice.call(document.querySelectorAll(".fly"));
+  var isMobile = window.matchMedia("(max-width:700px)").matches;
+  function frame(t){
+    floaters.forEach(function(el,i){
+      var rect = el.getBoundingClientRect();
+      var rel = (rect.top + rect.height/2 - window.innerHeight/2) / window.innerHeight;
+      var parY = rel * (i===0 ? -38 : -24);
+      var bob = Math.sin(t/950 + i*1.6) * (isMobile?5:11);
+      var rot = Math.sin(t/1350 + i*1.2) * (i===0?2.6:0.8) + (i===0?-1.5:0);
+      el.style.transform = "translate3d(0,"+(parY+bob).toFixed(2)+"px,0) rotate("+rot.toFixed(2)+"deg)";
+    });
+    requestAnimationFrame(frame);
+  }
+  if(!reduce) requestAnimationFrame(frame);
+
+  if(!reduce && !isMobile){
+    var wrap = document.getElementById("flyWrap");
+    setInterval(function(){
+      var s=document.createElement("span"); s.className="sizzle";
+      var sz=3+Math.random()*4; s.style.width=s.style.height=sz+"px";
+      s.style.left=(40+Math.random()*26)+"%"; s.style.top=(38+Math.random()*16)+"%";
+      s.style.background=Math.random()>.5?"#e7b04a":"#d98a4a";
+      s.style.animation="rise "+(1.7+Math.random()*1.2)+"s ease-out forwards";
+      wrap.appendChild(s); setTimeout(function(){s.remove();},3000);
+    }, 600);
+  }
+})();
+</script>
+</body>
+</html>

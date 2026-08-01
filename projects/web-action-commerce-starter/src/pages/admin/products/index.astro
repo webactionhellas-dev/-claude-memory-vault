@@ -1,0 +1,149 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import ProductImage from '@/components/ProductImage.astro';
+import { requireAdmin } from '@/lib/admin-guard';
+import { loadCatalog } from '@/lib/catalog';
+import { products } from '@/lib/products';
+import { money } from '@/lib/money';
+import { SHOPIFY_MANAGED, ADMIN_EDITABLE } from '@/lib/store-config';
+import { supabaseAdmin, adminReady } from '@/lib/supabase-admin';
+
+export const prerender = false;
+
+const g = await requireAdmin(Astro.cookies, Astro.request);
+if (!g.ok) return Astro.redirect('/login?next=/admin/products');
+
+await loadCatalog();
+const list = products.slice();
+
+// Self-service admin: rows link to the editor. Only when editing is disabled do
+// they link to the live storefront (read-only view).
+const rowHref = (slug: string) => (ADMIN_EDITABLE ? `/admin/products/${slug}` : `/product/${slug}`);
+
+// "Last synced" = the most recent product row change (only shown with the
+// read-only Shopify banner below).
+let lastSynced: string | null = null;
+if (SHOPIFY_MANAGED && !ADMIN_EDITABLE && adminReady()) {
+  const { data } = await supabaseAdmin.from('products').select('updated_at').order('updated_at', { ascending: false }).limit(1).maybeSingle();
+  lastSynced = data?.updated_at ?? null;
+}
+---
+
+<BaseLayout title="Products · Admin · ACME" noindex>
+  <AdminNav active="products" email={g.user?.email} />
+
+  <section class="wrap py-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="font-display text-2xl font-900 tracking-tight text-ink">Products</h1>
+        <p class="mt-1 text-sm text-faint"><span data-count>{list.length}</span> items</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <input data-search type="search" placeholder="Search name or brand…" class="h-10 w-56 rounded-xl border border-line bg-raised px-3.5 text-sm text-ink placeholder:text-faint focus:border-accent focus:outline-none" />
+        {ADMIN_EDITABLE
+          ? <a href="/admin/products/new" class="btn btn-fill">+ New product</a>
+          : <span class="rounded-full border border-line px-3 py-1.5 text-xs font-600 text-faint">Synced from Shopify · read-only</span>}
+      </div>
+    </div>
+
+    {SHOPIFY_MANAGED && !ADMIN_EDITABLE && (
+      <div class="mt-5 flex flex-col gap-3 rounded-2xl border border-line bg-raised/40 p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+          <span class="text-lg leading-none">🛍️</span>
+          <p class="text-muted">
+            Catalogue <strong class="text-ink">synced from Shopify</strong> — add and edit products in
+            <strong class="text-ink">Shopify admin</strong>; changes appear here on the next sync (nightly, or hit “Sync now”). This screen is read-only.
+            {lastSynced && <span class="text-faint"> · last synced {new Date(lastSynced).toLocaleString()}</span>}
+          </p>
+        </div>
+        <button data-sync class="btn btn-fill shrink-0">Sync now</button>
+      </div>
+    )}
+
+    <div class="mt-6 overflow-hidden rounded-2xl border border-line">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-line text-xs uppercase tracking-wide text-faint">
+          <tr><th class="p-3"></th><th class="p-3">Name</th><th class="p-3">Brand</th><th class="p-3">Price</th><th class="p-3">Status</th><th class="p-3"></th></tr>
+        </thead>
+        <tbody data-rows>
+          {list.map((p) => (
+            <tr class="border-b border-line last:border-0" data-row data-text={`${p.name} ${p.brand}`.toLowerCase()}>
+              <td class="p-3">
+                <a href={rowHref(p.slug)} class="block h-12 w-12 overflow-hidden rounded-lg border border-line bg-white">
+                  <ProductImage image={p.images[0]} alt="" widths={[48, 96]} sizes="48px" class="h-full w-full object-contain p-1" />
+                </a>
+              </td>
+              <td class="p-3 font-500 text-ink"><a href={rowHref(p.slug)} class="hover:text-accent-soft">{p.name}</a></td>
+              <td class="p-3 text-muted">{p.brand}</td>
+              <td class="p-3 font-600 text-ink">{money(p.price)}</td>
+              <td class="p-3">
+                {p.inStock
+                  ? <span class="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-600 text-accent-soft">In stock</span>
+                  : <span class="rounded-full bg-overlay/80 px-2 py-0.5 text-[11px] font-600 text-muted">Sold out</span>}
+              </td>
+              <td class="p-3 text-right"><a href={rowHref(p.slug)} class="text-accent-soft hover:underline">{ADMIN_EDITABLE ? 'Edit' : 'View ↗'}</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div data-empty class="hidden p-10 text-center text-sm text-faint">No products match.</div>
+    </div>
+  </section>
+
+  <script>
+    const search = document.querySelector('[data-search]') as HTMLInputElement;
+    const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')];
+    const count = document.querySelector('[data-count]')!;
+    const empty = document.querySelector('[data-empty]') as HTMLElement;
+    // toast on save/delete
+    const q = new URLSearchParams(location.search);
+    if (q.get('saved') || q.get('deleted')) {
+      const t = document.createElement('div');
+      t.textContent = q.get('deleted') ? 'Product deleted.' : 'Saved.';
+      t.className = 'fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-accent px-5 py-2.5 text-sm font-600 text-on-accent shadow-lg';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+      history.replaceState(null, '', '/admin/products');
+    }
+    search?.addEventListener('input', () => {
+      const term = search.value.trim().toLowerCase();
+      let n = 0;
+      rows.forEach((r) => {
+        const show = !term || r.dataset.text!.includes(term);
+        r.style.display = show ? '' : 'none';
+        if (show) n++;
+      });
+      count.textContent = String(n);
+      empty.style.display = n ? 'none' : 'block';
+    });
+  </script>
+
+  <script>
+    // "Sync now" → pull the latest catalogue from Shopify, then refresh.
+    const syncBtn = document.querySelector('[data-sync]') as HTMLButtonElement | null;
+    if (syncBtn) {
+      const original = syncBtn.textContent;
+      syncBtn.addEventListener('click', async () => {
+        syncBtn.disabled = true;
+        syncBtn.textContent = 'Syncing…';
+        try {
+          const res = await fetch('/api/admin/sync-shopify', { method: 'POST' });
+          const data = await res.json();
+          if (data.ok) {
+            syncBtn.textContent = 'Synced ✓';
+            setTimeout(() => location.reload(), 800);
+          } else {
+            alert(data.error || 'Sync failed.');
+            syncBtn.disabled = false;
+            syncBtn.textContent = original;
+          }
+        } catch {
+          alert('Could not run the sync.');
+          syncBtn.disabled = false;
+          syncBtn.textContent = original;
+        }
+      });
+    }
+  </script>
+</BaseLayout>

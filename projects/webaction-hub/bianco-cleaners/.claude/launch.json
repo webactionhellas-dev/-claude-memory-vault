@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bianco-cleaners",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3456", "."],
+      "port": 3456
+    }
+  ]
+}

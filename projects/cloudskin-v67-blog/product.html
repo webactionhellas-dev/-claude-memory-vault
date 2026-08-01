@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- warm the Supabase connection early so the owner's content (photos/copy) is ready sooner -->
+  <link rel="preconnect" href="https://ocszztflphqsaoyhlerx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://ocszztflphqsaoyhlerx.supabase.co">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/img/brand/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script>(function(){try{if(sessionStorage.getItem('cs_gate_ok')==='1')return;}catch(e){return;}location.replace('/');})();</script>
+  <title>Shop | CLOUDSKIN®</title>
+  <meta name="description" content="CloudSkin, luxury activewear engineered for the court and everywhere after.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f4ef">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/main.css?v=67">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"></noscript>
+  <script id="ld-product" type="application/ld+json"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#buybox">Skip to product</a>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div id="site-header"></div>
+
+  <main id="pdp">
+    <nav class="crumb" aria-label="Breadcrumb" id="crumb" style="grid-column:1/-1"></nav>
+
+    <div class="pdp" id="pdpMain"><!-- gallery + buybox injected --></div>
+
+    <!-- lower section: Complete the Look (left) + product details accordion (right) -->
+    <div class="pdp-extra">
+      <section class="pdp-look" aria-labelledby="ctlTitle">
+        <div class="pdp-extra__head"><h2 id="ctlTitle" data-i18n="pdp.completeLook">Complete the Look</h2></div>
+        <div class="pdp-look__grid" id="railCtl"></div>
+      </section>
+      <section class="pdp-details" aria-labelledby="detailsTitle">
+        <div class="pdp-extra__head"><h2 id="detailsTitle" data-i18n="pdp.details">Details</h2></div>
+        <div class="acc" id="acc"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- sticky add-to-bag -->
+  <div class="stickybar" id="stickybar">
+    <div class="stickybar__inner">
+      <img id="sbImg" src="" alt="">
+      <div class="stickybar__info"><h4 id="sbTitle"></h4><p id="sbPrice"></p></div>
+      <select id="sbSize" aria-label="Size" data-i18n-al="pdp.size"></select>
+      <button class="btn" id="sbAdd" data-i18n="pdp.addToBag">Add to Bag</button>
+    </div>
+  </div>
+
+  <footer id="site-footer" aria-label="Footer"></footer>
+
+  <script src="js/i18n-strings.js?v=67"></script>
+  <script src="js/i18n.js?v=67"></script>
+  <script src="js/config.js?v=67"></script>
+  <script src="js/products.js?v=67"></script>
+  <script src="js/product-content.js?v=67"></script>
+  <script src="js/shopify.js?v=67"></script>
+  <script src="js/curate.js?v=67"></script>
+  <script src="js/legal.js?v=67"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=67"></script>
+  <script src="js/content-snapshot.js?v=67"></script>
+  <script defer src="js/content.js?v=67"></script>
+  <script src="js/auth.js?v=67"></script>
+  <script src="js/shell.js?v=67"></script>
+  <script src="js/checkout.js?v=67"></script>
+  <script src="js/product.js?v=67"></script>
+  <script src="js/lux.js?v=67" defer></script>
+  <script src="js/welcome.js?v=67"></script>
+  <script>try{if(sessionStorage.getItem('vlm-armed')==='1'){
+  var l=document.createElement('link');l.rel='stylesheet';l.href='css/edit-mode.css?v=67';document.head.appendChild(l);
+  var s=document.createElement('script');s.src='js/edit-mode.js?v=67';s.defer=true;document.body.appendChild(s);
+}}catch(e){}</script>
+</body>
+</html>

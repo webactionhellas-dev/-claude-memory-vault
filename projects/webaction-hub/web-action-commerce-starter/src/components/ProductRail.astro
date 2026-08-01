@@ -1,0 +1,94 @@
+---
+import ProductCard from './ProductCard.astro';
+import Icon from './Icon.astro';
+import type { Product } from '@/lib/products';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  tagline?: string;
+  enEyebrow?: string;
+  enTitle?: string;
+  enTagline?: string;
+  href?: string;
+  products: Product[];
+  eager?: boolean;
+}
+const { eyebrow, title, tagline, enEyebrow, enTitle, enTagline, href, products, eager = false } = Astro.props;
+const railId = `rail-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<section class="wrap py-14 reveal">
+  <div class="mb-8 flex items-end justify-between gap-6">
+    <div>
+      {eyebrow && <span class="eyebrow" data-en={enEyebrow}>{eyebrow}</span>}
+      <h2 class="mt-3 font-display text-3xl font-800 tracking-tight md:text-[40px]" data-en={enTitle}>{title}</h2>
+      {tagline && <p class="mt-2 max-w-md text-sm text-muted" data-en={enTagline}>{tagline}</p>}
+    </div>
+    {
+      href && (
+        <a href={href} class="hidden shrink-0 items-center gap-1.5 text-sm font-600 text-muted transition-colors hover:text-ink sm:inline-flex">
+          <span data-en="View all">Δείτε όλα</span> <Icon name="arrow" size={16} />
+        </a>
+      )
+    }
+  </div>
+
+  <!-- Rail + overlay arrows (tiffany, centred on the product, hugging each edge) -->
+  <div class="relative -mx-5">
+    <div
+      id={railId}
+      class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 py-5 -my-3 md:gap-5"
+    >
+      {
+        products.map((p, i) => (
+          <div class="w-[58vw] flex-none snap-start sm:w-[40vw] md:w-[clamp(240px,24vw,300px)]">
+            <ProductCard product={p} eager={eager && i < 4} />
+          </div>
+        ))
+      }
+    </div>
+
+    <button
+      type="button"
+      data-rail-prev={railId}
+      class="rail-arrow absolute left-2 top-[38%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-base/55 text-accent shadow-lg ring-1 ring-accent/25 backdrop-blur-sm transition hover:bg-base/85 hover:text-accent-soft md:left-3"
+      aria-label="Scroll left"
+    >
+      <Icon name="chevron" size={20} class="rotate-90" />
+    </button>
+    <button
+      type="button"
+      data-rail-next={railId}
+      class="rail-arrow absolute right-2 top-[38%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-base/55 text-accent shadow-lg ring-1 ring-accent/25 backdrop-blur-sm transition hover:bg-base/85 hover:text-accent-soft md:right-3"
+      aria-label="Scroll right"
+    >
+      <Icon name="chevron" size={20} class="-rotate-90" />
+    </button>
+  </div>
+</section>
+
+<script>
+  // Scroll by a whole number of cards so the rail always lands aligned to a card
+  // start (never cutting a card in half / "starting from the middle").
+  function step(id: string, dir: 1 | -1) {
+    const rail = document.getElementById(id);
+    if (!rail) return;
+    const first = rail.firstElementChild as HTMLElement | null;
+    if (!first) return;
+    const gap = parseFloat(getComputedStyle(rail).columnGap || '20') || 20;
+    const cardW = first.getBoundingClientRect().width + gap;
+    const base = first.offsetLeft; // first card start (accounts for the rail's px padding)
+    const perView = Math.max(1, Math.floor(rail.clientWidth / cardW));
+    const amount = cardW * perView * dir;
+    // land exactly on a card boundary (base + n·cardW) so a card is never half-cut
+    const target = base + Math.round((rail.scrollLeft - base + amount) / cardW) * cardW;
+    rail.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-rail-next]').forEach((btn) =>
+    btn.addEventListener('click', () => step(btn.getAttribute('data-rail-next')!, 1)),
+  );
+  document.querySelectorAll('[data-rail-prev]').forEach((btn) =>
+    btn.addEventListener('click', () => step(btn.getAttribute('data-rail-prev')!, -1)),
+  );
+</script>

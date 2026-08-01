@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import ProductForm from '@/components/admin/ProductForm.astro';
+import { requireAdmin } from '@/lib/admin-guard';
+import { loadCatalog } from '@/lib/catalog';
+import { brands, categories } from '@/lib/products';
+import { ADMIN_EDITABLE } from '@/lib/store-config';
+
+export const prerender = false;
+
+const g = await requireAdmin(Astro.cookies, Astro.request);
+if (!g.ok) return Astro.redirect('/login?next=/admin/products/new');
+// Only reachable when the admin is self-service (ADMIN_EDITABLE).
+if (!ADMIN_EDITABLE) return Astro.redirect('/admin/products');
+
+await loadCatalog();
+const brandNames = brands.map((b) => b.name);
+const cats = categories.map((c) => ({ slug: c.slug, label: c.label }));
+---
+
+<BaseLayout title="New product · Admin · DRIP" noindex>
+  <AdminNav active="products" email={g.user?.email} />
+  <section class="wrap py-8">
+    <a href="/admin/products" class="text-sm text-faint hover:text-ink">← Products</a>
+    <h1 class="mb-6 mt-2 font-display text-2xl font-900 tracking-tight text-ink">New product</h1>
+    <ProductForm brands={brandNames} categories={cats} />
+  </section>
+</BaseLayout>

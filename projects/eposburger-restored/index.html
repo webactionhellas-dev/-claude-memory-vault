@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<!-- Synchronous, dependency-free, and FIRST: marks that JS is alive so the
+     reveal animations may hide content. If this one line fails to run, every
+     .reveal stays visible and the page can never render blank. -->
+<script>document.documentElement.className+=" js";</script>
+<title>Epos Burger — Epic Smash Burgers</title>
+<meta name="description" content="Epos Burger — epic smash burgers. 100% beef, brioche buns, sauce made in-house. Glyfada, Athens Riviera. Order on Wolt." />
+<meta name="theme-color" content="#f3ccd6" />
+<link rel="canonical" href="https://www.eposburger.com/" />
+<link rel="icon" href="assets/logo.webp" />
+<meta property="og:type" content="restaurant" />
+<meta property="og:title" content="Epos Burger — Epic Smash Burgers" />
+<meta property="og:description" content="100% beef. Brioche buns. Smashed to order." />
+<meta property="og:image" content="https://www.eposburger.com/assets/burger-house.webp" />
+<meta property="og:url" content="https://www.eposburger.com/" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- fonts are self-hosted: no cross-origin CSS round-trip before text can paint.
+     only the three faces used above the fold are preloaded; the rest stream in
+     with font-display:swap so text is readable immediately. -->
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-900-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/hanken-grotesk-400-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/hanken-grotesk-700-latin.woff2" crossorigin />
+<link rel="preload" as="image" href="assets/hero-burger.webp" fetchpriority="high" />
+<link rel="preload" as="image" href="assets/logo.webp" />
+
+<style>
+/* ---- self-hosted faces (latin + latin-ext, woff2) ---------------------- */
+@font-face{font-family:'Fredoka';font-style:normal;font-weight:600;font-stretch:100%;font-display:swap;src:url(assets/fonts/fredoka-600-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Fredoka';font-style:normal;font-weight:600;font-stretch:100%;font-display:swap;src:url(assets/fonts/fredoka-600-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/hanken-grotesk-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/hanken-grotesk-400-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/hanken-grotesk-600-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/hanken-grotesk-600-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:700;font-display:swap;src:url(assets/fonts/hanken-grotesk-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:700;font-display:swap;src:url(assets/fonts/hanken-grotesk-700-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:800;font-display:swap;src:url(assets/fonts/nunito-800-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:800;font-display:swap;src:url(assets/fonts/nunito-800-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url(assets/fonts/nunito-900-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url(assets/fonts/nunito-900-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
+:root{
+  --pink:#f3ccd6;        /* brand pink (from logo) */
+  --pink-2:#efbecb;      /* deeper band */
+  --pink-3:#f9dee4;      /* light cards */
+  --ink:#4e4e57;         /* brand slate — headings & buttons */
+  --ink-deep:#3e3e46;    /* body text */
+  --muted:rgba(62,62,70,.66);
+  --muted-2:rgba(62,62,70,.42);
+  --line:rgba(62,62,70,.15);
+  --cream:#fff6f3;
+  --maxw:1200px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--pink);color:var(--ink-deep);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;
+  font-size:clamp(15px,1.04vw,17px);line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ink);color:var(--pink)}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:"Nunito",system-ui,sans-serif;font-weight:800;line-height:1.0;
+  letter-spacing:-.01em;color:var(--ink)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5em;font-family:"Hanken Grotesk";
+  font-weight:700;font-size:.93rem;padding:.82em 1.5em;border-radius:100px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--cream);cursor:pointer;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s,color .3s;will-change:transform}
+.btn svg{width:1.02em;height:1.02em;transition:transform .35s var(--ease)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 14px 24px -12px rgba(62,62,70,.5)}
+.btn:hover svg{transform:translate(3px,-3px)}
+.btn--ghost{background:transparent;color:var(--ink)}
+.btn--ghost:hover{background:rgba(62,62,70,.07)}
+
+.eyebrow{display:inline-flex;align-items:center;gap:.6em;font-size:.73rem;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:22px;height:1.5px;background:var(--ink);opacity:.5}
+
+/* nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;
+  justify-content:space-between;padding:14px clamp(18px,4vw,44px);
+  transition:padding .4s var(--ease),box-shadow .4s}
+/* The blurred bar lives on a PSEUDO-ELEMENT, never on .nav itself. A
+   backdrop-filter (like transform/filter) makes an element the containing block
+   for its position:fixed descendants — with it on .nav, the fixed mobile menu
+   panel resolved inset:0 against the 62px bar instead of the viewport and
+   collapsed into a sliver the moment the page was scrolled. */
+.nav::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:rgba(243,204,214,0);
+  transition:background .4s var(--ease),-webkit-backdrop-filter .4s,backdrop-filter .4s}
+.nav.scrolled::before{background:rgba(243,204,214,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  backdrop-filter:blur(14px) saturate(150%)}
+.nav.scrolled{padding-top:9px;padding-bottom:9px;box-shadow:0 1px 0 var(--line)}
+.brand{display:flex;align-items:center}
+.brand img{height:54px;width:54px;object-fit:contain;padding:7px;box-sizing:border-box;background:var(--pink);border:1px solid var(--pink-2);border-radius:50%;transition:height .4s var(--ease),width .4s var(--ease)}
+.nav.scrolled .brand img{height:44px;width:44px}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a.lnk{font-weight:600;font-size:.92rem;color:var(--muted);position:relative;transition:color .3s}
+.nav-links a.lnk::after{content:"";position:absolute;left:0;bottom:-5px;width:0;height:1.5px;
+  background:var(--ink);transition:width .35s var(--ease)}
+.nav-links a.lnk:hover{color:var(--ink)}
+.nav-links a.lnk:hover::after{width:100%}
+.burger-toggle{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+.burger-toggle span{width:24px;height:2px;background:var(--ink);transition:.3s var(--ease)}
+
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;
+  padding:120px clamp(18px,4vw,44px) 50px;overflow:hidden}
+.hero-logo{position:absolute;top:clamp(40px,4.5vh,66px);left:50%;transform:translateX(-50%);z-index:7;pointer-events:none;display:flex;align-items:center;justify-content:center;padding:clamp(20px,2.4vw,30px)}.hero-logo::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;aspect-ratio:1;border-radius:50%;background:var(--pink);border:1px solid var(--pink-2);z-index:-1}.hero-logo img{width:clamp(98px,12.5vw,148px);height:auto;display:block;filter:drop-shadow(0 3px 5px rgba(60,40,48,.3)) drop-shadow(0 0 1.2px rgba(78,78,87,.6))}@media(max-width:760px){.hero-logo{top:34px}.hero-logo img{width:96px}}
+.hero-glow{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(56% 52% at 70% 44%, rgba(255,255,255,.5), transparent 60%),
+            radial-gradient(80% 70% at 28% 92%, rgba(239,190,203,.55), transparent 70%)}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;
+  display:grid;grid-template-columns:1fr 1.05fr;gap:24px;align-items:center}
+.hero-copy{max-width:520px}
+.hero h1{font-size:clamp(3.1rem,8.4vw,6.6rem);font-weight:900;margin:.18em 0 0}
+.hero h1 .pt{color:var(--ink)}
+.hero p.lede{font-size:clamp(1.02rem,1.4vw,1.18rem);color:var(--muted);max-width:34ch;margin:1.2em 0 1.8em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:13px}
+.tagline{margin-top:32px;font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--muted-2);
+  text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.tagline::before{content:"";width:18px;height:1.5px;background:var(--muted-2)}
+
+.hero-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:44vh}
+.fly-wrap{position:relative;width:min(48vw,560px);aspect-ratio:1/.66;
+  animation:heroFade .7s ease both}
+@keyframes heroFade{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.fly-wrap{animation:none}}
+.fly{position:absolute;inset:0;width:100%;height:auto;
+  filter:drop-shadow(0 26px 24px rgba(70,52,58,.24));will-change:transform}
+@keyframes rise{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:.7}100%{opacity:0;transform:translateY(-72px) scale(1.1)}}
+.sizzle{position:absolute;border-radius:50%;pointer-events:none;opacity:0;filter:blur(.4px)}
+
+/* marquee */
+.marquee{background:var(--ink);color:var(--pink);overflow:hidden;padding:12px 0;position:relative;z-index:3}
+.marquee-track{display:flex;width:max-content;animation:scroll 24s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{font-family:"Fredoka";font-weight:600;font-size:1.05rem;padding:0 22px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:22px}
+.marquee span::after{content:"●";font-size:.42em;opacity:.55}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:clamp(60px,10vh,124px) clamp(18px,4vw,44px)}
+.sec-head{margin-bottom:44px}
+.sec-head h2{font-size:clamp(2.2rem,5.2vw,4rem);font-weight:700}
+
+/* menu — burger in its own zone, text strictly below */
+.burgers{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.bcard{background:var(--pink-3);border-radius:26px;display:flex;flex-direction:column;
+  overflow:visible;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.bcard:hover{transform:translateY(-8px);box-shadow:0 28px 46px -28px rgba(62,40,48,.4)}
+/* The burger used to ride up past the card's top edge, so the tile's rounded
+   border cut a visible line straight across it. The image zone now carries a
+   top pad bigger than the total upward travel (float 8 + hover 14 + the ~6px
+   the 1.05 scale adds), so the burger always floats INSIDE the tile. */
+.pic{height:264px;padding-top:56px;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:visible}
+/* The cap matters as much as the pad: the two burgers have different aspect
+   ratios, and without one the taller image still cleared the pad and clipped. */
+.bimg{width:80%;max-width:340px;max-height:208px;height:auto;object-fit:contain;
+  filter:drop-shadow(0 20px 18px rgba(70,52,58,.22));
+  transition:transform .6s var(--ease);transform:translateY(-6px);-webkit-user-drag:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;pointer-events:none}
+.bcard:hover .bimg{transform:translateY(-14px) rotate(-3deg) scale(1.05)}
+.meta{padding:4px 32px 30px}
+.btag{display:inline-block;font-size:.67rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cream);background:var(--ink);padding:.34em .8em;border-radius:100px;margin-bottom:12px}
+.bcard h3{font-size:clamp(1.7rem,2.6vw,2.2rem);font-weight:600;margin-bottom:.3em}
+.bcard .desc{color:var(--muted);font-size:.95rem;margin-bottom:16px;max-width:32ch}
+.bcard .row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border-top:1px solid var(--line);padding-top:16px}
+.price{font-family:"Fredoka";font-weight:600;font-size:1.7rem;color:var(--ink)}
+
+/* story */
+.story{background:#fff;padding-top:56px}.story-photo{margin:26px 0 0;max-width:282px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 16px 36px rgba(70,52,58,.20);transition:transform .18s ease-out,box-shadow .3s ease-out;transform-origin:center;will-change:transform;cursor:pointer}.story-photo:hover{box-shadow:0 28px 54px rgba(70,52,58,.30)}.story-photo img{display:block;width:100%;height:auto}.story-photo figcaption{position:absolute;left:0;bottom:0;width:100%;padding:30px 14px 11px;color:#fff;font:600 .72rem/1 "Hanken Grotesk",sans-serif;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(transparent,rgba(46,45,53,.72))}
+.story .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+.story h2{font-size:clamp(1.9rem,4.4vw,3.2rem);font-weight:900;margin:.4em 0 .5em}
+.story p{color:var(--ink-deep);max-width:34ch;font-size:1.05rem}
+.story-visual{position:relative;display:flex;align-items:flex-start;justify-content:center;min-height:auto;padding-top:clamp(4px,1.5vw,16px)}
+.story-visual .fly{position:relative;width:min(46vw,340px);height:auto;max-width:84%;
+  filter:drop-shadow(0 30px 26px rgba(70,52,58,.24))}
+/* decomposing burger — 6 full-canvas layers stacked in one box (.bstage): the
+   first <img> sets the size (like the old single image) and the rest overlay it
+   pixel-aligned. A layer at translateY 0 reproduces the source's exploded spread,
+   so the JS only TUCKS them together at scroll progress 0 (assembled). Per-layer
+   drop-shadow (never on the whole burger) gives depth as they separate. */
+.burger-float{position:relative;display:flex;align-items:center;justify-content:center;
+  width:100%;will-change:transform;transform:translateZ(0)}
+.bstage{position:relative;max-width:100%}
+.blayer2{display:block;position:relative;width:auto;height:auto;max-width:100%;max-height:min(70vh,640px);
+  object-fit:contain;backface-visibility:hidden;will-change:transform,opacity;
+  filter:drop-shadow(0 22px 34px rgba(70,52,58,.20))}
+.blayer2~.blayer2{position:absolute;top:0;left:0;width:100%;height:100%}
+/* paint order: top bun in front -> bottom bun at the back (matches a real stack) */
+.blayer2[data-i="0"]{z-index:60} /* top bun */
+.blayer2[data-i="1"]{z-index:50} /* onions + ketchup + mustard */
+.blayer2[data-i="2"]{z-index:40} /* pickles */
+.blayer2[data-i="3"]{z-index:30} /* upper cheese + patty */
+.blayer2[data-i="4"]{z-index:20} /* lower cheese + patty */
+.blayer2[data-i="5"]{z-index:10} /* bottom bun */
+
+/* sides & drinks */
+.lists{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(22px,4vw,46px)}.sides-banner{background:var(--pink-3);border-radius:20px;padding:20px clamp(20px,3vw,32px);margin-bottom:34px}.sides-banner h3{margin-bottom:4px}.sides-banner .li{border-bottom:0;padding:7px 0}.list-note{color:var(--muted-2);font-size:.8rem;margin:2px 0 8px}.menu-list h3{margin-bottom:8px}
+.menu-list h3{font-family:"Fredoka";font-weight:600;font-size:1.45rem;margin-bottom:16px}
+.li{display:flex;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.li .name{font-weight:600;color:var(--ink-deep)}
+.li .name small{display:block;color:var(--muted-2);font-weight:400;font-size:.82rem;margin-top:1px}
+.li .lead{flex:1}
+.li .p{font-family:"Fredoka";font-weight:600;color:var(--ink);white-space:nowrap}
+
+/* visit */
+.visit-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.loc{position:relative;overflow:hidden;border-radius:24px;padding:30px 26px;background:var(--pink-3)}
+/* One group photo split across the location tiles. The horizontal
+   background-size is the width of the whole row expressed relative to a single
+   tile — 4 tiles plus the 3 gaps between them — so the slices line up into one
+   continuous picture. Each tile is then positioned at i/(n-1) along it. */
+.visit-grid{--visit-photo:none}
+#visit.bg-in .visit-grid{--visit-photo:url(assets/visit-photo.webp)}
+.visit-grid .loc{background-image:linear-gradient(rgba(249,222,228,.74),rgba(249,222,228,.74)),var(--visit-photo);
+  background-repeat:no-repeat,no-repeat;background-size:100% 100%,calc(400% + 66px) auto}
+.visit-grid .loc:nth-child(1){background-position:center,0% center}
+.visit-grid .loc:nth-child(2){background-position:center,33.333% center}
+.visit-grid .loc:nth-child(3){background-position:center,66.667% center}
+.visit-grid .loc:nth-child(4){background-position:center,100% center}
+/* two-up: same trick, two tiles + one gap */
+@media(min-width:961px) and (max-width:1200px){
+  .visit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .loc{padding:34px}
+  .visit-grid .loc{background-size:100% 100%,calc(200% + 22px) auto}
+  .visit-grid .loc:nth-child(odd){background-position:center,0% center}
+  .visit-grid .loc:nth-child(even){background-position:center,100% center}
+}
+.visit-grid .loc--side{background-image:linear-gradient(rgba(62,62,70,.80),rgba(62,62,70,.80)),var(--visit-photo)}
+.loc .pin{font-size:.71rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+/* four across is tight — ease the eyebrow so "NOW OPEN · NEA ERYTHRAIA" holds
+   one line. Must sit after the base rule: media queries add no specificity. */
+@media(min-width:1201px){.loc .pin{font-size:.66rem;letter-spacing:.08em}}
+.loc h3{font-family:"Nunito";font-weight:800;font-size:1.8rem;margin:6px 0 16px}
+.loc .info{display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:.96rem}
+.loc .info b{color:var(--ink-deep);font-weight:600}
+.hours{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:grid;
+  grid-template-columns:auto 1fr;gap:5px 16px;font-size:.9rem}
+.hours dt{color:var(--muted-2);font-weight:600}
+.hours dd{text-align:right;color:var(--ink-deep)}
+.order-on{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.85rem;
+  padding:.6em 1.1em;border-radius:100px;border:1.5px solid var(--line);transition:.3s var(--ease)}
+.chip:hover{border-color:var(--ink);transform:translateY(-2px)}
+.chip .d{width:7px;height:7px;border-radius:50%;background:var(--ink);opacity:.6}
+.loc--side{display:flex;flex-direction:column;justify-content:center;background:var(--ink);color:var(--pink)}
+.loc--side .pin{color:rgba(243,204,214,.7)}
+.loc--side h3{color:var(--cream)}
+.loc--side p{color:rgba(243,204,214,.78);font-size:.96rem}
+
+/* cta */
+.cta{text-align:center}
+.cta h2{font-size:clamp(2.4rem,6.4vw,5rem);font-weight:700;margin-bottom:.2em}
+.cta p{color:var(--muted);max-width:34ch;margin:0 auto 26px}
+
+/* footer */
+footer{background:var(--ink);color:var(--pink);overflow:hidden}
+footer::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:none center/cover no-repeat;opacity:.55}
+footer.bg-in::before{background-image:url(assets/footer-bg.webp)}
+footer .foot,footer .foot-bottom,footer .line-sep{position:relative;z-index:1}
+.foot{max-width:var(--maxw);margin:0 auto;padding:56px clamp(18px,4vw,44px) 32px;
+  display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:36px;align-items:start}
+.foot .logo-foot{height:112px;width:112px;object-fit:contain;padding:18px;box-sizing:border-box;background:var(--pink);border:1px solid var(--pink-2);border-radius:50%;filter:none;opacity:1}
+.foot p{color:rgba(243,204,214,.7);max-width:28ch;margin-top:14px;font-size:.9rem}
+.fcol h4{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,204,214,.7);margin-bottom:14px}
+.fcol a{display:block;color:rgba(243,204,214,.78);padding:5px 0;transition:color .25s;font-size:.93rem}
+.fcol a:hover{color:var(--cream)}
+.foot-bottom{border-top:1px solid rgba(243,204,214,.16);padding:20px clamp(18px,4vw,44px);
+  max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;color:rgba(243,204,214,.5);font-size:.82rem}
+
+/* melting sauce dividers — upper section colour drips into the next */
+.story,#extras,footer{position:relative}
+.drip{position:absolute;top:0;left:0;width:100%;height:40px;line-height:0;pointer-events:none;
+  transform:translateY(-1px);z-index:4}
+.drip svg{width:100%;height:100%;display:block;fill:currentColor}
+.drip-photo{position:absolute;left:0;top:0;width:100%;height:140px;transform:translateY(-1px);z-index:4;pointer-events:none;background-image:linear-gradient(to bottom,var(--pink),rgba(243,204,214,0) 9px),none;background-repeat:no-repeat,repeat-x;background-position:top center,top center;background-size:100% 140px,auto 140px}
+
+@media(max-width:700px){}
+
+
+
+
+#extras{padding-top:64px;background:var(--pink);overflow:hidden}
+.extras-bg{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.45;
+  background:none center center/cover no-repeat;image-rendering:auto}
+/* decorative art attaches only as its section approaches — see the bg-in
+   observer in the script below */
+#extras.bg-in .extras-bg{background-image:url(assets/extras-bg.webp)}
+.story.bg-in .drip-photo{background-image:linear-gradient(to bottom,var(--pink),rgba(243,204,214,0) 9px),url(assets/drip-photo.webp)}
+#extras .wrap{position:relative;z-index:1}
+.line-sep{position:absolute;left:0;top:0;width:100%;height:0;border-top:2px solid rgba(243,204,214,.22);z-index:4;pointer-events:none}
+
+/* reveal — content must NEVER be stuck invisible.
+   Default is VISIBLE, so with no JS at all (or a script that throws, or an
+   in-app browser that chokes) everything shows. The hidden-then-animate state
+   is gated behind html.js, which an inline script in <head> sets synchronously.
+   Belt and suspenders: even once hidden, a CSS keyframe force-reveals after
+   2.6s, so a mid-run JS failure can't leave a blank page either. When the
+   observer adds .in the transition takes over and the safety animation is
+   cancelled. */
+.reveal{opacity:1;transform:none}
+.js .reveal{opacity:0;transform:translateY(28px);
+  transition:opacity .9s var(--ease-out),transform .9s var(--ease-out);
+  animation:revealSafety .6s ease 2.6s forwards}
+/* Once JS confirms the scroll observer is installed it adds html.reveal-js,
+   which cancels the blanket safety animation so real scroll-reveal takes over.
+   If the script threw before that point, reveal-js is never set and everything
+   fades in at 2.6s — late, but never permanently blank. */
+.js.reveal-js .reveal{animation:none}
+.js .reveal.in{opacity:1;transform:none;animation:none}
+@keyframes revealSafety{to{opacity:1;transform:none}}
+.reveal[data-d="1"]{transition-delay:.08s}
+.reveal[data-d="2"]{transition-delay:.18s}
+.reveal[data-d="3"]{transition-delay:.28s}
+.reveal[data-d="4"]{transition-delay:.38s}
+
+@media(max-width:960px){
+  .hero-inner,.story .wrap,.lists,.visit-grid{grid-template-columns:1fr}
+  /* stacked: each tile still shows a different slice, so the column doesn't
+     read as the same photo repeated four times */
+  .visit-grid .loc{background-size:100% 100%,168% auto}
+  .visit-grid .loc:nth-child(1){background-position:center,0% center}
+  .visit-grid .loc:nth-child(2){background-position:center,33.333% center}
+  .visit-grid .loc:nth-child(3){background-position:center,66.667% center}
+  .visit-grid .loc:nth-child(4){background-position:center,100% center}
+  .hero-stage{order:-1;min-height:32vh;margin-bottom:6px}
+  .fly-wrap{width:min(78vw,420px)}
+  .blayer2{max-height:min(56vh,520px)}
+  .foot{grid-template-columns:1fr 1fr}
+  .nav-links{position:fixed;inset:0 0 0 auto;width:min(78vw,300px);flex-direction:column;
+    align-items:flex-start;justify-content:center;gap:24px;padding:38px;background:var(--pink-3);
+    box-shadow:-20px 0 50px rgba(62,40,48,.2);transform:translateX(100%);transition:transform .45s var(--ease)}
+  .nav-links.open{transform:none}
+  .nav-links .btn{width:100%;justify-content:center}
+  .burger-toggle{display:flex;z-index:2}
+  .nav-links a.lnk{font-size:1.2rem}
+}
+@media(max-width:600px){
+  .burgers{grid-template-columns:1fr}
+  .foot{grid-template-columns:1fr}
+  .pic{height:216px;padding-top:46px}
+  .bimg{max-height:170px}
+  .blayer2{max-height:46vh;max-width:66vw}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .reveal,.js .reveal{opacity:1!important;transform:none!important;animation:none!important}
+  .menu-list .li,.sides-banner .li,.pic,.mimg,.bimg{opacity:1!important;transform:none!important;animation:none!important}
+}
+
+/* ===== ADDED: richer reactivity · animated menu options · merch ===== */
+
+/* menu burgers — gentle continuous float on the image zone (never stops) */
+@keyframes picFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.pic{animation:picFloat 4.6s var(--ease-out) infinite}
+.bcard:nth-of-type(2) .pic{animation-delay:-2.3s}
+.bcard{position:relative}
+.bcard::after{content:"";position:absolute;inset:0;border-radius:26px;pointer-events:none;
+  box-shadow:inset 0 0 0 1.5px rgba(78,78,87,0);transition:box-shadow .5s var(--ease)}
+.bcard:hover::after{box-shadow:inset 0 0 0 1.5px rgba(78,78,87,.16)}
+.bcard .btag{transition:transform .45s var(--ease),background .3s,color .3s}
+.bcard:hover .btag{transform:translateY(-3px)}
+.bcard h3{transition:transform .45s var(--ease)}
+.bcard:hover h3{transform:translateX(3px)}
+.bcard .price{transition:transform .45s var(--ease),color .3s;transform-origin:left center}
+.bcard:hover .price{transform:scale(1.07)}.bcard{-webkit-tap-highlight-color:transparent}.bcard:active{transform:translateY(-4px)}
+
+/* every list option (sides · dips · drinks · beer & wine) — reactive rows */
+.li{position:relative;border-radius:12px}
+.li::before{content:"";position:absolute;left:-12px;top:50%;width:3px;height:58%;border-radius:3px;
+  background:var(--ink);transform:translateY(-50%) scaleY(0);transform-origin:center;
+  transition:transform .4s var(--ease)}
+.li .name{transition:color .3s}
+.li .p{transition:transform .4s var(--ease),color .3s;transform-origin:right center}
+.li:hover::before{transform:translateY(-50%) scaleY(1)}
+.li:hover .name{color:var(--ink)}
+.li:hover .p{transform:scale(1.12);color:var(--ink)}
+/* staggered entrance once a column reveals (scoped so hover still wins) */
+.menu-list .li,.sides-banner .li{opacity:0;transform:translateY(12px);
+  transition:opacity .55s var(--ease-out),transform .45s var(--ease),background .4s var(--ease)}
+.menu-list.in .li,.sides-banner.in .li{opacity:1;transform:none}
+.menu-list.in .li:hover,.sides-banner.in .li:hover{transform:translateX(9px);background:rgba(78,78,87,.05)}
+.menu-list.in .li:nth-child(2){transition-delay:.05s}
+.menu-list.in .li:nth-child(3){transition-delay:.10s}
+.menu-list.in .li:nth-child(4){transition-delay:.15s}
+.menu-list.in .li:nth-child(5){transition-delay:.20s}
+.menu-list.in .li:nth-child(6){transition-delay:.25s}
+.menu-list.in .li:nth-child(7){transition-delay:.30s}
+.menu-list.in .li:nth-child(8){transition-delay:.35s}
+.menu-list.in .li:nth-child(9){transition-delay:.40s}
+
+/* visit cards & sides banner — lift + glow on hover */
+.loc{transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.loc:hover{transform:translateY(-6px);box-shadow:0 26px 44px -28px rgba(62,40,48,.42)}
+.sides-banner{transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.sides-banner:hover{transform:translateY(-4px);box-shadow:0 22px 40px -28px rgba(62,40,48,.30)}
+
+/* merch */
+#merch{background:var(--pink)}
+.merch-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.mcard{position:relative;background:var(--pink-3);border-radius:26px;overflow:hidden;
+  display:flex;flex-direction:column;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.mcard:hover{transform:translateY(-8px);box-shadow:0 28px 46px -28px rgba(62,40,48,.4)}
+.mcard::after{content:"";position:absolute;inset:0;border-radius:26px;pointer-events:none;
+  box-shadow:inset 0 0 0 1.5px rgba(78,78,87,0);transition:box-shadow .5s var(--ease)}
+.mcard:hover::after{box-shadow:inset 0 0 0 1.5px rgba(78,78,87,.16)}
+/* pan-y (not none): a vertical swipe over a hoodie still scrolls the page —
+   the script only claims the gesture once it reads as horizontal */
+.mpic{position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:grab;touch-action:pan-y;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.mpic.pinching{cursor:grabbing}
+/* contrasting backdrops so the cut-out hoodies pop */
+.mcard:nth-of-type(1) .mpic{background:radial-gradient(120% 100% at 50% 36%,#fffdfc,#f5e8eb 78%,#efd9df)}
+.mcard:nth-of-type(2) .mpic{background:radial-gradient(120% 100% at 50% 36%,#fde6ec,#f3c9d6 80%,#eebbcb)}
+.mfab{width:100%;display:block;will-change:transform;backface-visibility:hidden}
+/* hoodie rendered as a background (no <img>) + drag/select locked so it can't be saved */
+.mimg{width:100%;aspect-ratio:1;display:block;transform-origin:50% 50%;
+  background-repeat:no-repeat;background-position:center 50%;background-size:contain;
+  -webkit-user-drag:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  will-change:transform,filter;backface-visibility:hidden}
+#merch.bg-in .mcard:nth-of-type(1) .mimg{background-image:url(assets/hoodie-pink.webp)}
+#merch.bg-in .mcard:nth-of-type(2) .mimg{background-image:url(assets/hoodie-white.webp)}
+/* cursor-tracking sheen, pinch dimple & fabric hint */
+.mpinch{position:absolute;inset:0;pointer-events:none;opacity:calc(var(--pinch,0)*.9);
+  background:radial-gradient(110px 110px at var(--mx,50%) var(--my,50%),rgba(60,40,48,.32),rgba(60,40,48,0) 60%)}
+.mhint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%) translateY(8px);
+  font:700 .66rem/1 "Hanken Grotesk",sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cream);background:rgba(62,62,70,.8);padding:.55em 1em;border-radius:100px;
+  pointer-events:none;opacity:0;white-space:nowrap;
+  transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.mpic.hovered .mhint{opacity:1;transform:translateX(-50%) translateY(0)}
+.mpic.pinching .mhint{opacity:0;transform:translateX(-50%) translateY(8px)}
+.mcard .meta{padding:22px 32px 30px}
+.mcard h3{font-size:clamp(1.3rem,2.1vw,1.75rem);font-weight:600;margin-bottom:.3em}
+.mcard .btag{transition:transform .45s var(--ease)}
+.mcard:hover .btag{transform:translateY(-3px)}
+.mcard .desc{color:var(--muted);font-size:.95rem;margin-bottom:16px;max-width:34ch}
+.mcard .row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border-top:1px solid var(--line);padding-top:16px}
+.mcard .price{transition:transform .45s var(--ease);transform-origin:left center}
+.mcard:hover .price{transform:scale(1.07)}
+@media(max-width:600px){.merch-grid{grid-template-columns:1fr}}
+
+/* ==========================================================================
+   DEVICE POLISH — phones, tablets, notched iPhones, Safari/macOS
+   ========================================================================== */
+
+/* --- scrolling ---------------------------------------------------------- */
+html{
+  scroll-padding-top:92px;          /* anchor targets clear the fixed nav */
+  -webkit-text-size-adjust:100%;    /* iOS must not reflow text on rotate */
+  text-size-adjust:100%;
+  /* reserve the classic-scrollbar gutter so body.nav-open{overflow:hidden}
+     can't widen the viewport and jog the fixed nav sideways when the menu
+     opens. Safari has no support but uses overlay bars, so it never jumps. */
+  scrollbar-gutter:stable;
+}
+/* NOTE: do NOT put overflow-x:clip/hidden on <html> here. The root element's
+   overflow propagates to the viewport, and `clip` makes the viewport a
+   non-scrolling clip container — it killed page scrolling entirely. The
+   sideways clipping we need already comes from body{overflow-x:hidden}. */
+body{
+  overscroll-behavior-y:none;       /* no rubber-band flash behind the page */
+  overscroll-behavior-x:none;
+}
+/* iOS <15.4 has no svh: keep a vh value first so the hero never collapses */
+.hero{min-height:100vh;min-height:100svh}
+/* every tappable thing loses the grey iOS flash */
+a,button,.chip,.btn,.bcard,.mcard{-webkit-tap-highlight-color:transparent}
+
+/* --- notch / home-indicator safe areas ---------------------------------- */
+.nav{
+  padding-left:max(clamp(18px,4vw,44px),env(safe-area-inset-left));
+  padding-right:max(clamp(18px,4vw,44px),env(safe-area-inset-right));
+}
+.wrap,.hero,.foot,.foot-bottom{
+  padding-left:max(clamp(18px,4vw,44px),env(safe-area-inset-left));
+  padding-right:max(clamp(18px,4vw,44px),env(safe-area-inset-right));
+}
+.foot-bottom{padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.nav-links{padding-right:max(38px,env(safe-area-inset-right))}
+
+/* the nav blur is applied on .nav::before above — putting it on .nav itself
+   traps the fixed mobile menu inside the bar */
+
+/* --- touch devices ------------------------------------------------------ */
+@media(hover:none){
+  /* hover-only flourishes would otherwise stick after a tap on iOS */
+  .bcard:hover,.mcard:hover,.sides-banner:hover{transform:none;box-shadow:none}
+  .bcard:hover .bimg{transform:translateY(-6px)}
+  .bcard:hover h3,.bcard:hover .btag,.mcard:hover .btag{transform:none}
+  .bcard:hover .price,.mcard:hover .price{transform:none}
+  .btn:hover{transform:none;box-shadow:none}
+  .btn:hover svg{transform:none}
+  .chip:hover{transform:none;border-color:var(--line)}
+  .story-photo:hover{box-shadow:0 16px 36px rgba(70,52,58,.20)}
+  .mhint{display:none}
+  /* promotion layers cost real memory on a phone — only keep them where the
+     element is genuinely animating */
+  .bimg,.mimg,.btn{will-change:auto}
+  /* comfortable thumb targets (Apple HIG: 44pt) */
+  .nav-links a.lnk{padding:10px 0}
+  .chip{padding:.72em 1.2em}
+  .fcol a{padding:9px 0}
+}
+
+/* --- hero logo: in the flow on stacked layouts ---------------------------
+   The logo is position:absolute, so it reserves no space and the hero centres
+   its content underneath it. On a tall phone that happened to leave a gap; on
+   a 667px-tall one the burger rode up 55px BEHIND the logo circle. Putting the
+   logo in normal flow as the first item of a column hero means it always owns
+   its own band and the burger can never reach it, at any viewport height.
+   Scoped to 960px — the same breakpoint where .hero-inner collapses to one
+   column and .hero-stage takes order:-1, i.e. wherever the burger sits on top
+   and can collide. (At 760px this still failed on a 960x700 window.) */
+@media(max-width:960px){
+  /* the logo now occupies the band the absolute version used to float in, so
+     the hero's own top pad only has to clear the fixed nav */
+  .hero{flex-direction:column;align-items:center;justify-content:flex-start;
+    padding-top:94px}
+  /* position:relative, NOT static — .hero-logo::before draws the pink disc with
+     width:100%;aspect-ratio:1, so it needs this element to stay its containing
+     block. Going static handed that job to .hero and the disc ballooned to the
+     full hero width, covering the headline. top/left/transform are already
+     neutralised, so relative adds no offset.
+     The margin has to out-reach the idle float (±10px on mobile) or the bun
+     drifts back up into the circle. */
+  .hero-logo{position:relative;transform:none;top:auto;left:auto;
+    margin:0 0 22px;flex:0 0 auto}
+  .hero-inner{width:100%}
+}
+
+/* --- thumb targets -------------------------------------------------------
+   Sized by viewport, not by (hover:none): plenty of touch devices still report
+   hover:hover, and they need the same 44pt minimum Apple's HIG asks for. */
+@media(max-width:760px){
+  .burger-toggle{width:44px;height:44px;align-items:center;justify-content:center;margin-right:-8px}
+  .brand img{min-height:44px;min-width:44px}
+  .nav-links a.lnk{padding:12px 0}
+  .chip{min-height:44px}
+  .fcol a{padding:10px 0}
+  /* the tel: link is the single most-tapped thing on a restaurant page */
+  .foot-bottom a,.info a{display:inline-block;padding:10px 0}
+}
+
+/* --- phones ------------------------------------------------------------- */
+@media(max-width:600px){
+  .nav{padding-top:10px;padding-bottom:10px}
+  .brand img{height:46px;width:46px}
+  .nav.scrolled .brand img{height:40px;width:40px}
+  .hero{padding-top:78px;padding-bottom:38px}
+  .hero-stage{min-height:auto}
+  .sec-head{margin-bottom:30px}
+  .meta{padding:4px 22px 26px}
+  .mcard .meta{padding:20px 22px 26px}
+  .loc{padding:26px 22px}
+  .story-photo{max-width:100%;margin-top:22px}
+  .foot{gap:26px}
+  .marquee span{font-size:.95rem;padding:0 16px;gap:16px}
+  /* one long word must never push the layout sideways */
+  h1,h2,h3,p{overflow-wrap:break-word}
+}
+
+/* --- landscape phone -----------------------------------------------------
+   A 100svh hero plus the stacked (max-width:960) layout meant the burger alone
+   filled the screen and the headline sat below the fold. Side-by-side, copy
+   first, and no full-height hero. */
+@media(max-height:560px) and (orientation:landscape){
+  .hero{min-height:auto;padding-top:88px;padding-bottom:34px}
+  .hero-inner{grid-template-columns:1.05fr .95fr;gap:20px;align-items:center}
+  .hero-copy{max-width:none}
+  .hero-stage{order:0;min-height:auto;margin-bottom:0}
+  .hero-logo{display:none}
+  .fly-wrap{width:min(42vw,320px)}
+  .hero h1{font-size:clamp(2.2rem,6vw,3.2rem)}
+  .hero p.lede{margin:.8em 0 1.1em}
+  .tagline{display:none}
+  .wrap{padding-top:52px;padding-bottom:52px}
+}
+
+/* --- the mobile nav panel -----------------------------------------------
+   960px, matching where .nav-links actually becomes the off-canvas panel. At
+   760px these missed the 761-960 band (iPad mini portrait), where the panel
+   opens but the page kept scrolling behind it. */
+@media(max-width:960px){
+  .nav-links{
+    padding-top:max(38px,calc(env(safe-area-inset-top) + 38px));
+    padding-bottom:max(38px,calc(env(safe-area-inset-bottom) + 38px));
+    overflow-y:auto;                /* long menu still reachable on a small screen */
+    -webkit-overflow-scrolling:touch;
+  }
+  body.nav-open{overflow:hidden}    /* page must not scroll behind the panel */
+}
+
+/* --- retina / Safari text rendering ------------------------------------- */
+@media(-webkit-min-device-pixel-ratio:1.5),(min-resolution:144dpi){
+  body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+}
+</style>
+<!-- three.js is dynamically imported only once the merch section nears the
+     viewport, so it costs nothing on first load -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<path id="dripEdge" d="M0,6.0 L35.6,6.0 C54.5,8.5 59.7,26.5 70.0,26.5 C80.3,26.5 85.5,8.5 104.4,6.0 L207.7,6.0 C223.0,9.8 227.2,38.1 235.6,38.1 C243.9,38.1 248.1,9.8 263.4,6.0 L353.7,6.0 C368.8,9.7 372.9,37.2 381.2,37.2 C389.4,37.2 393.5,9.7 408.7,6.0 L466.5,6.0 C487.0,8.2 492.6,24.1 503.8,24.1 C515.0,24.1 520.6,8.2 541.1,6.0 L593.1,6.0 C613.5,10.9 619.0,46.8 630.1,46.8 C641.2,46.8 646.8,10.9 667.2,6.0 L727.0,6.0 C744.5,10.2 749.3,40.8 758.8,40.8 C768.3,40.8 773.1,10.2 790.6,6.0 L904.1,6.0 C926.7,9.3 932.8,33.9 945.1,33.9 C957.4,33.9 963.6,9.3 986.1,6.0 L1106.3,6.0 C1121.2,11.0 1125.3,47.8 1133.5,47.8 C1141.6,47.8 1145.7,11.0 1160.7,6.0 L1200,6.0 L1200,0 H0 Z"/>
+</defs></svg>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Epos Burger home"><img src="assets/logo.webp" width="459" height="506" alt="Epos Burgers" /></a>
+  <div class="nav-links" id="navLinks">
+    <a class="lnk" href="#menu">Menu</a>
+    <a class="lnk" href="#story">Story</a>
+    <a class="lnk" href="#visit">Visit</a>
+    <a class="lnk" href="#merch">Merch</a>
+    <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">
+      Order<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+    </a>
+  </div>
+  <button class="burger-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-logo" aria-hidden="true"><img src="assets/logo.webp" width="459" height="506" alt="" fetchpriority="high"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <h1 class="reveal" data-d="1">Epic smash <span class="pt">burgers.</span></h1>
+      <p class="lede reveal" data-d="2">100% beef, brioche buns, sauce made in-house.</p>
+      <div class="hero-cta reveal" data-d="2">
+        <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+        <a class="btn btn--ghost" href="#menu">See the menu</a>
+      </div>
+    </div>
+    <div class="hero-stage">
+      <div class="fly-wrap" id="flyWrap">
+        <img class="fly" id="heroBurger" src="assets/hero-burger.webp" width="900" height="598"
+             alt="Epos House Cheeseburger with signature spicy mayo"
+             fetchpriority="high" decoding="async" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>100% Beef</span><span>Brioche Buns</span><span>Smashed To Order</span><span>House Sauce</span><span>est. 2024</span>
+    <span>100% Beef</span><span>Brioche Buns</span><span>Smashed To Order</span><span>House Sauce</span><span>est. 2024</span>
+  </div>
+</div>
+
+<section id="menu">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">The lineup</span>
+      <h2 class="reveal" data-d="1">Two burgers, done right.</h2></div>
+    <div class="burgers">
+      <article class="bcard reveal" data-d="1">
+        <div class="pic"><img class="bimg" src="assets/burger-house.webp" width="664" height="428" loading="eager" decoding="sync" alt="House Cheeseburger"></div>
+        <div class="meta">
+          <span class="btag">House favourite</span>
+          <h3>House Cheeseburger</h3>
+          <p class="desc">Double smash, American cheese, signature spicy mayo and pickle relish.</p>
+          <div class="row"><span class="price">€9.50</span>
+            <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order</a></div>
+        </div>
+      </article>
+      <article class="bcard reveal" data-d="2">
+        <div class="pic"><img class="bimg" src="assets/burger-classic.webp" width="591" height="415" loading="eager" decoding="sync" alt="Classic Cheeseburger"></div>
+        <div class="meta">
+          <span class="btag">The original</span>
+          <h3>Classic Cheeseburger</h3>
+          <p class="desc">Double smash, American cheese, ketchup, mustard, pickles and onions.</p>
+          <div class="row"><span class="price">€9.50</span>
+            <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="drip-photo" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The story</span>
+      <h2>Born on an island. Smashed in the city.</h2>
+      <p>Epos started on Antíparos, where one smash burger earned a cult following. Now it's landed in Glyfáda, with the same flat-top obsession and crispy edges.</p>
+      <figure class="story-photo"><img src="assets/story-photo.webp" width="853" height="1280" decoding="async" alt="The original Epos Burger shopfront in Antiparos" loading="lazy"><figcaption>The original — Antíparos</figcaption></figure>
+    </div>
+    <div class="story-visual" data-d="2">
+      <div class="burger-float" id="burgerFloat">
+        <div class="bstage" role="img" aria-label="The Epos burger decomposing into its layers: brioche crown, sweet onions and house ketchup and mustard, pickles, melted cheese and two smashed beef patties above a toasted base bun">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="0" alt="" aria-hidden="true" decoding="async" src="assets/layer-0.webp">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="1" alt="" aria-hidden="true" decoding="async" src="assets/layer-1.webp">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="2" alt="" aria-hidden="true" decoding="async" src="assets/layer-2.webp">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="3" alt="" aria-hidden="true" decoding="async" src="assets/layer-3.webp">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="4" alt="" aria-hidden="true" decoding="async" src="assets/layer-4.webp">
+          <img class="blayer2" width="700" height="1358" loading="lazy" data-i="5" alt="" aria-hidden="true" decoding="async" src="assets/layer-5.webp">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="extras">
+  <div class="extras-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">On the side</span>
+      <h2 class="reveal" data-d="1">Fries and drinks.</h2></div>
+    <div class="sides-banner reveal" data-d="1">
+      <h3>Sides</h3>
+      <div class="li"><span class="name">French Fries<small>Golden, crispy, and perfectly salted</small></span><span class="lead"></span><span class="p">€5.00</span></div>
+    </div>
+    <div class="lists">
+      <div class="menu-list reveal" data-d="1"><h3>Dips</h3><div class="li"><span class="name">Sweet Chili Mayo</span><span class="lead"></span><span class="p">€1.50</span></div><div class="li"><span class="name">Truffle Mayo</span><span class="lead"></span><span class="p">€1.50</span></div><div class="li"><span class="name">Ketchup</span><span class="lead"></span><span class="p">€1.50</span></div><div class="li"><span class="name">Mustard</span><span class="lead"></span><span class="p">€1.50</span></div><div class="li"><span class="name">Mayonnaise</span><span class="lead"></span><span class="p">€1.50</span></div></div>
+      <div class="menu-list reveal" data-d="2"><h3>Soft Drinks</h3><p class="list-note">0.33l each</p><div class="li"><span class="name">Coca-Cola</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Coca-Cola Light</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Coca-Cola Zero</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Sprite</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Red Fanta</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Lemon Fanta</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Blue Fanta</span><span class="lead"></span><span class="p">€2.50</span></div><div class="li"><span class="name">Avra Natural Mineral Water 0.5l</span><span class="lead"></span><span class="p">€0.50</span></div></div>
+      <div class="menu-list reveal" data-d="3"><h3>Beer &amp; Wine</h3><div class="li"><span class="name">Mamos Beer 0.33l</span><span class="lead"></span><span class="p">€5.00</span></div><div class="li"><span class="name">Chilled Red Organic Wine</span><span class="lead"></span><span class="p">€5.00</span></div><div class="li"><span class="name">Crisp White Organic Wine</span><span class="lead"></span><span class="p">€5.00</span></div><div class="li"><span class="name">Rosé Spritzer Organic</span><span class="lead"></span><span class="p">€5.00</span></div><div class="li"><span class="name">Juicy Amber Wine Core</span><span class="lead"></span><span class="p">€5.00</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="visit">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">Come get smashed</span>
+      <h2 class="reveal" data-d="1">Find us and feast.</h2></div>
+    <div class="visit-grid">
+      <div class="loc reveal" data-d="1">
+        <span class="pin">● Flagship · Glyfada</span>
+        <h3>Epos Glyfada</h3>
+        <div class="info">
+          <span><b>Giannitsopoulou 3</b>, Glyfada 166 74</span>
+          <span><b>Phone</b> <a href="tel:+302109681181" style="color:var(--ink)">+30 210 968 1181</a></span>
+        </div>
+        <dl class="hours">
+          <dt>Mon to Thu</dt><dd>17:30 to 00:00</dd>
+          <dt>Fri to Sat</dt><dd>12:30 to 01:30</dd>
+          <dt>Sunday</dt><dd>12:30 to 00:00</dd>
+        </dl>
+        <div class="order-on">
+          <a class="chip" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener"><span class="d"></span>Wolt</a>
+          <a class="chip" href="https://www.foody.com.cy/delivery/menu/epos-smash-burgers" target="_blank" rel="noopener"><span class="d"></span>Foody</a>
+          <a class="chip" href="#"><span class="d"></span>Bolt Food</a>
+        </div>
+      </div>
+      <div class="loc reveal" data-d="2">
+        <span class="pin">● Now open · Avana</span>
+        <h3>Epos Avana</h3>
+        <div class="info">
+          <span>Our newest spot, smashed to order all day.</span>
+        </div>
+        <dl class="hours">
+          <dt>Mon to Thu</dt><dd>12:00 to 00:30</dd>
+          <dt>Fri to Sat</dt><dd>12:00 to 01:30</dd>
+        </dl>
+        <div class="order-on">
+          <a class="chip" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener"><span class="d"></span>Wolt</a>
+          <a class="chip" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener"><span class="d"></span>Instagram</a>
+        </div>
+      </div>
+      <div class="loc reveal" data-d="3">
+        <span class="pin">● Now open · Nea Erythraia</span>
+        <h3>Epos Nea Erythraia</h3>
+        <div class="info">
+          <span><b>Charilaou Trikoupi 146</b> &amp; Strofyliou, Nea Erythraia</span>
+        </div>
+        <dl class="hours">
+          <dt>Mon to Thu</dt><dd>17:30 to 00:00</dd>
+          <dt>Fri to Sat</dt><dd>12:30 to 01:30</dd>
+          <dt>Sunday</dt><dd>12:30 to 01:00</dd>
+        </dl>
+        <div class="order-on">
+          <a class="chip" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener"><span class="d"></span>Wolt</a>
+          <a class="chip" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener"><span class="d"></span>Instagram</a>
+        </div>
+      </div>
+      <div class="loc loc--side reveal" data-d="4">
+        <span class="pin">● Where it began</span>
+        <h3>Epos Antíparos</h3>
+        <p>Antiparos Square (Chóra), Antíparos. The original island grill, open through the summer season.</p>
+        <div class="order-on">
+          <a class="chip" href="https://www.facebook.com/epossmashburgers" target="_blank" rel="noopener" style="border-color:rgba(243,204,214,.3);color:var(--pink)"><span class="d" style="background:var(--pink)"></span>Facebook</a>
+          <a class="chip" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener" style="border-color:rgba(243,204,214,.3);color:var(--pink)"><span class="d" style="background:var(--pink)"></span>Instagram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <span class="eyebrow reveal" style="justify-content:center">Hungry?</span>
+    <h2 class="reveal" data-d="1">Make it epic.</h2>
+    <p class="reveal" data-d="2">Your smash burger is two clicks away.</p>
+    <div class="reveal" data-d="2" style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap">
+      <a class="btn" href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Order on Wolt
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+      <a class="btn btn--ghost" href="tel:+302109681181">Call the shop</a>
+    </div>
+  </div>
+</section>
+
+<section id="merch">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow reveal">Wear the love</span>
+      <h2 class="reveal" data-d="1">Epos merch.</h2></div>
+    <div class="merch-grid">
+      <article class="mcard reveal" data-d="1">
+        <div class="mpic"><div class="mfab"><div class="mimg" data-tex="assets/hoodie-pink.webp" role="img" aria-label="I love Epos hoodie in pink"></div></div><span class="mpinch" aria-hidden="true"></span><span class="mhint" aria-hidden="true">Click · drag · stretch</span></div>
+        <div class="meta">
+          <span class="btag">Limited drop</span>
+          <h3>‘I &#10084; Epos’ Hoodie — Pink</h3>
+          <p class="desc">Heavyweight brushed-fleece hoodie with the Epos heart print. Unisex, oversized fit.</p>
+          <div class="row"><span class="price">&euro;55.00</span>
+            <a class="btn" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener">Get yours
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+        </div>
+      </article>
+      <article class="mcard reveal" data-d="2">
+        <div class="mpic"><div class="mfab"><div class="mimg" data-tex="assets/hoodie-white.webp" role="img" aria-label="I love Epos hoodie in white"></div></div><span class="mpinch" aria-hidden="true"></span><span class="mhint" aria-hidden="true">Click · drag · stretch</span></div>
+        <div class="meta">
+          <span class="btag">Limited drop</span>
+          <h3>‘I &#10084; Epos’ Hoodie — White</h3>
+          <p class="desc">Heavyweight brushed-fleece hoodie with the Epos heart print. Unisex, oversized fit.</p>
+          <div class="row"><span class="price">&euro;55.00</span>
+            <a class="btn" href="https://www.instagram.com/eposburger" target="_blank" rel="noopener">Get yours
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="line-sep" aria-hidden="true"></div>
+  <div class="foot">
+    <div><img class="logo-foot" src="assets/logo.webp" width="459" height="506" loading="lazy" decoding="async" alt="Epos Burgers" />
+      <p>Epic smash burgers on the Athens Riviera.</p></div>
+    <div class="fcol"><h4>Menu</h4>
+      <a href="#menu">House Cheeseburger</a><a href="#menu">Classic Cheeseburger</a><a href="#extras">Fries &amp; Drinks</a><a href="#merch">Merch</a></div>
+    <div class="fcol"><h4>Order &amp; Follow</h4>
+      <a href="https://wolt.com/en/grc/athens/restaurant/epos-burger" target="_blank" rel="noopener">Wolt</a>
+      <a href="https://www.instagram.com/eposburger" target="_blank" rel="noopener">Instagram</a>
+      <a href="tel:+302109681181">+30 210 968 1181</a></div>
+  </div>
+  <div class="foot-bottom">
+    <span>© <span id="yr"></span> Epos Burger · Glyfada</span>
+    <span>Smashed to order · Made in Greece</span>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Epos Burger","description":"Epic smash burgers — 100% beef, brioche buns and signature sauces.","servesCuisine":["Smash Burgers","American"],"priceRange":"€€","url":"https://www.eposburger.com/","telephone":"+302109681181","image":"https://www.eposburger.com/assets/burger-house.webp","address":{"@type":"PostalAddress","streetAddress":"Giannitsopoulou 3","addressLocality":"Glyfada","postalCode":"16674","addressCountry":"GR"},"openingHours":["Mo-Th 17:30-24:00","Fr-Sa 12:30-01:30","Su 12:30-24:00"],"department":[{"@type":"Restaurant","name":"Epos Nea Erythraia","servesCuisine":["Smash Burgers","American"],"priceRange":"€€","address":{"@type":"PostalAddress","streetAddress":"Charilaou Trikoupi 146 & Strofyliou","addressLocality":"Nea Erythraia","addressCountry":"GR"},"openingHours":["Mo-Th 17:30-24:00","Fr-Sa 12:30-01:30","Su 12:30-01:00"]},{"@type":"Restaurant","name":"Epos Avana","servesCuisine":["Smash Burgers","American"],"priceRange":"€€","address":{"@type":"PostalAddress","addressLocality":"Avana","addressCountry":"GR"},"openingHours":["Mo-Th 12:00-00:30","Fr-Sa 12:00-01:30"]},{"@type":"Restaurant","name":"Epos Antiparos","servesCuisine":["Smash Burgers","American"],"priceRange":"€€","address":{"@type":"PostalAddress","streetAddress":"Antiparos Square (Chora)","addressLocality":"Antiparos","addressCountry":"GR"}}]}
+</script>
+
+<script>
+/* ── Resilience layer ───────────────────────────────────────────────────────
+   Runs in its OWN try/catch'd IIFE, BEFORE the main script, so even if the
+   main script later throws the page is still usable. Covers the three ways an
+   Instagram / Facebook in-app browser breaks this page:
+     1. content stuck invisible (reveals never fire) — force them visible on
+        load, on return from bfcache, and on becoming visible again;
+     2. images left broken after the tab was frozen / a load was aborted —
+        detect naturalWidth===0 and reload them;
+     3. external links dead because the webview blocks window.open / _blank —
+        intercept and navigate top-level. */
+(function(){
+  try{
+    var UA = navigator.userAgent || "";
+    var IN_APP = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Line\/|Twitter|TikTok|musical_ly|Snapchat|Pinterest|GSA\//i.test(UA);
+
+    function revealAll(){
+      var r = document.querySelectorAll(".reveal:not(.in)");
+      for(var i=0;i<r.length;i++) r[i].classList.add("in");
+    }
+    function fixImages(){
+      var imgs = document.images;
+      for(var i=0;i<imgs.length;i++){
+        var im = imgs[i];
+        if(im.complete && im.naturalWidth === 0 && im.src){
+          var base = im.src.split("#")[0].split("?")[0];
+          im.src = base + "?r=" + Date.now();   // force a fresh fetch
+        }
+      }
+    }
+    // any image that fails once retries itself once, cache-busted
+    document.addEventListener("error", function(e){
+      var im = e.target;
+      if(im && im.tagName === "IMG" && !im.dataset.retried){
+        im.dataset.retried = "1";
+        var base = im.src.split("#")[0].split("?")[0];
+        im.src = base + "?r=" + Date.now();
+      }
+    }, true);
+
+    // A page restored from bfcache (Instagram "back") never re-runs the main
+    // script, so nothing would un-hide content or restart animation. Force it.
+    window.addEventListener("pageshow", function(e){
+      if(e.persisted){ revealAll(); fixImages();
+        try{ window.dispatchEvent(new Event("resize")); }catch(_){}   // re-kick rAF gates
+      }
+    });
+    window.addEventListener("visibilitychange", function(){
+      if(document.visibilityState === "visible"){ revealAll(); fixImages(); }
+    });
+    // last-ditch: if for any reason the observer never revealed anything, show
+    // everything a beat after load (the CSS keyframe is the real backstop; this
+    // covers browsers that also stalled the animation).
+    window.addEventListener("load", function(){ setTimeout(function(){
+      if(document.querySelectorAll(".reveal:not(.in)").length === document.querySelectorAll(".reveal").length)
+        revealAll();
+    }, 3200); });
+
+    // External links: _blank is a no-op in most in-app browsers, so the CTA
+    // "does nothing." In those, navigate the webview itself (which hands off to
+    // the Instagram/Wolt app). Normal browsers keep their native new-tab.
+    if(IN_APP){
+      document.addEventListener("click", function(e){
+        var a = e.target.closest ? e.target.closest('a[target="_blank"]') : null;
+        if(!a) return;
+        var href = a.getAttribute("href") || "";
+        if(!/^https?:/i.test(href)) return;
+        e.preventDefault();
+        window.location.href = href;
+      }, false);
+    }
+  }catch(_){ /* never let resilience code break the page */ }
+})();
+
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  var nav = document.getElementById("nav");
+  function onScrollNav(){ nav.classList.toggle("scrolled", window.scrollY > 24); }
+  onScrollNav(); window.addEventListener("scroll", onScrollNav, {passive:true});
+
+  var toggle = document.getElementById("navToggle"), links = document.getElementById("navLinks");
+  function setNav(open){
+    links.classList.toggle("open", open);
+    document.body.classList.toggle("nav-open", open);   // locks the page behind the panel
+    toggle.setAttribute("aria-expanded", open ? "true":"false");
+  }
+  toggle.addEventListener("click", function(){ setNav(!links.classList.contains("open")); });
+  links.addEventListener("click", function(e){ if(e.target.closest("a")) setNav(false); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") setNav(false); });
+
+  var io = new IntersectionObserver(function(en){
+    en.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }});
+  }, {threshold:0.08, rootMargin:"0px 0px 6% 0px"});
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  // observer is live → cancel the CSS safety animation so scroll-reveal runs
+  document.documentElement.classList.add("reveal-js");
+
+  /* Decorative CSS backgrounds (visit tiles, footer texture, drip band, extras
+     backdrop, the two hoodie photos) have no loading="lazy" equivalent — the
+     browser fetches them during first paint no matter how far down the page
+     they sit, which was ~370 KB of below-the-fold art competing with the hero
+     on a phone. Attaching them a screen ahead of time keeps them invisible to
+     the user and off the critical path. */
+  var bgIO = new IntersectionObserver(function(en){
+    en.forEach(function(e){
+      if(!e.isIntersecting) return;
+      e.target.classList.add("bg-in");
+      bgIO.unobserve(e.target);
+    });
+  }, {rootMargin:"600px 0px"});
+  ["#visit","#extras","#merch",".story","footer"].forEach(function(sel){
+    var el = document.querySelector(sel); if(el) bgIO.observe(el);
+  });
+
+  /* Hero burger float. Two changes that matter on a phone: the loop only runs
+     while the hero is actually on screen, and the parallax input is read from
+     scroll events instead of a getBoundingClientRect() inside every frame —
+     that read sat right after a style write, forcing a synchronous layout 60
+     times a second and showing up as scroll jank. */
+  var floaters = Array.prototype.slice.call(document.querySelectorAll(".fly"));
+  var isMobile = window.matchMedia("(max-width:700px)").matches;
+  var flyRel = [], flyPar = [], flyOn = false, flyRAF = null;
+
+  function measureFly(){
+    // Bail on a bogus viewport. This runs synchronously at parse time, and if
+    // innerHeight is still 0 then `|| 1` turns the ratio below into hundreds,
+    // which seeds flyPar with a value that throws the burger off screen.
+    var vh = window.innerHeight;
+    if(!vh || vh < 80) return;
+    floaters.forEach(function(el,i){
+      // measure the WRAPPER, not the element we animate — reading the animated
+      // node feeds its own bob back in as parallax input
+      var r = (el.parentElement || el).getBoundingClientRect();
+      var rel = (r.top + r.height/2 - vh/2) / vh;
+      // a hero burger is never more than a couple of viewports away; clamping
+      // means no single bad measurement can fling it out of the document
+      flyRel[i] = rel < -3 ? -3 : rel > 3 ? 3 : rel;
+      if(flyPar[i] === undefined) flyPar[i] = flyRel[i] * (i===0 ? -38 : -24);
+    });
+  }
+
+  /* Idle drift. Each channel is the sum of two sines whose periods don't divide
+     into each other, so the beat between them never lines up and the loop never
+     reads as a repeat — that's what makes it feel like floating rather than
+     ticking. Long periods (1.6s–3.7s) keep it slow, and it runs continuously,
+     independent of scrolling. The parallax offset is lerped rather than applied
+     raw so a scroll nudges the burger instead of snapping it. */
+  function frame(t){
+    for(var i=0;i<floaters.length;i++){
+      var A = isMobile ? 7 : 13;
+      var bob  = Math.sin(t/1600 + i*1.6)*A + Math.sin(t/2450 + i*0.7)*A*0.42;
+      var sway = Math.cos(t/2900 + i*1.1) * (isMobile?3:6);
+      var rot  = Math.sin(t/2200 + i*1.2) * (i===0?2.4:0.9)
+               + Math.sin(t/3700 + i*0.5) * 1.0
+               + (i===0?-1.2:0);
+      var target = (flyRel[i]||0) * (i===0 ? -38 : -24);
+      flyPar[i] += (target - flyPar[i]) * 0.06;
+      floaters[i].style.transform =
+        "translate3d("+sway.toFixed(2)+"px,"+(flyPar[i]+bob).toFixed(2)+"px,0)"+
+        " rotate("+rot.toFixed(2)+"deg)";
+    }
+    flyRAF = flyOn ? requestAnimationFrame(frame) : null;
+  }
+  if(!reduce && floaters.length){
+    measureFly();
+    // re-measure once layout has actually settled, in case the first call ran
+    // against a zero-height viewport and bailed
+    window.addEventListener("load", measureFly);
+    requestAnimationFrame(measureFly);
+    window.addEventListener("scroll", measureFly, {passive:true});
+    window.addEventListener("resize", measureFly);
+    /* Gate on the WRAPPER, never on the animated image. Watching the image
+       itself is a deadlock: anything that pushes it out of view also stops the
+       loop that would bring it back, so it stays stuck off screen forever. */
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        flyOn = e.isIntersecting;
+        if(flyOn && !flyRAF) flyRAF = requestAnimationFrame(frame);
+      });
+    }, {rootMargin:"120px 0px"}).observe(floaters[0].parentElement || floaters[0]);
+  }
+
+  if(!reduce && !isMobile){
+    var wrap = document.getElementById("flyWrap");
+    setInterval(function(){
+      if(!flyOn || document.hidden) return;   // no particles for an unseen hero
+      var s=document.createElement("span"); s.className="sizzle";
+      var sz=3+Math.random()*4; s.style.width=s.style.height=sz+"px";
+      s.style.left=(40+Math.random()*26)+"%"; s.style.top=(38+Math.random()*16)+"%";
+      s.style.background=Math.random()>.5?"#e7b04a":"#d98a4a";
+      s.style.animation="rise "+(1.7+Math.random()*1.2)+"s ease-out forwards";
+      wrap.appendChild(s); setTimeout(function(){s.remove();},3000);
+    }, 600);
+  }
+
+  /* ---- Scroll-linked slime melt (story -> extras divider) ----------------
+     The divider is ONE solid SVG <path> (no transparent tile, no repeat
+     seams) so the section seam is always fully covered -> no background
+     bleed. As the divider scrolls up through the viewport we derive a melt
+     progress p (0..1) and REBUILD the path so each drip stretches downward
+     with staggered timing + necking (organic deformation). A rAF lerp toward
+     the scroll target keeps it fluid/60fps, and an IntersectionObserver only
+     binds the scroll listener while the divider is near the viewport. */
+  (function(){
+    var host=document.querySelector(".slime-melt"); if(!host) return;
+    var fill=host.querySelector(".slime-fill"), gloss=host.querySelector(".slime-gloss");
+    var W=1200, BAND=30;
+    var drips=[], N=13, i;
+    for(i=0;i<N;i++){
+      drips.push({ x:(i+0.5)*(W/N)+(i%2?6:-6),
+        neck:15+(i%3)*3, bulb:20+(i%4)*2,
+        base:0+(i%4)*1, extra:70+(i%3)*22,
+        phase:(i%5)/10, sway:(i%2?1:-1)*5 });
+    }
+    function smooth(x){ x=x<0?0:x>1?1:x; return x*x*(3-2*x); }
+    function buildPath(p){
+      var d="M0,0 H"+W+" V"+BAND, glo="";
+      for(var i=drips.length-1;i>=0;i--){             // sweep right -> left
+        var dr=drips[i];
+        var m=smooth((p-dr.phase)/(1-dr.phase));       // staggered, eased melt
+        var depth=dr.base+dr.extra*m;
+        var neck=dr.neck*(1-0.34*m);                   // necking: thins as it stretches
+        var bulb=dr.bulb*(1-0.12*m)+1.5;               // rounded tip
+        var cx=dr.x+Math.sin(m*Math.PI)*dr.sway, T=BAND;
+        d+="L"+(cx+neck).toFixed(1)+","+T;
+        d+="C"+(cx+neck).toFixed(1)+","+(T+depth*0.42).toFixed(1)+" "+(cx+bulb).toFixed(1)+","+(T+depth*0.56).toFixed(1)+" "+(cx+bulb).toFixed(1)+","+(T+depth*0.8).toFixed(1);
+        d+="C"+(cx+bulb).toFixed(1)+","+(T+depth*1.05).toFixed(1)+" "+(cx-bulb).toFixed(1)+","+(T+depth*1.05).toFixed(1)+" "+(cx-bulb).toFixed(1)+","+(T+depth*0.8).toFixed(1);
+        d+="C"+(cx-bulb).toFixed(1)+","+(T+depth*0.56).toFixed(1)+" "+(cx-neck).toFixed(1)+","+(T+depth*0.42).toFixed(1)+" "+(cx-neck).toFixed(1)+","+T;
+        if(depth>34) glo+='<ellipse cx="'+(cx-bulb*0.4).toFixed(1)+'" cy="'+(T+depth*0.5).toFixed(1)+'" rx="'+Math.max(2,bulb*0.18).toFixed(1)+'" ry="'+Math.max(5,depth*0.3).toFixed(1)+'"/>';
+      }
+      d+="L0,"+BAND+" Z";
+      fill.setAttribute("d",d); gloss.innerHTML=glo;
+    }
+    var cur=0, target=0, raf=null;
+    function tick(){
+      cur+=(target-cur)*0.14;                          // fluid lerp toward target
+      if(Math.abs(target-cur)<0.0015) cur=target;
+      buildPath(cur);
+      raf=(cur!==target)?requestAnimationFrame(tick):null;
+    }
+    function computeTarget(){
+      var r=host.getBoundingClientRect(), vh=window.innerHeight||1;
+      var x=1-(r.top/(vh*0.8));                         // 0 low in viewport -> 1 near top
+      target=x<0?0:x>1?1:x;
+      if(!raf) raf=requestAnimationFrame(tick);
+    }
+    var bound=false, onScroll=function(){ computeTarget(); };
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting && !bound){ bound=true; window.addEventListener("scroll",onScroll,{passive:true}); window.addEventListener("resize",onScroll); computeTarget(); }
+        else if(!e.isIntersecting && bound){ bound=false; window.removeEventListener("scroll",onScroll); window.removeEventListener("resize",onScroll); }
+      });
+    },{rootMargin:"40% 0px 40% 0px"}).observe(host);
+    buildPath(0);                                       // initial fully-covered state
+    if(reduce) buildPath(0.55);                         // reduced motion: static melted look
+  })();
+
+})();
+</script>
+<script>
+/* Decomposing burger for #story. Six full-canvas layers share one box (.bstage):
+   each layer's translateY 0 reproduces the source's exploded spread, so the JS
+   only has to TUCK them together (COLLAPSE offsets) at scroll progress 0 and
+   release them to 0 at progress 1 -> assembled, then exploded as you scroll past.
+   The CONTAINER keeps the premium feel (entrance fade+rise+scale, idle bob, mouse
+   parallax); the LAYERS do the decomposition. One rAF lerps a smoothed scrub (cp)
+   toward the scroll target (tp) for buttery motion, and every layer is a single
+   composited transform+opacity — no mask / clip-path / whole-burger filter — so it
+   stays at 60fps. Honors prefers-reduced-motion (shown static and composed). */
+(function(){
+  var node = document.getElementById("burgerFloat"); if(!node) return;
+  var L = [].slice.call(node.querySelectorAll(".blayer2")); if(!L.length) return;
+
+  // per-layer tuning, index 0 = top bun .. 5 = bottom bun
+  var COLLAPSE = [0.280, 0.165, 0.048, -0.065, -0.182, -0.288]; // tuck offset (frac of height) at p=0
+  var ROT  = [-2.5, 3.0, -4.2, 2.4, -2.8, 1.5];     // playful rotation at p=1 (deg)
+  var XR   = [0, 6, -9, 6, -5.5, 0];                // sideways drift at p=1 (px)
+  var FADE = [0.03, 0.12, 0.14, 0.05, 0.05, 0.03];  // subtle opacity fade at p=1
+  var SX   = [1.00, 0.555, 1.00, 1.00, 1.00, 1.00]; // narrow onions+sauce when composed so they tuck under the bun (not behind it)
+  var ASSEMBLE = 1.21, EXTRA = 0.04, GROW = 0.016;  // composed tightness (higher = patties closer) / burst / scale
+  var PMIN = 0.45;                                  // progress floor: burger enters already well-separated (the desired spread), then keeps opening as it scrolls up
+  function sgn(v){ return v<0?-1:1; }
+
+  function layers(p){                               // p: 0 composed -> 1 exploded
+    var inv = 1-p;
+    for(var i=0;i<L.length;i++){
+      var ty = (COLLAPSE[i]*ASSEMBLE*inv - sgn(COLLAPSE[i])*EXTRA*p) * 100;
+      var sx = SX[i] + (1-SX[i])*p;                 // narrow when composed -> full width as it explodes
+      L[i].style.transform = "translate3d("+(XR[i]*p).toFixed(2)+"px,"+ty.toFixed(3)+"%,0) rotate("+(ROT[i]*p).toFixed(2)+"deg) scale("+sx.toFixed(4)+","+(1+GROW*p).toFixed(4)+")";
+      L[i].style.opacity = (1-FADE[i]*p).toFixed(3);
+    }
+  }
+
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){ node.style.opacity=1; layers(PMIN); return; }
+  node.style.opacity = 0;                           // set before first paint -> no flash
+
+  var enter=0, bobY=0, mx=0, my=0, tmx=0, tmy=0, cp=PMIN, tp=PMIN;
+  var isMobile = window.matchMedia("(max-width:700px)").matches;
+  var onScreen=false, raf=null;
+
+  function loop(ts){
+    bobY = Math.sin(ts/1600) * (isMobile?6:10);
+    mx += (tmx-mx)*0.06; my += (tmy-my)*0.06;
+    cp += (tp-cp)*0.12; if(Math.abs(tp-cp)<0.0006) cp=tp;   // smoothed scrub
+    var ty = (1-enter)*40 + bobY + my, s = 0.95 + 0.05*enter;
+    node.style.opacity = enter.toFixed(3);
+    node.style.transform = "translate3d("+mx.toFixed(2)+"px,"+ty.toFixed(2)+"px,0) scale("+s.toFixed(4)+")";
+    layers(cp);
+    raf = onScreen ? requestAnimationFrame(loop) : null;   // idle when off screen
+  }
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      onScreen = e.isIntersecting;
+      if(onScreen && !raf) raf = requestAnimationFrame(loop);
+    });
+  }, {rootMargin:"200px 0px"}).observe(node);
+
+  // entrance — fires once the burger scrolls into view
+  function easeOutCubic(t){ return 1-Math.pow(1-t,3); }
+  var t0=null, started=false;
+  function ef(ts){ if(t0===null)t0=ts; enter=easeOutCubic(Math.min(1,(ts-t0)/1200)); if(enter<1) requestAnimationFrame(ef); }
+  new IntersectionObserver(function(es,ob){ es.forEach(function(e){ if(e.isIntersecting && !started){ started=true; requestAnimationFrame(ef); ob.disconnect(); }}); },{threshold:0.2}).observe(node);
+
+  // mouse parallax — whole burger together, capped at 8px
+  /* mouse parallax removed — scroll-only animation (tmx/tmy stay 0) */
+
+  // scroll -> decomposition progress as the burger crosses the viewport.
+  // floored at PMIN (never fully composed) so the messy assembled frame is never
+  // shown; fully exploded (p=1) as it nears the top. measured on the untransformed
+  // wrapper so bob/parallax never feed back.
+  var A=1.30, B=0.30, host=node.parentElement;     // A = f when the bun first enters view, so motion starts immediately on sight
+  function onScroll(){
+    var r=host.getBoundingClientRect(), vh=window.innerHeight||1;
+    var f=(r.top + r.height*0.5)/vh;                // 1 = viewport bottom, 0 = top
+    var raw=(A - f)/(A - B); raw = raw<0?0:raw>1?1:raw;
+    tp = PMIN + (1-PMIN)*raw;                        // remap [0,1] -> [PMIN,1]
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll);
+  onScroll();
+})();
+</script>
+<script>
+/* Antiparos photo: subtle cursor-reactive 3D tilt (desktop hover only). */
+(function(){
+  var fig=document.querySelector(".story-photo"); if(!fig) return;
+  if(window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  if(window.matchMedia("(hover:none)").matches) return;
+  var MAX=7;
+  fig.addEventListener("mousemove", function(e){
+    var r=fig.getBoundingClientRect();
+    var px=(e.clientX-r.left)/r.width-0.5, py=(e.clientY-r.top)/r.height-0.5;
+    fig.style.transform="perspective(720px) rotateX("+(-py*MAX).toFixed(2)+"deg) rotateY("+(px*MAX).toFixed(2)+"deg) scale(1.04)";
+  });
+  fig.addEventListener("mouseleave", function(){ fig.style.transform=""; });
+})();
+</script>
+<script>
+/* merch interactivity now handled by the 3D module below */
+</script>
+
+<script>
+/* === Epos 3D hoodies — photo on a Verlet cloth, depth-resolved ==============
+   At rest each hoodie is pixel-identical to the product shot. Grab it and only
+   that region of fabric deforms, in real 3D, then springs back.
+
+   THE ORDERING PROBLEM, AND WHY THIS SHAPE
+   The sheet is flat, so "the front mixing with the back" is really the sheet
+   overlapping ITSELF in screen space. One blended draw call cannot fix that:
+   within a single mesh, triangles blend in index-buffer order, not depth order.
+   The usual escape — alphaTest + alphaToCoverage — orders correctly but
+   quantises the cut-out edge into a handful of MSAA coverage levels, which
+   reads as a dithered, pixelated outline. Both were tried; both were wrong.
+
+   The way out is a DEPTH PREPASS. Two meshes share one geometry:
+     pass A  writes depth only (no colour), alpha-tested at PRECUT, so it stamps
+             which layer wins per pixel by TRUE DEPTH, independent of index order;
+     pass B  writes colour only, blending the full 0->1 analog alpha with no
+             discard and no depth write, depth-tested LessEqual against pass A.
+   Correct ordering AND a soft analog silhouette, simultaneously.
+
+   None of that works without real depth to arbitrate, and the old grab pinned
+   z at ~0 — a pure 2D image warp. So the grab now lifts the fabric toward the
+   camera (ZLIFT), the anchor relaxes z 2.2x slower than x/y so the separation
+   outlives the spring-back, and the rest pose carries a 0.003 radial dome so
+   two folded points can never be exactly coplanar.
+
+   MOTION
+   The grab and the anchor both ran INSIDE the constraint loop, so ITERS was
+   silently a material property: a mid-radius grab weight of 0.5 composed to
+   1-0.5^12 = 0.99976, annihilating the smoothstep falloff and dragging a disc
+   of fabric as a rigid plate. perIter() compensates every rate for the loop
+   count, so desktop (12) and touch (8) are the same fabric. The anchor is now
+   an acceleration rather than a position lerp — a lerp cannot overshoot, which
+   is why the old fabric dissolved back instead of springing.  */
+(function(){
+  var host = document.getElementById('merch');
+  if(!host) return;
+  if(!window.WebGLRenderingContext) return;
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+  var started = false;
+  new IntersectionObserver(function(es, ob){
+    es.forEach(function(e){
+      if(e.isIntersecting && !started){ started = true; ob.disconnect(); boot(); }
+    });
+  }, {rootMargin:'300px 0px'}).observe(host);
+
+  function boot(){
+    import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js')
+      .then(run)
+      .catch(function(){ /* offline or blocked: the static photos stay */ });
+  }
+
+  function run(THREE){
+    var SIZE = 1.5, HALF = SIZE/2;
+    var COARSE = window.matchMedia('(max-width:820px)').matches ||
+                 window.matchMedia('(hover:none)').matches ||
+                 (navigator.hardwareConcurrency || 8) <= 4;
+
+    var GRID  = COARSE ? 41 : 61;      // verts per side
+    var ITERS = COARSE ? 8  : 12;      // constraint passes per step
+
+    /* --- solver constants ------------------------------------------------ */
+    var ANCH  = 0.0625;   // omega*dt = sqrt(ANCH) = 0.25 rad/step -> T = 0.42s
+    var ANCHZ = 0.45;     // z relaxes 2.2x slower, so depth outlives the fold
+    var DAMP  = 0.91;     // zeta = 0.18 -> 2-3 visible wobbles over ~1.2s
+    var GRAV  = -2.6e-4;
+    var GDIST = 0.06;     // gravity ramps in over this displacement
+    var MAXV  = 0.06;     // circular velocity clamp
+    var FOLLOW = 0.82;    // how much of the drag prev inherits
+    var K_STRUCT = 1.00, K_SHEAR = 0.70, K_BEND = 0.14;
+    var BOW = 0.003;      // permanent radial rest dome
+
+    /* --- grab constants -------------------------------------------------- */
+    var R       = COARSE ? 0.46 : 0.40;   // a finger is bigger than a cursor
+    var MAXPULL = 0.50;
+    var ZLIFT   = 0.30;
+    var ZKNEE   = 0.22;
+    var KG      = 0.60;
+
+    /* --- render constants ------------------------------------------------ */
+    var PRECUT = 0.45;    // prepass alpha threshold (rim is a ~9-texel ramp)
+    var BACKF  = 0.78;    // back-of-fold darkening
+    var MAXBUF = 1200;    // per-axis drawing-buffer ceiling
+
+    // Every rate below is applied ITERS times per step, so bake in the
+    // compensation once and ITERS becomes a convergence knob, not a material.
+    function perIter(k, iters){ return 1 - Math.pow(1 - k, 1/iters); }
+    var KG_IT = perIter(KG, ITERS);
+
+    /* ---- flat grid with a whisper of a dome ------------------------------ */
+    function makeGrid(n){
+      var pos = new Float32Array(n*n*3), idx = new Uint32Array((n-1)*(n-1)*6);
+      var step = SIZE/(n-1), x, y, i, k = 0;
+      for(y=0; y<n; y++) for(x=0; x<n; x++){
+        i = (y*n+x)*3;
+        var px = -HALF + x*step, py = -HALF + y*step;
+        var u = px/HALF, v = py/HALF;
+        pos[i] = px; pos[i+1] = py;
+        // radial, so any two points at different radii differ in z and can
+        // never tie exactly. ~0.6px of magnification across the silhouette.
+        pos[i+2] = BOW * (1 - 0.5*(u*u + v*v));
+      }
+      for(y=0; y<n-1; y++) for(x=0; x<n-1; x++){
+        var a = y*n+x, b = a+1, c = a+n, d = c+1;
+        idx[k++]=a; idx[k++]=b; idx[k++]=d;
+        idx[k++]=a; idx[k++]=d; idx[k++]=c;
+      }
+      return {pos:pos, idx:idx, nv:n*n, n:n};
+    }
+
+    function Cloth(grid){
+      var n = grid.n, pos = grid.pos, i, x, y;
+      this.n = n; this.count = grid.nv;
+      this.pos = pos.slice(); this.prev = pos.slice(); this.rest = pos.slice();
+      this.pinned = new Uint8Array(this.count);
+      this.grab = new Float32Array(this.count);
+      this.iters = ITERS; this.energy = 0; this._applyGrab = null;
+
+      // hang it from the crown — the top row is the texture's transparent margin
+      for(x = 0; x < n; x++) this.pinned[(n-1)*n + x] = 1;
+
+      var A = [], B = [], L = [], K = [];
+      function link(a, b, k){
+        var ax = a*3, bx = b*3;
+        A.push(a); B.push(b); K.push(perIter(k, ITERS));
+        L.push(Math.sqrt((pos[bx]-pos[ax])*(pos[bx]-pos[ax]) +
+                         (pos[bx+1]-pos[ax+1])*(pos[bx+1]-pos[ax+1]) +
+                         (pos[bx+2]-pos[ax+2])*(pos[bx+2]-pos[ax+2])));
+      }
+      for(y = 0; y < n; y++) for(x = 0; x < n; x++){
+        i = y*n + x;
+        if(x+1 < n) link(i, i+1,   K_STRUCT);
+        if(y+1 < n) link(i, i+n,   K_STRUCT);
+        if(x+1 < n && y+1 < n){ link(i, i+n+1, K_SHEAR); link(i+1, i+n, K_SHEAR); }
+        // bend at 0.14, not 1.0 — solving bend as stiffly as stretch is what
+        // made the sheet behave like cardboard and slide as one stiff card
+        if(x+2 < n) link(i, i+2,   K_BEND);
+        if(y+2 < n) link(i, i+2*n, K_BEND);
+      }
+      this.eA = new Uint32Array(A); this.eB = new Uint32Array(B);
+      this.eL = new Float32Array(L); this.eK = new Float32Array(K);
+      this.eN = L.length;
+    }
+
+    Cloth.prototype.step = function(){
+      var p = this.pos, pp = this.prev, rest = this.rest,
+          pin = this.pinned, gw = this.grab, n = this.count,
+          i, k, energy = 0;
+
+      for(i = 0; i < n; i++){
+        if(pin[i]) continue;
+        k = i*3;
+        var vx = (p[k]-pp[k])*DAMP, vy = (p[k+1]-pp[k+1])*DAMP, vz = (p[k+2]-pp[k+2])*DAMP;
+
+        // circular, not per-axis: a per-axis clamp let diagonals run 41% faster
+        var vm = Math.sqrt(vx*vx + vy*vy + vz*vz);
+        if(vm > MAXV){ var s = MAXV/vm; vx*=s; vy*=s; vz*=s; }
+        energy += vm;
+
+        // anchor as an ACCELERATION. A position lerp mathematically cannot
+        // overshoot, which is exactly why the fabric used to dissolve back
+        // instead of springing.
+        var ax = rest[k]-p[k], ay = rest[k+1]-p[k+1], az = rest[k+2]-p[k+2];
+        var disp = Math.sqrt(ax*ax + ay*ay + az*az);
+        var aw = ANCH * (1 - 0.85*gw[i]);
+        // gravity ramps with displacement -> exactly zero at equilibrium, so
+        // rest stays bit-exact instead of sagging
+        var gm = disp > GDIST ? 1 : disp/GDIST;
+
+        pp[k] = p[k]; pp[k+1] = p[k+1]; pp[k+2] = p[k+2];
+        p[k]   += vx + ax*aw;
+        p[k+1] += vy + ay*aw + GRAV*gm;
+        p[k+2] += vz + az*aw*ANCHZ;
+      }
+      this.energy = energy / n;
+
+      var eA = this.eA, eB = this.eB, eL = this.eL, eK = this.eK, eN = this.eN;
+      for(var it = 0; it < this.iters; it++){
+        if(this._applyGrab) this._applyGrab();
+        for(var e = 0; e < eN; e++){
+          var ai = eA[e]*3, bi = eB[e]*3, L = eL[e];
+          var dx = p[bi]-p[ai], dy = p[bi+1]-p[ai+1], dz = p[bi+2]-p[ai+2];
+          var d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if(d < 1e-7) continue;
+          var f = (d - L) / d * 0.5 * eK[e];
+          var ox = dx*f, oy = dy*f, oz = dz*f;
+          var pa = pin[eA[e]], pb = pin[eB[e]];
+          if(!pa && !pb){
+            p[ai]+=ox; p[ai+1]+=oy; p[ai+2]+=oz;
+            p[bi]-=ox; p[bi+1]-=oy; p[bi+2]-=oz;
+          } else if(!pa){
+            p[ai]+=ox*2; p[ai+1]+=oy*2; p[ai+2]+=oz*2;
+          } else if(!pb){
+            p[bi]-=ox*2; p[bi+1]-=oy*2; p[bi+2]-=oz*2;
+          }
+        }
+      }
+    };
+
+    function makeHoodie(el, grid, tex, onLive){
+      /* antialias:false — MSAA resolves GEOMETRY coverage, and the only geometry
+         edge here is the plane's own fully-transparent square border. The
+         hoodie's silhouette is a texture-alpha edge inside a fully-covered quad,
+         which MSAA cannot touch. Dropping it funds dpr 3 on mobile for free. */
+      var renderer = new THREE.WebGLRenderer({
+        antialias:false, alpha:true, powerPreference:'high-performance'
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      var cv = renderer.domElement;
+      cv.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;z-index:0';
+      el.insertBefore(cv, el.firstChild);
+
+      tex.colorSpace = THREE.SRGBColorSpace;
+      // mipmaps stay on: at dpr 1 the plane minifies ~2x and would alias badly
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = true;
+      tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+      tex.needsUpdate = true;
+
+      var scene = new THREE.Scene();
+      var cam = new THREE.PerspectiveCamera(22, 1, 0.1, 100);
+      cam.position.set(0, 0, 4.6);
+
+      var g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(grid.pos.slice(), 3));
+      g.setIndex(new THREE.BufferAttribute(grid.idx.slice(), 1));
+      var uv = new Float32Array(grid.nv*2);
+      for(var i = 0; i < grid.nv; i++){
+        uv[i*2]   = grid.pos[i*3]  /SIZE + 0.5;
+        uv[i*2+1] = grid.pos[i*3+1]/SIZE + 0.5;
+      }
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      var col = new Float32Array(grid.nv*3).fill(1);
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      var colAttr = g.attributes.color;
+
+      // three computes this lazily from the FLAT grid and caches it forever, so
+      // grabs on already-stretched fabric silently missed intersectObject
+      g.boundingSphere = new THREE.Sphere(new THREE.Vector3(0,0,0),
+                                          SIZE*0.75 + MAXPULL + ZLIFT);
+      g.computeBoundingSphere = function(){};
+
+      /* PASS A — depth only, alpha-tested. Stamps the winning layer per pixel
+         by true depth, so index-buffer order stops mattering. */
+      var matDepth = new THREE.MeshBasicMaterial({
+        map: tex, alphaTest: PRECUT, transparent: false,
+        colorWrite: false, depthWrite: true, depthTest: true,
+        side: THREE.DoubleSide, toneMapped: false,
+        polygonOffset: true, polygonOffsetFactor: 0, polygonOffsetUnits: 1.0
+      });
+      /* PASS B — colour only. Full analog 0->1 alpha, no discard, no depth
+         write. This is what keeps the silhouette smooth instead of stair-stepped. */
+      var matColor = new THREE.MeshBasicMaterial({
+        map: tex, transparent: true, alphaTest: 0,
+        depthWrite: false, depthTest: true, depthFunc: THREE.LessEqualDepth,
+        side: THREE.DoubleSide, toneMapped: false, vertexColors: true
+      });
+      matColor.onBeforeCompile = function(sh){
+        sh.fragmentShader = sh.fragmentShader.replace(
+          '#include <color_fragment>',
+          '#include <color_fragment>\n  if(!gl_FrontFacing) diffuseColor.rgb *= ' +
+          BACKF.toFixed(3) + ';');
+      };
+
+      var meshDepth = new THREE.Mesh(g, matDepth); meshDepth.renderOrder = 0;
+      var mesh      = new THREE.Mesh(g, matColor); mesh.renderOrder      = 1;
+      meshDepth.frustumCulled = mesh.frustumCulled = false;
+      var grp = new THREE.Group(); grp.add(meshDepth); grp.add(mesh); scene.add(grp);
+
+      var cloth = new Cloth(grid), posAttr = g.attributes.position;
+      var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane();
+      var grabWorld = new THREE.Vector3(), grabLocal = new THREE.Vector3();
+      var hitWorld  = new THREE.Vector3(), hitLocal  = new THREE.Vector3();
+      var Zaxis = new THREE.Vector3(0, 0, 1);
+
+      var grabbing = false, hovering = false, visible = true, live = false;
+      var grabIds = [], grabStart = [];
+      var Dx = 0, Dy = 0, Dz = 0;
+      var tiltTX = 0, tiltTY = 0;
+
+      function pickDpr(W){
+        var d = Math.min(window.devicePixelRatio || 1, 3);
+        while(W * d > MAXBUF && d > 1) d -= 0.5;
+        return d;
+      }
+      function resize(){
+        var W = el.clientWidth || 400, H = el.clientHeight || 400;
+        renderer.setPixelRatio(pickDpr(W));
+        renderer.setSize(W, H, false);
+        cam.aspect = W/H; cam.updateProjectionMatrix();
+        ensureRunning();
+      }
+      new ResizeObserver(resize).observe(el);
+      resize();
+
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ visible = e.isIntersecting; if(visible) ensureRunning(); });
+      }, {rootMargin:'120px 0px'}).observe(el);
+
+      /* Fake-lambert from the z DEVIATION field, so a fold reads as a fold.
+         Two unlit copies of the same photo have zero luminance difference, so
+         even perfectly ordered overlap would still look like a smear. Using
+         (z - z_rest) means the term is exactly 1.0 at rest, by construction. */
+      var LX = -0.42, LY = 0.58, S = 1.15;
+      function shade(){
+        var p = cloth.pos, rest = cloth.rest, n = cloth.n,
+            c = colAttr.array, h = SIZE/(n-1), x, y;
+        for(y = 0; y < n; y++) for(x = 0; x < n; x++){
+          var i = y*n+x, k = i*3;
+          var xr = (x<n-1?i+1:i)*3, xl = (x>0?i-1:i)*3;
+          var yu = (y<n-1?i+n:i)*3, yd = (y>0?i-n:i)*3;
+          var sx = (x>0&&x<n-1)?2:1, sy = (y>0&&y<n-1)?2:1;
+          var gx = ((p[xr+2]-rest[xr+2])-(p[xl+2]-rest[xl+2]))/(sx*h);
+          var gy = ((p[yu+2]-rest[yu+2])-(p[yd+2]-rest[yd+2]))/(sy*h);
+          var s = 1 + S*(gx*LX + gy*LY);
+          if(s < 0.84) s = 0.84; else if(s > 1.18) s = 1.18;
+          c[k] = c[k+1] = c[k+2] = s;
+        }
+        colAttr.needsUpdate = true;
+      }
+
+      function toNdc(e){
+        var r = cv.getBoundingClientRect();
+        ndc.x =  ((e.clientX-r.left)/r.width )*2 - 1;
+        ndc.y = -((e.clientY-r.top )/r.height)*2 + 1;
+      }
+
+      function beginGrab(e){
+        toNdc(e); ray.setFromCamera(ndc, cam); mesh.updateWorldMatrix(true, false);
+        var ix = ray.intersectObject(mesh, false);      // colour mesh only
+        if(!ix.length) return false;
+        try{ el.setPointerCapture(e.pointerId); }catch(_){}
+        el.classList.add('pinching');
+        grabWorld.copy(ix[0].point); grabLocal.copy(ix[0].point); mesh.worldToLocal(grabLocal);
+        grabbing = true; grabIds = []; grabStart = []; cloth.grab.fill(0);
+        var p = cloth.pos;
+        for(var i = 0; i < cloth.count; i++){
+          if(cloth.pinned[i]) continue;
+          var k = i*3;
+          var dx = p[k]-grabLocal.x, dy = p[k+1]-grabLocal.y, dz = p[k+2]-grabLocal.z;
+          var d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if(d < R){
+            var t = 1 - d/R;
+            cloth.grab[i] = t*t*(3-2*t);
+            // anchor to where each vertex IS now, so re-grabbing already
+            // stretched fabric doesn't snap
+            grabIds.push(i); grabStart.push(p[k], p[k+1], p[k+2]);
+          }
+        }
+        plane.setFromNormalAndCoplanarPoint(Zaxis, grabWorld);
+        Dx = Dy = Dz = 0;
+        tiltTX = grp.rotation.x; tiltTY = grp.rotation.y;   // no tilt creep
+        ensureRunning();
+        return true;
+      }
+
+      function drag(e){
+        toNdc(e); ray.setFromCamera(ndc, cam);
+        if(!ray.ray.intersectPlane(plane, hitWorld)) return;
+        var ox = hitWorld.x-grabWorld.x, oy = hitWorld.y-grabWorld.y;
+        var d = Math.sqrt(ox*ox + oy*oy);
+        if(d > 1e-6){
+          // asymptotic: 1:1 near the grab, progressively stiffer, capped. No
+          // threshold means it never snaps out of your hand.
+          var s = MAXPULL*(1 - Math.exp(-d/MAXPULL))/d;
+          hitWorld.x = grabWorld.x + ox*s;
+          hitWorld.y = grabWorld.y + oy*s;
+        }
+        hitLocal.copy(hitWorld); mesh.worldToLocal(hitLocal);
+        Dx = hitLocal.x - grabLocal.x;
+        Dy = hitLocal.y - grabLocal.y;
+        var Dm = Math.sqrt(Dx*Dx + Dy*Dy);
+        // the lift is the whole reason the depth prepass has anything to sort
+        Dz = ZLIFT * (1 - Math.exp(-Dm/ZKNEE));
+
+        cloth._applyGrab = function(){
+          var p = cloth.pos, pp = cloth.prev;
+          for(var j = 0; j < grabIds.length; j++){
+            var i = grabIds[j], k = i*3, w = cloth.grab[i], s2 = j*3;
+            var a  = KG_IT * (0.30 + 0.70*w);        // rim lags centre
+            var tx = grabStart[s2]   + Dx*w;
+            var ty = grabStart[s2+1] + Dy*w;
+            var tz = grabStart[s2+2] + Dz*w*w;       // w^2 -> a cone tip, not a plate
+            var mx = (tx-p[k])*a, my = (ty-p[k+1])*a, mz = (tz-p[k+2])*a;
+            p[k] += mx; p[k+1] += my; p[k+2] += mz;
+            // prev rides along, so Verlet never reads the drag as velocity
+            pp[k] += mx*FOLLOW; pp[k+1] += my*FOLLOW; pp[k+2] += mz*FOLLOW;
+          }
+        };
+        ensureRunning();
+      }
+
+      function release(e){
+        if(!grabbing) return;
+        grabbing = false; cloth._applyGrab = null; cloth.grab.fill(0);
+        el.classList.remove('pinching');
+        try{ el.releasePointerCapture(e && e.pointerId); }catch(_){}
+        ensureRunning();
+      }
+
+      /* Touch: don't steal the gesture. Wait for a few px and only take it if
+         the swipe is horizontal — a vertical swipe belongs to the page. */
+      var pending = null;
+      el.addEventListener('pointerdown', function(e){
+        if(e.pointerType === 'touch'){ pending = {x:e.clientX, y:e.clientY, e:e}; return; }
+        if(beginGrab(e)) e.preventDefault();
+      });
+
+      el.addEventListener('pointermove', function(e){
+        if(pending){
+          var dx = e.clientX-pending.x, dy = e.clientY-pending.y;
+          var ax = Math.abs(dx), ay = Math.abs(dy);
+          if(ax < 6 && ay < 6) return;
+          if(ay > ax){ pending = null; return; }   // vertical -> let the page scroll
+          var start = pending; pending = null;
+          if(!beginGrab(Object.assign({}, start.e, {clientX:start.x, clientY:start.y,
+                                                    pointerId:e.pointerId}))) return;
+        }
+        if(grabbing){ e.preventDefault(); drag(e); return; }
+        if(e.pointerType !== 'touch'){
+          toNdc(e); tiltTX = ndc.y*0.04; tiltTY = ndc.x*0.06; ensureRunning();
+        }
+      });
+
+      el.addEventListener('pointerup',     function(e){ pending = null; release(e); });
+      el.addEventListener('pointercancel', function(e){ pending = null; release(e); });
+      el.addEventListener('pointerenter',  function(){ hovering = true; el.classList.add('hovered'); ensureRunning(); });
+      el.addEventListener('pointerleave',  function(e){
+        hovering = false; pending = null;
+        el.classList.remove('hovered'); tiltTX = 0; tiltTY = 0; release(e);
+      });
+
+      /* ---- fixed-timestep loop ------------------------------------------- */
+      var DT = 1/60, MAXSTEPS = 3, acc = 0, last = 0, running = false, quiet = 0;
+
+      function frame(now){
+        if(!visible){ running = false; last = 0; return; }
+        if(!last) last = now;
+        var dt = (now-last)/1000; last = now;
+        if(dt > 0.25) dt = 0.25;
+        acc += dt;
+        var steps = 0;
+        while(acc >= DT && steps < MAXSTEPS){ cloth.step(); acc -= DT; steps++; }
+        if(steps === MAXSTEPS) acc = 0;
+
+        posAttr.array.set(cloth.pos);
+        posAttr.needsUpdate = true;
+        shade();
+
+        grp.rotation.x += (tiltTX-grp.rotation.x)*0.10;
+        grp.rotation.y += (tiltTY-grp.rotation.y)*0.10;
+        renderer.render(scene, cam);
+
+        if(!live){ live = true; onLive && onLive(); }   // only hide the CSS photo
+                                                        // once a frame really landed
+        var settled = Math.abs(tiltTX-grp.rotation.x) < 2e-4 &&
+                      Math.abs(tiltTY-grp.rotation.y) < 2e-4;
+        // 20 consecutive quiet frames, so it can't stop mid-wobble
+        if(cloth.energy < 6e-5) quiet++; else quiet = 0;
+        if(!grabbing && !hovering && settled && quiet > 20){
+          running = false; last = 0; return;            // sleep until touched
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function ensureRunning(){
+        if(!running && visible){ running = true; last = 0; requestAnimationFrame(frame); }
+      }
+      ensureRunning();
+    }
+
+    var grid = makeGrid(GRID);
+    var loader = new THREE.TextureLoader();
+    [].slice.call(document.querySelectorAll('#merch .mpic')).forEach(function(pic){
+      var mimg = pic.querySelector('.mimg'); if(!mimg) return;
+      // data-tex, not the computed background: the CSS background is attached
+      // lazily, so reading it here would be a race
+      var src = mimg.getAttribute('data-tex');
+      if(!src){
+        var m = (getComputedStyle(mimg).backgroundImage || '').match(/url\(\s*["']?(.*?)["']?\s*\)/i);
+        if(!m) return;
+        src = m[1];
+      }
+      loader.load(src, function(tex){
+        try{
+          makeHoodie(pic, grid, tex, function(){ mimg.style.backgroundImage = 'none'; });
+        }catch(err){ /* keep the static photo on failure */ }
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

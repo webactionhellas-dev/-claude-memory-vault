@@ -1,0 +1,220 @@
+---
+import { getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import ProductImage from './ProductImage.astro';
+import { resolveImage, isRemoteImage, plateColor } from '@/lib/images';
+import { shouldFlip } from '@/lib/orientation';
+import { money, discountPct } from '@/lib/money';
+import type { Product } from '@/lib/products';
+
+interface Props {
+  product: Product;
+  eager?: boolean;
+  swap?: boolean;
+  sizes?: string;
+}
+const {
+  product,
+  eager = false,
+  swap = true,
+  sizes = '(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 300px',
+} = Astro.props;
+
+const primaryRaw = product.images[0];
+const secondaryRaw = swap ? product.images[1] : undefined;
+const primaryMeta = resolveImage(primaryRaw);
+const hasSecondary = !!(secondaryRaw && (resolveImage(secondaryRaw) || isRemoteImage(secondaryRaw)));
+const off = discountPct(product.price, product.compareAtPrice);
+const flip = shouldFlip(product.slug);
+const href = `/product/${product.slug}`;
+// optimized URL for the instant-add-to-bag droplet (bundled → optimize; uploaded → use as-is)
+const cartImg = primaryMeta
+  ? (await getImage({ src: primaryMeta, width: 360, format: 'webp' })).src
+  : isRemoteImage(primaryRaw)
+    ? primaryRaw
+    : '';
+const quickSize = product.sizes[0] ?? 'OS';
+const widths = [260, 520];
+---
+
+<article class="card-pop group relative">
+  <div class="plate relative aspect-square overflow-hidden rounded-2xl border border-line" style={`--plate-c:${product.plateColor ?? plateColor(product.images[0])}`}>
+    <!-- Badges -->
+    <div class="absolute left-3 top-3 z-10 flex flex-col gap-1.5">
+      {off > 0 && (
+        <span class="rounded-full bg-sale px-2.5 py-1 text-[11px] font-700 text-white">-{off}%</span>
+      )}
+      {off === 0 && product.badge === 'new' && (
+        <span class="rounded-full bg-ink px-2.5 py-1 text-[11px] font-700 text-noir">New</span>
+      )}
+      {!product.inStock && (
+        <span class="rounded-full bg-overlay/90 px-2.5 py-1 text-[11px] font-700 text-muted">Sold out</span>
+      )}
+    </div>
+
+    <!-- Driplet: instant add to bag -->
+    <button
+      type="button"
+      data-drip-add
+      data-slug={product.slug}
+      data-name={product.name}
+      data-brand={product.brand}
+      data-price={product.price}
+      data-image={cartImg}
+      data-size={quickSize}
+      class="drip-add absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-base/50 text-accent opacity-0 backdrop-blur-md transition-all duration-300 hover:bg-accent hover:text-on-accent group-hover:opacity-100"
+      aria-label="Add to bag"
+      title="Add to bag"
+    >
+      <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor" aria-hidden="true">
+        <path d="M12 2.2c3.9 4.9 6.4 8.3 6.4 11.9a6.4 6.4 0 0 1-12.8 0c0-3.6 2.5-7 6.4-11.9z" />
+      </svg>
+    </button>
+
+    <a href={href} aria-label={product.name} class:list={['block h-full w-full', flip && '-scale-x-100']}>
+      <ProductImage
+        image={primaryRaw}
+        alt={product.name}
+        widths={widths}
+        sizes={sizes}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+        class:list={[
+          'absolute inset-0 h-full w-full object-contain p-[10%] ease-[cubic-bezier(0.22,1,0.36,1)]',
+          // With a second image we crossfade (fade primary OUT as secondary fades in)
+          // so the two never stack; with no second image we just zoom on hover.
+          hasSecondary
+            ? 'transition-[opacity,transform] duration-500 group-hover:scale-[1.04] group-hover:opacity-0'
+            : 'transition-transform duration-700 group-hover:scale-[1.04]',
+        ]}
+      />
+      {
+        hasSecondary && (
+          <ProductImage
+            image={secondaryRaw}
+            alt=""
+            widths={widths}
+            sizes={sizes}
+            loading="lazy"
+            class="absolute inset-0 h-full w-full object-contain p-[10%] opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] group-hover:opacity-100"
+          />
+        )
+      }
+    </a>
+
+    <!-- Quick view (desktop only — on touch it just covers the sneaker) -->
+    <button
+      type="button"
+      data-quickview={product.slug}
+      class="qv-btn absolute inset-x-3 bottom-3 z-10 hidden h-11 translate-y-3 items-center justify-center gap-2 overflow-hidden rounded-full text-[13px] font-700 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:flex"
+    >
+      <span data-en="Quick view">Γρήγορη προβολή</span>
+      <Icon name="arrowUpRight" size={16} />
+    </button>
+  </div>
+
+  <!-- Meta -->
+  <div class="mt-3.5 px-0.5">
+    <div class="flex items-center justify-between">
+      <p class="text-[11px] font-600 uppercase tracking-[0.14em] text-faint">{product.brand}</p>
+    </div>
+    <h3 class="mt-1 line-clamp-1 text-[14px] font-500 text-ink">
+      <a href={href} class="transition-colors hover:text-accent-soft">{product.name}</a>
+    </h3>
+    <div class="mt-1.5 flex items-center gap-2">
+      <span class="text-[15px] font-700 text-ink">{money(product.price)}</span>
+      {
+        off > 0 && product.compareAtPrice && (
+          <span class="text-[13px] text-faint line-through">{money(product.compareAtPrice)}</span>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  /* Pop-up interaction: the whole card lifts, the tile gains a tiffany-tinted
+     shadow + ring, and the photo eases up to meet the cursor. Works on hover,
+     keyboard focus (focus-within) and touch (:active). */
+  .card-pop {
+    transition: transform 0.45s var(--ease-lux);
+    will-change: transform;
+  }
+  .card-pop .plate {
+    transition:
+      box-shadow 0.45s var(--ease-lux),
+      transform 0.45s var(--ease-lux),
+      border-color 0.45s;
+    box-shadow: 0 8px 20px -14px rgba(0, 0, 0, 0.7);
+  }
+  .card-pop:hover,
+  .card-pop:focus-within,
+  .card-pop:active {
+    transform: translateY(-9px);
+  }
+  .card-pop:hover .plate,
+  .card-pop:focus-within .plate,
+  .card-pop:active .plate {
+    border-color: rgba(0, 192, 182, 0.45);
+    box-shadow:
+      0 28px 52px -22px rgba(0, 0, 0, 0.75),
+      0 22px 60px -26px rgba(0, 192, 182, 0.5),
+      0 0 0 1px rgba(0, 192, 182, 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-pop,
+    .card-pop .plate {
+      transition: none;
+    }
+    .card-pop:hover,
+    .card-pop:focus-within,
+    .card-pop:active {
+      transform: none;
+    }
+  }
+
+  /* Tiffany quick-view button with a cursor-following shine (--mx/--my set in JS) */
+  .qv-btn {
+    isolation: isolate;
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    color: var(--color-on-accent);
+    box-shadow: 0 10px 28px -12px rgba(0, 192, 182, 0.65);
+  }
+  .qv-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(110px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.5), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-lux);
+    pointer-events: none;
+  }
+  .qv-btn:hover::before {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  import { addItem } from '@/lib/cart';
+  // Delegated: pressing a card's driplet adds it straight to the bag.
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-drip-add]') as HTMLElement | null;
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      slug: btn.dataset.slug!,
+      name: btn.dataset.name!,
+      brand: btn.dataset.brand!,
+      price: Number(btn.dataset.price),
+      image: btn.dataset.image!,
+      size: btn.dataset.size || 'OS',
+    });
+    btn.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1)' }],
+      { duration: 320, easing: 'cubic-bezier(0.22,1,0.36,1)' },
+    );
+  });
+</script>
