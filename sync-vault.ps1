@@ -10,7 +10,7 @@ robocopy $memory $vault *.md /XO /XD .git .obsidian /NFL /NDL /NJH /NJS | Out-Nu
 
 $changes = git status --short
 if ($changes) {
-    git add -A
+    git add -A 2>&1 | Out-Null
     git commit -m "Auto memory sync: $(Get-Date -Format 'yyyy-MM-dd HH:mm')" 2>&1 | Out-Null
     git push 2>&1 | Out-Null
 }
