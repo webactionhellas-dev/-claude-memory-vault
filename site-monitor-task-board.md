@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 70f1bde9-a5a3-4cb5-ac72-971762bb76e7
-  modified: 2026-08-01T23:13:47.393Z
+  modified: 2026-08-01T23:38:26.017Z
 ---
 
 `C:\Users\mikef\site-monitor` — a zero-dep Node tool (same house style as [[x-tracker]]) with two parts on one dashboard:
@@ -31,5 +31,9 @@ This writes the task file directly (works whether or not the dashboard server ha
 **Known limitation**: Asteris doesn't have this dashboard's web UI running on their own machine yet - they can edit a task's `status`/`assignee` field directly in the markdown via Obsidian and it'll sync fine, but they don't get the clickable board. Setting up the same tool on Asteris's machine would need Mike to hand them the folder (or a fresh setup script) - not something doable from this machine alone.
 
 **Real bugs caught and fixed before shipping (both verified with direct evidence, not assumed):** the broken-image checker was flagging real images as broken because it didn't HTML-entity-decode `&amp;` in extracted `src` attributes before treating them as URLs (a Vercel `/_vercel/image?url=...&amp;w=750` link) - fixed, reverified with curl. Creating two tasks with the same title on the same day silently overwrote the first task's file (same slug -> same filename) - fixed with a collision-disambiguation loop, reverified by reproducing the exact case that broke it.
+
+**Design: "Signal Deck"** (Nami, 2026-08-01) - mission-control/telemetry concept, not a generic dark dashboard: Bricolage Grotesque (wordmark/hero numeral only, rationed), Switzer (UI text), JetBrains Mono (every data value - ms/%/timestamps/counts, consistently). Near-black `#08090c` bg, one rationed accent violet `#8567ff` kept strictly separate from the ok/warn/down semantic colors (the amber-for-both confusion in the prior rough pass was a real, caught mistake). Fonts are CDN-loaded (Google Fonts + Fontshare) - works fine but not offline-resilient, self-hosting is a nice-to-have follow-up. No real Web Action logo exists anywhere on file - header is typographic (wordmark + live pulse dot) until Mike supplies a real mark. All in `src/dashboard.js` only (server/API routes untouched).
+
+**Also runs as a real Electron desktop app now**, not just a browser tab: `npm run app` (or the packaged form once `npm run build-app` succeeds - full packaging via electron-builder hit a Windows dev-mode/symlink permission wall in this sandbox, unresolved, dev-mode launch works fine as the interim). `electron-main.js` + `src/app.js` (shared start-up logic between the plain CLI and Electron, so there's one tested implementation, not two).
 
 See [[x-tracker]] for the sibling tool this followed the conventions of, [[memory-vault-sync-incident]] for the sync mechanism it reuses.
