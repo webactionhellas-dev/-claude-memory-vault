@@ -1,0 +1,65 @@
+---
+// GDPR / ePrivacy cookie-consent banner. Framework-free, no external deps.
+// Essential cookies (cart, sign-in) run without consent; analytics/marketing
+// scripts should gate themselves on window.__consent === 'granted' or listen for
+// the 'consent-change' event. The choice is stored in localStorage.
+// Bilingual: Greek default, English via the site's [data-en] swap runtime.
+---
+<div id="wa-consent" class="wa-consent" hidden role="dialog" aria-live="polite" aria-label="Cookie notice">
+  <p
+    class="wa-consent__text"
+    data-en="We use essential cookies to run the store (your bag and sign-in). With your consent we also use analytics to improve the site."
+  >
+    Χρησιμοποιούμε απαραίτητα cookies για τη λειτουργία του καταστήματος (καλάθι και σύνδεση). Με τη
+    συγκατάθεσή σας χρησιμοποιούμε και analytics για τη βελτίωση του site.
+  </p>
+  <a class="wa-consent__link" href="/privacy" data-en="Privacy policy">Πολιτική απορρήτου</a>
+  <div class="wa-consent__actions">
+    <button type="button" data-consent="denied" class="wa-consent__btn wa-consent__btn--ghost" data-en="Decline">Άρνηση</button>
+    <button type="button" data-consent="granted" class="wa-consent__btn" data-en="Accept">Αποδοχή</button>
+  </div>
+</div>
+
+<style>
+  .wa-consent {
+    position: fixed; left: 1rem; right: 1rem; bottom: 1rem; z-index: 9999;
+    max-width: 46rem; margin-inline: auto;
+    display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; justify-content: space-between;
+    padding: 1rem 1.15rem; border-radius: 14px;
+    background: #111; color: #f5f5f5; box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+    font-size: .9rem; line-height: 1.45;
+  }
+  .wa-consent[hidden] { display: none; }
+  .wa-consent__text { margin: 0; flex: 1 1 20rem; }
+  .wa-consent__link { color: #fff; text-decoration: underline; font-size: .85rem; flex: 0 0 auto; }
+  .wa-consent__actions { display: flex; gap: .5rem; flex: 0 0 auto; }
+  .wa-consent__btn {
+    appearance: none; border: 0; cursor: pointer; padding: .55rem 1.1rem; border-radius: 9px;
+    font: inherit; font-weight: 600; background: #f5f5f5; color: #111;
+  }
+  .wa-consent__btn--ghost { background: transparent; color: #f5f5f5; border: 1px solid rgba(245, 245, 245, .4); }
+  @media (prefers-reduced-motion: no-preference) { .wa-consent { animation: wa-rise .3s ease-out; } }
+  @keyframes wa-rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+</style>
+
+<script is:inline>
+  (function () {
+    var KEY = 'wa-consent';
+    var el = document.getElementById('wa-consent');
+    if (!el) return;
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    window.__consent = saved;
+    function apply(v) {
+      try { localStorage.setItem(KEY, v); } catch (e) {}
+      window.__consent = v;
+      el.hidden = true;
+      document.dispatchEvent(new CustomEvent('consent-change', { detail: v }));
+    }
+    if (saved !== 'granted' && saved !== 'denied') el.hidden = false;
+    el.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-consent]');
+      if (t) apply(t.getAttribute('data-consent'));
+    });
+  })();
+</script>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="el" class="no-js">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Επικοινωνία · Underdog Γλυφάδα</title>
+<meta name="description" content="Κλείστε ραντεβού στο Underdog, Δημ. Αγγέλου Μεταξά 42-44, Γλυφάδα. Δευ–Σαβ 10:00–18:00." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..600&family=Manrope:wght@400..700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/site.css" />
+<style>
+  .field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+  .field label{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);font-weight:600}
+  .field input,.field textarea{font:inherit;padding:.85rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--cream);color:var(--ink)}
+  .field input:focus,.field textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+</style>
+</head>
+<body>
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="brand" href="index.html">Underdog<span class="dot"></span></a>
+    <nav class="nav-links">
+      <a href="services.html" data-en="Services">Υπηρεσίες</a>
+      <a href="gallery.html" data-en="Gallery">Gallery</a>
+      <a href="index.html#story" data-en="Our story">Η ιστορία μας</a>
+      <a href="contact.html" data-en="Contact">Επικοινωνία</a>
+    </nav>
+    <div class="nav-right">
+      <button class="lang" id="lang"><b>EL</b> / EN</button>
+      <a class="btn mag" href="tel:+302117707007"><span data-en="Book">Ραντεβού</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="phero" style="min-height:50vh">
+    <div class="hero-bg"><img src="assets/img/img-10.jpg" alt="" /></div>
+    <div class="hero-inner wrap">
+      <p class="eyebrow hero-eyebrow" style="color:rgba(255,255,255,.85)" data-en="Say hello">Πείτε μας γεια</p>
+      <h1 data-en="Let's meet your companion.">Ας γνωρίσουμε τον σύντροφό σας.</h1>
+    </div>
+  </section>
+
+  <section class="sec-pad">
+    <div class="wrap loc-grid">
+      <div class="reveal">
+        <span class="eyebrow" data-en="Book by phone or message">Ραντεβού με τηλέφωνο ή μήνυμα</span>
+        <h2 style="margin:.4em 0 1.3rem" data-en="We keep the day calm.">Κρατάμε την ημέρα ήρεμη.</h2>
+        <div class="info-row"><div class="k" data-en="Address">Διεύθυνση</div><div class="v">Δημάρχου Αγγέλου Μεταξά 42-44,<br/>Γλυφάδα 166 74</div></div>
+        <div class="info-row"><div class="k" data-en="Hours">Ώρες</div><div class="v"><span data-en="Mon–Sat 10:00–18:00">Δευ–Σαβ 10:00–18:00</span><br/><span class="muted" data-en="Sunday closed">Κυριακή κλειστά</span></div></div>
+        <div class="info-row"><div class="k" data-en="Phone">Τηλέφωνο</div><div class="v"><a href="tel:+302117707007">211 77 07 007</a></div></div>
+        <div class="info-row"><div class="k">Email</div><div class="v"><a href="mailto:info@theunderdog.gr">info@theunderdog.gr</a></div></div>
+        <div class="info-row"><div class="k">Instagram</div><div class="v"><a href="https://instagram.com/theunderdog.gr" target="_blank" rel="noopener">@theunderdog.gr</a></div></div>
+        <div style="margin-top:1.6rem"><a class="btn mag" href="https://www.google.com/maps/search/?api=1&query=Dimarchou+Angelou+Metaxa+42-44+Glyfada" target="_blank" rel="noopener"><span data-en="Get directions">Οδηγίες πρόσβασης</span><span class="arrow">→</span></a></div>
+      </div>
+
+      <div class="reveal" style="background:var(--sand);border-radius:var(--r);padding:clamp(1.6rem,3vw,2.4rem)">
+        <h3 style="font-size:var(--h4);font-weight:500;margin-bottom:1.2rem" data-en="Request an appointment">Ζητήστε ραντεβού</h3>
+        <form action="mailto:info@theunderdog.gr" method="post" enctype="text/plain">
+          <div class="field"><label for="f-name" data-en="Your name">Το όνομά σας</label><input id="f-name" type="text" name="name" required /></div>
+          <div class="field"><label for="f-contact" data-en="Phone or email">Τηλέφωνο ή email</label><input id="f-contact" type="text" name="contact" required /></div>
+          <div class="field"><label for="f-msg" data-en="Your pet & what they need">Το κατοικίδιο & τι χρειάζεται</label><textarea id="f-msg" name="message" rows="4"></textarea></div>
+          <button class="btn btn--gold mag" type="submit" style="width:100%;justify-content:center"><span data-en="Send request">Αποστολή αιτήματος</span><span class="arrow">→</span></button>
+          <p class="muted" style="font-size:.82rem;margin-top:.9rem" data-en="Demo form. On the live site this delivers straight to the salon's inbox.">Ενδεικτική φόρμα. Στο live site παραδίδεται απευθείας στο inbox του σαλονιού.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-pad" style="padding-top:0">
+    <div class="wrap"><div class="cta reveal">
+      <div class="txt">
+        <span class="eyebrow" style="color:var(--ink)" data-en="Prefer to call?">Προτιμάτε τηλέφωνο;</span>
+        <h2 style="margin:.4em 0 .6em" data-en="We're a phone call away.">Απέχουμε ένα τηλεφώνημα.</h2>
+        <p style="color:#3A2E1E;max-width:40ch;margin-bottom:1.8rem" data-en="Mon to Sat, 10:00 to 18:00. We would love to meet your companion.">Δευτέρα με Σάββατο, 10:00 με 18:00. Θα χαρούμε να γνωρίσουμε τον σύντροφό σας.</p>
+        <a class="btn mag" style="background:var(--ink);color:var(--cream);border-color:var(--ink)" href="tel:+302117707007"><span data-en="Call 211 77 07 007">Καλέστε 211 77 07 007</span><span class="arrow">→</span></a>
+      </div>
+      <div class="ph"><img src="assets/img/img-11.jpg" alt="" /></div>
+    </div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col"><a class="brand" href="index.html">Underdog<span class="dot"></span></a><p style="margin-top:1rem;max-width:30ch" data-en="Calm, natural grooming & pet care in Glyfada.">Ήρεμο, φυσικό grooming & φροντίδα κατοικιδίων στη Γλυφάδα.</p></div>
+      <div class="foot-col"><div class="foot-h" data-en="Explore">Μενού</div><a href="services.html" data-en="Services">Υπηρεσίες</a><a href="gallery.html" data-en="Gallery">Gallery</a><a href="contact.html" data-en="Contact">Επικοινωνία</a></div>
+      <div class="foot-col"><div class="foot-h" data-en="Visit">Επίσκεψη</div><p>Δημ. Αγγέλου Μεταξά 42-44, Γλυφάδα</p><a href="tel:+302117707007">211 77 07 007</a><a href="https://instagram.com/theunderdog.gr" target="_blank" rel="noopener">@theunderdog.gr</a></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 Underdog · Γλυφάδα</span><span data-en="Redesign concept by Web Action">Concept ανασχεδιασμού από τη Web Action</span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

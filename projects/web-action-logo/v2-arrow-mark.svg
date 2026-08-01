@@ -1,0 +1,8 @@
+<svg width="150" height="150" viewBox="0 0 100 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Web Action mark">
+  <!-- rising 3-chevron arrow: bold, sliced, geometric -->
+  <g stroke="currentColor" stroke-width="12" stroke-linecap="butt" stroke-linejoin="miter">
+    <path d="M22 32 L50 12 L78 32"/>
+    <path d="M22 54 L50 34 L78 54"/>
+    <path d="M22 76 L50 56 L78 76"/>
+  </g>
+</svg>

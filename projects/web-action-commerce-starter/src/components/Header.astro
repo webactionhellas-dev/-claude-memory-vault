@@ -1,0 +1,233 @@
+---
+import Icon from './Icon.astro';
+import { loadContent, c } from '@/lib/content';
+
+await loadContent();
+const annDelivery = c('announce.delivery', 'Δωρεάν παράδοση 24 ωρών σε όλη την Αθήνα', 'Free 24-hour delivery across Your City');
+const annAuth = c('announce.auth', 'Κάθε ζευγάρι πιστοποιημένο', 'Every pair authenticated');
+const annReturns = c('announce.returns', 'Επιστροφές 14 ημερών', '14-day returns');
+
+const nav = [
+  { label: 'Όλα τα προϊόντα', en: 'Shop All', href: '/shop' },
+  { label: 'Νέες Παραλαβές', en: 'New Arrivals', href: '/shop?category=new-arrivals' },
+  { label: 'Μάρκες', en: 'Brands', href: '/brands' },
+  { label: 'Σχετικά', en: 'About', href: '/about' },
+];
+const path = Astro.url.pathname;
+---
+
+<header id="site-header" class="sticky top-0 z-50">
+  <!-- Announcement bar -->
+  <div class="bg-accent/85 text-[#04211f] backdrop-blur-md">
+    <div class="wrap flex items-center justify-center gap-2 py-2 text-center text-[12px] font-semibold tracking-[0.04em]">
+      <span class="hidden sm:inline" data-en={annDelivery.en}>{annDelivery.el}</span>
+      <span class="hidden sm:inline opacity-40">•</span>
+      <span data-en={annAuth.en}>{annAuth.el}</span>
+      <span class="opacity-40">•</span>
+      <span data-en={annReturns.en}>{annReturns.el}</span>
+    </div>
+  </div>
+
+  <div
+    id="header-bar"
+    class="transition-colors duration-300"
+  >
+    <div class="wrap flex h-16 items-center justify-between gap-4 md:h-[72px]">
+      <!-- Mobile menu -->
+      <button
+        type="button"
+        data-menu-open
+        class="flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden"
+        aria-label="Open menu"
+      >
+        <Icon name="menu" size={22} />
+      </button>
+
+      <!-- Wordmark -->
+      <a href="/" class="flex items-center gap-2.5 md:flex-none" aria-label="ACME home">
+        <img src="/acme-logo.png?v=2" alt="ACME" width="244" height="120" class="logo-glow h-7 w-auto md:h-8" />
+      </a>
+
+      <!-- Desktop nav: sliding tiffany pill follows the cursor -->
+      <ul data-navpill class="navpill relative hidden items-center md:flex">
+        {
+          nav.map((item) => (
+            <li class="navpill-item relative z-10">
+              <a
+                href={item.href}
+                class:list={[
+                  'block px-4 py-2 text-[13px] font-600 tracking-wide transition-colors duration-200',
+                  item.accent ? 'text-accent-soft' : 'text-muted',
+                  path === item.href && 'text-ink',
+                ]}
+              >
+                <span data-en={item.en}>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+        <span data-navcursor class="navpill-cursor" aria-hidden="true" />
+      </ul>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          data-lang-toggle
+          class="flex h-10 items-center justify-center rounded-full px-2.5 text-[12px] font-700 tracking-wide text-muted transition-colors hover:text-accent-soft"
+          aria-label="Change language"
+        >
+          <span data-lang-label>EN</span>
+        </button>
+        <button
+          type="button"
+          data-search-open
+          class="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:text-ink"
+          aria-label="Search"
+        >
+          <Icon name="search" size={20} />
+        </button>
+        <a
+          href="/cart"
+          data-cart-open
+          class="relative flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:text-ink"
+          aria-label="Open bag"
+        >
+          <Icon name="bag" size={20} />
+          <span
+            data-cart-count
+            class="absolute -right-0.5 -top-0.5 hidden h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-700 text-[#04211f]"
+            >0</span
+          >
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div
+    data-menu-panel
+    class="invisible fixed inset-0 z-50 overflow-hidden opacity-0 transition-opacity duration-300 md:hidden"
+  >
+    <div data-menu-close class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div
+      data-menu-sheet
+      class="absolute left-0 top-0 h-full w-[82%] max-w-sm -translate-x-full bg-raised p-6 shadow-2xl transition-transform duration-300"
+    >
+      <div class="mb-8 flex items-center justify-between">
+        <img src="/acme-logo.png?v=2" alt="ACME" width="244" height="120" class="logo-glow h-7 w-auto" />
+        <button data-menu-close class="flex h-10 w-10 items-center justify-center rounded-full text-muted" aria-label="Close menu">
+          <Icon name="close" size={22} />
+        </button>
+      </div>
+      <nav class="flex flex-col">
+        {
+          nav.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                'border-b border-line py-4 text-lg font-display font-700 tracking-tight',
+                item.accent ? 'text-accent-soft' : 'text-ink',
+              ]}
+            >
+              <span data-en={item.en}>{item.label}</span>
+            </a>
+          ))
+        }
+      </nav>
+      <div class="mt-8 space-y-2 text-sm text-muted">
+        <p data-en="Free 24h Your City delivery">Δωρεάν παράδοση 24ω στην Αθήνα</p>
+        <p data-en="Every pair authenticated">Κάθε ζευγάρι πιστοποιημένο</p>
+        <p data-en="14-day returns">Επιστροφές 14 ημερών</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Header elevation on scroll
+  const bar = document.getElementById('header-bar');
+  const onScroll = () => bar?.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile menu
+  const panel = document.querySelector('[data-menu-panel]');
+  const sheet = document.querySelector('[data-menu-sheet]');
+  const open = () => {
+    panel?.classList.remove('invisible', 'opacity-0');
+    requestAnimationFrame(() => sheet?.classList.remove('-translate-x-full'));
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    sheet?.classList.add('-translate-x-full');
+    panel?.classList.add('opacity-0');
+    setTimeout(() => panel?.classList.add('invisible'), 300);
+    document.body.style.overflow = '';
+  };
+  document.querySelector('[data-menu-open]')?.addEventListener('click', open);
+  document.querySelectorAll('[data-menu-close]').forEach((el) => el.addEventListener('click', close));
+
+  // Open cart drawer from header bag (intercept the /cart link)
+  document.querySelector('[data-cart-open]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.dispatchEvent(new Event('cart:open'));
+  });
+  document.querySelector('[data-search-open]')?.addEventListener('click', () => {
+    window.dispatchEvent(new Event('search:open'));
+  });
+
+  // Sliding tiffany nav pill that follows the cursor
+  const navpill = document.querySelector('[data-navpill]');
+  const navcursor = document.querySelector('[data-navcursor]') as HTMLElement | null;
+  if (navpill && navcursor) {
+    navpill.querySelectorAll<HTMLElement>('.navpill-item').forEach((li) => {
+      li.addEventListener('mouseenter', () => {
+        navcursor.style.left = li.offsetLeft + 'px';
+        navcursor.style.width = li.offsetWidth + 'px';
+        navcursor.style.opacity = '1';
+      });
+    });
+    navpill.addEventListener('mouseleave', () => { navcursor.style.opacity = '0'; });
+  }
+</script>
+
+<style>
+  /* Teal glow around the transparent wordmark (drop-shadow follows the letter
+     shapes, so it glows around the letters with no box behind it). */
+  .logo-glow {
+    filter:
+      drop-shadow(0 0 5px rgba(0, 192, 182, 0.5))
+      drop-shadow(0 0 13px rgba(0, 192, 182, 0.32));
+  }
+
+  /* Transparent header over the hero video; turns solid black once scrolled.
+     No border-bottom — a transitioning border-color flashed white for a moment;
+     a dark shadow gives the same separation without any white line. */
+  #header-bar.scrolled {
+    background: #0a0a0b;
+    box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.8);
+  }
+
+  .navpill-item:hover a {
+    color: var(--color-on-accent);
+  }
+  .navpill-cursor {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0;
+    height: 2.25rem;
+    transform: translateY(-50%);
+    z-index: 0;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    box-shadow: 0 6px 20px -8px rgba(0, 192, 182, 0.6);
+    opacity: 0;
+    transition:
+      left 0.32s var(--ease-lux),
+      width 0.32s var(--ease-lux),
+      opacity 0.25s;
+    pointer-events: none;
+  }
+</style>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Action — Brand Mark</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0E17; --ink2:#0F1626; --panel:#121a2b;
+    --cyan:#22D3EE; --sky:#38BDF8; --blue:#4F7BFF; --indigo:#6366F1;
+    --paper:#F4F6FB; --mute:#8493B3; --line:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Sora',system-ui,sans-serif; color:var(--paper);
+    background:
+      radial-gradient(900px 600px at 78% -8%, rgba(79,123,255,.18), transparent 60%),
+      radial-gradient(700px 500px at 8% 12%, rgba(34,211,238,.12), transparent 55%),
+      var(--ink);
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  /* faint grain */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;z-index:99;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  .kicker{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:5px;color:var(--cyan);text-transform:uppercase}
+
+  /* ---- HERO ---- */
+  header{padding:84px 0 56px;text-align:center;position:relative}
+  .grid-bg{position:absolute;inset:0;z-index:-1;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:46px 46px;mask:radial-gradient(620px 360px at 50% 30%,#000,transparent 80%);opacity:.6}
+  .hero-mark{display:inline-flex;align-items:center;gap:26px;margin:26px 0 10px;flex-wrap:wrap;justify-content:center}
+  .tile{filter:drop-shadow(0 24px 60px rgba(34,211,238,.22))}
+  h1{font-weight:200;font-size:clamp(46px,9vw,104px);line-height:.92;letter-spacing:-1px;margin-top:8px}
+  h1 b{font-weight:700}
+  h1 .a{background:linear-gradient(100deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:300}
+  header p{color:var(--mute);max-width:480px;margin:20px auto 0;font-weight:300;font-size:16px;line-height:1.6}
+
+  /* ---- SECTIONS ---- */
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:30px}
+  .sec-head h2{font-weight:600;font-size:22px;letter-spacing:-.2px}
+  .sec-head span{font-family:'DM Mono',monospace;color:var(--mute);font-size:12px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))}
+  .card .stage{display:flex;align-items:center;justify-content:center;min-height:150px;padding:26px}
+  .card .lbl{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--mute);padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+  .on-dark{background:var(--ink2)}
+  .on-paper{background:var(--paper)}
+  .on-grad{background:linear-gradient(120deg,#22D3EE,#4F7BFF)}
+  .mono-w svg path{stroke:#fff!important}.mono-w svg circle{fill:#fff!important}
+  .mono-k svg path{stroke:#0A0E17!important}.mono-k svg circle{fill:#0A0E17!important}
+
+  /* palette */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .sw{border-radius:16px;border:1px solid var(--line);overflow:hidden}
+  .sw .chip{height:96px}
+  .sw .meta{padding:12px 14px;background:var(--panel)}
+  .sw .meta b{font-size:13px;font-weight:600}
+  .sw .meta code{display:block;font-family:'DM Mono',monospace;font-size:11px;color:var(--mute);margin-top:4px}
+
+  /* construction / clearspace */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.two{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line);border-radius:18px;padding:26px;background:rgba(255,255,255,.02)}
+  .panel h3{font-size:14px;font-weight:600;margin-bottom:8px}
+  .panel p{color:var(--mute);font-size:13px;font-weight:300;line-height:1.6}
+  .clearbox{position:relative;display:inline-block;margin-top:18px;padding:30px;border:1px dashed rgba(34,211,238,.4);border-radius:14px}
+
+  /* contexts */
+  .biz{aspect-ratio:1.6;border-radius:16px;background:linear-gradient(150deg,#0e1626,#0a0e17);border:1px solid var(--line);
+    padding:24px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .biz::before{content:"";position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(circle,rgba(34,211,238,.18),transparent 70%)}
+  .biz .nm{font-weight:700;font-size:15px}.biz .rl{color:var(--mute);font-size:12px;font-weight:300}
+  .biz .ct{font-family:'DM Mono',monospace;font-size:11px;color:var(--cyan)}
+  .browser{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0d1421}
+  .browser .bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#0a1019;border-bottom:1px solid var(--line)}
+  .dot{width:10px;height:10px;border-radius:50%;background:#2a3550}
+  .browser .tab{margin-left:10px;display:flex;align-items:center;gap:8px;background:#121b2c;padding:6px 12px;border-radius:8px;font-size:12px;color:var(--mute)}
+  .browser .body{padding:34px;display:flex;align-items:center;justify-content:center}
+
+  footer{padding:48px 0 70px;text-align:center;color:var(--mute);font-size:12px;font-family:'DM Mono',monospace;border-top:1px solid var(--line)}
+
+  /* shared mark sizing */
+  .m48{width:48px;height:48px}.m72{width:78px;height:78px}.m90{width:96px;height:96px}
+</style>
+</head>
+<body>
+
+<!-- reusable mark symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g" x1="26" y1="66" x2="70" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"/><stop offset=".55" stop-color="#38BDF8"/><stop offset="1" stop-color="#4F7BFF"/>
+    </linearGradient>
+    <symbol id="wa" viewBox="0 0 64 64">
+      <path d="M12 27 L22 45 L32 31 L42 49 L52 21" stroke="url(#g)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M41 30.5 L52 21 L54.5 34.5" stroke="url(#g)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="22" cy="45" r="2.2" fill="#22D3EE"/><circle cx="42" cy="49" r="2.2" fill="#4F7BFF"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="grid-bg"></div>
+  <div class="wrap">
+    <span class="kicker">Brand Identity · Logo System</span>
+    <div class="hero-mark">
+      <img class="tile" src="logo-mark-tile.svg" width="118" height="118" alt="Web Action tile mark">
+    </div>
+    <h1><b>WEB</b> <span class="a">ACTION</span></h1>
+    <p>A web design studio identity. The mark is a rising signal that fires forward — part&nbsp;<b>W</b>, part launch arrow, joints lit like network nodes. Web, in motion.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- VARIATIONS -->
+  <section>
+    <div class="sec-head"><h2>Logo variations</h2><span>// drop-in assets</span></div>
+    <div class="cards">
+      <div class="card"><div class="stage on-dark"><img src="logo-lockup-reversed.svg" width="240" alt=""></div><div class="lbl"><span>Primary · reversed</span><span>SVG</span></div></div>
+      <div class="card"><div class="stage on-paper"><img src="logo-lockup.svg" width="240" alt=""></div><div class="lbl"><span>Primary · light</span><span>SVG</span></div></div>
+      <div class="card"><div class="stage on-dark"><svg class="m72"><use href="#wa"/></svg></div><div class="lbl"><span>Mark only</span><span>icon</span></div></div>
+      <div class="card"><div class="stage on-grad mono-w"><svg class="m72"><use href="#wa"/></svg></div><div class="lbl"><span>Mono · white</span><span>knockout</span></div></div>
+      <div class="card"><div class="stage on-paper mono-k"><svg class="m72"><use href="#wa"/></svg></div><div class="lbl"><span>Mono · ink</span><span>1-color</span></div></div>
+      <div class="card"><div class="stage on-dark"><img src="logo-mark-tile.svg" width="96" alt=""></div><div class="lbl"><span>App icon · tile</span><span>squircle</span></div></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT / CONSTRUCTION -->
+  <section>
+    <div class="sec-head"><h2>The idea</h2><span>// why it works</span></div>
+    <div class="two">
+      <div class="panel">
+        <h3>One mark, three reads</h3>
+        <p style="margin-bottom:14px">The zig-zag spells a <b style="color:#fff">W</b> for <i>web</i>, then breaks its own rhythm to launch up-right into an arrowhead — the <b style="color:#fff">action</b>. The two lit joints read as connected <b style="color:#fff">nodes</b>, a quiet nod to the network you build on.</p>
+        <p>Built from a single constant-width stroke with round joins, so it stays crisp from a 16px favicon to a billboard, and works in one flat colour when it has to.</p>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+        <h3 style="align-self:flex-start">Clear space &amp; minimum size</h3>
+        <p style="align-self:flex-start">Keep padding of at least the cap-height of the mark on all sides. Don't render the mark below 20px tall.</p>
+        <div class="clearbox"><svg class="m90"><use href="#wa"/></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PALETTE -->
+  <section>
+    <div class="sec-head"><h2>Colour</h2><span>// electric on ink</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#22D3EE"></div><div class="meta"><b>Signal Cyan</b><code>#22D3EE</code></div></div>
+      <div class="sw"><div class="chip" style="background:#38BDF8"></div><div class="meta"><b>Sky</b><code>#38BDF8</code></div></div>
+      <div class="sw"><div class="chip" style="background:#4F7BFF"></div><div class="meta"><b>Action Blue</b><code>#4F7BFF</code></div></div>
+      <div class="sw"><div class="chip" style="background:#0F1626"></div><div class="meta"><b>Ink</b><code>#0A0E17</code></div></div>
+      <div class="sw"><div class="chip" style="background:#F4F6FB"></div><div class="meta"><b>Paper</b><code>#F4F6FB</code></div></div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section>
+    <div class="sec-head"><h2>Typography</h2><span>// Sora + DM Mono</span></div>
+    <div class="two">
+      <div class="panel">
+        <div style="font-weight:700;font-size:34px;letter-spacing:1px">WEB <span style="font-weight:300">ACTION</span></div>
+        <p style="margin-top:10px"><b style="color:#fff">Sora</b> — geometric, modern, confident. Heavy <b>700</b> on “WEB”, light <b>300</b> on “ACTION” to carry the speed/contrast of the name.</p>
+      </div>
+      <div class="panel">
+        <div style="font-family:'DM Mono',monospace;letter-spacing:4px;color:var(--cyan)">WEB&nbsp;DESIGN&nbsp;STUDIO</div>
+        <p style="margin-top:10px"><b style="color:#fff">DM Mono</b> — for tags, captions, and code-flavoured UI. Widely tracked to feel technical and precise.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IN CONTEXT -->
+  <section>
+    <div class="sec-head"><h2>In context</h2><span>// it has to live somewhere</span></div>
+    <div class="two">
+      <div class="biz">
+        <svg class="m48"><use href="#wa"/></svg>
+        <div>
+          <div class="nm">Web Action</div>
+          <div class="rl">Design Studio</div>
+          <div class="ct" style="margin-top:10px">hello@webaction.studio</div>
+        </div>
+      </div>
+      <div class="browser">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="tab"><svg style="width:14px;height:14px"><use href="#wa"/></svg> webaction.studio</span>
+        </div>
+        <div class="body"><img src="logo-lockup-reversed.svg" width="220" alt=""></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">WEB ACTION · LOGO SYSTEM · ALL ASSETS DELIVERED AS SCALABLE SVG</footer>
+
+</body>
+</html>

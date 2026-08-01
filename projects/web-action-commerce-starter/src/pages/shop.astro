@@ -1,0 +1,602 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import EtherealShadow from '@/components/EtherealShadow.astro';
+import Icon from '@/components/Icon.astro';
+import { loadCatalog } from '@/lib/catalog';
+import { products, facets, sizeGroups, categories, sortProducts, type Product } from '@/lib/products';
+import { discountPct } from '@/lib/money';
+
+export const prerender = false;
+
+await loadCatalog();
+const f = facets();
+const sg = sizeGroups();
+
+// Greek labels for category chips (keyed by slug); falls back to the English label.
+const catEl: Record<string, string> = {
+  products: 'Products',
+  running: 'Τρέξιμο',
+  basketball: 'Μπάσκετ',
+  lifestyle: 'Lifestyle',
+  clothing: 'Ρούχα',
+  accessories: 'Αξεσουάρ',
+  'limited-editions': 'Limited Editions',
+  'new-arrivals': 'Νέες Παραλαβές',
+  sale: 'Προσφορές',
+};
+const allCats = categories; // includes new-arrivals + sale
+
+// Section heading reflects the active filter (?category= / ?brand=) instead of
+// always saying "Shop All". Greek + English (data-en) so it still translates.
+const qpCat = Astro.url.searchParams.get('category');
+const qpBrand = Astro.url.searchParams.get('brand');
+let headEl = 'Όλα τα προϊόντα';
+let headEn = 'Shop All';
+let eyebrowEl = 'Η συλλογή';
+let eyebrowEn = 'The collection';
+if (qpBrand) {
+  headEl = qpBrand;
+  headEn = qpBrand;
+  eyebrowEl = 'Μάρκα';
+  eyebrowEn = 'Brand';
+} else if (qpCat) {
+  headEn = categories.find((c) => c.slug === qpCat)?.label ?? qpCat;
+  headEl = catEl[qpCat] ?? headEn;
+  if (qpCat === 'new-arrivals') { eyebrowEl = 'Μόλις ήρθαν'; eyebrowEn = 'Just landed'; }
+  else if (qpCat === 'sale') { eyebrowEl = 'Σε έκπτωση'; eyebrowEn = 'Marked down'; }
+  else { eyebrowEl = 'Κατηγορία'; eyebrowEn = 'Category'; }
+}
+
+// Render everything once; the island filters/sorts client-side.
+const ordered = sortProducts(products, 'featured');
+
+const catData = (p: Product) => {
+  const set = new Set(p.categories);
+  set.add(p.category);
+  if (discountPct(p.price, p.compareAtPrice) > 0) set.add('sale');
+  return [...set].join(' ');
+};
+const ts = (p: Product) => (p.releaseDate ? Date.parse(p.releaseDate) : 0);
+---
+
+<BaseLayout title={`${headEn} · ACME`} description="Browse authenticated luxury products and streetwear. Filter by brand, size, price and more.">
+  <EtherealShadow>
+  <div class="wrap pt-10">
+    <span class="eyebrow" data-en={eyebrowEn}>{eyebrowEl}</span>
+    <h1 class="mt-3 font-display text-4xl font-900 tracking-tight md:text-5xl" data-en={headEn}>{headEl}</h1>
+  </div>
+
+  <div class="wrap mt-8 grid gap-8 pb-16 lg:grid-cols-[260px_1fr]">
+    <!-- ============ FILTERS ============ -->
+    <form
+      id="filters"
+      class="invisible fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-raised p-6 opacity-0 transition-opacity duration-300 lg:visible lg:static lg:z-auto lg:bg-transparent lg:p-0 lg:opacity-100"
+    >
+      <div class="mb-4 flex items-center justify-between lg:hidden">
+        <span class="font-display text-xl font-800" data-en="Filters">Φίλτρα</span>
+        <button type="button" data-filters-close class="flex h-9 w-9 items-center justify-center rounded-full text-muted">
+          <Icon name="close" size={20} />
+        </button>
+      </div>
+
+      <div class="lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-2">
+        <!-- Category -->
+        <fieldset class="border-b border-line pb-5">
+          <legend class="mb-3 text-[12px] font-600 uppercase tracking-[0.16em] text-accent-soft" data-en="Category">Κατηγορία</legend>
+          <div class="flex flex-wrap gap-1.5">
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value="" checked class="peer sr-only" />
+              <span class="inline-block rounded-full border border-line px-3 py-1.5 text-sm text-muted peer-checked:border-ink peer-checked:bg-ink peer-checked:text-noir" data-en="All">Όλα</span>
+            </label>
+            {
+              allCats.map((c) => (
+                <label class="cursor-pointer">
+                  <input type="radio" name="category" value={c.slug} class="peer sr-only" />
+                  <span class="inline-block rounded-full border border-line px-3 py-1.5 text-sm text-muted peer-checked:border-ink peer-checked:bg-ink peer-checked:text-noir" data-en={c.label}>{catEl[c.slug] ?? c.label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <!-- Brand -->
+        <fieldset class="border-b border-line py-5">
+          <legend class="mb-3 text-[12px] font-600 uppercase tracking-[0.16em] text-faint" data-en="Brand">Μάρκα</legend>
+          <div class="max-h-52 space-y-1.5 overflow-y-auto pr-1">
+            {
+              f.brands.map((b) => (
+                <label class="flex cursor-pointer items-center justify-between text-sm text-muted hover:text-ink">
+                  <span class="flex items-center gap-2.5">
+                    <input type="checkbox" name="brand" value={b.name} class="h-4 w-4 rounded border-line-strong bg-transparent accent-[var(--color-accent)]" />
+                    {b.name}
+                  </span>
+                  <span class="text-xs text-faint">{b.count}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <!-- Shoe sizes -->
+        <fieldset class="border-b border-line py-5">
+          <legend class="mb-3 flex items-center gap-2 text-[12px] font-600 uppercase tracking-[0.16em] text-accent-soft">
+            <Icon name="sliders" size={13} /> <span data-en="Shoe sizes">Νούμερα παπουτσιών</span> <span class="text-faint">(EU)</span>
+          </legend>
+          <div class="grid grid-cols-5 gap-1.5">
+            {
+              sg.shoes.map((s) => (
+                <label class="cursor-pointer">
+                  <input type="checkbox" name="size" value={s} class="peer sr-only" />
+                  <span class="size-tile flex h-9 items-center justify-center rounded-lg text-[13px]">{s}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <!-- Clothing sizes -->
+        {sg.clothing.length > 0 && (
+          <fieldset class="border-b border-line py-5">
+            <legend class="mb-3 text-[12px] font-600 uppercase tracking-[0.16em] text-accent-soft" data-en="Clothing sizes">Μεγέθη ρούχων</legend>
+            <div class="grid grid-cols-5 gap-1.5">
+              {sg.clothing.map((s) => (
+                <label class="cursor-pointer">
+                  <input type="checkbox" name="size" value={s} class="peer sr-only" />
+                  <span class="size-tile flex h-9 items-center justify-center rounded-lg text-[13px]">{s}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <!-- Other / packaging sizes -->
+        {sg.other.length > 0 && (
+          <fieldset class="border-b border-line py-5">
+            <legend class="mb-3 text-[12px] font-600 uppercase tracking-[0.16em] text-faint" data-en="Other">Άλλα</legend>
+            <div class="grid grid-cols-3 gap-1.5">
+              {sg.other.map((s) => (
+                <label class="cursor-pointer">
+                  <input type="checkbox" name="size" value={s} class="peer sr-only" />
+                  <span class="size-tile flex h-9 items-center justify-center rounded-lg px-2 text-center text-[12px] leading-tight">{s}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <!-- Price -->
+        <fieldset class="border-b border-line py-5">
+          <legend class="mb-3 text-[12px] font-600 uppercase tracking-[0.16em] text-accent-soft" data-en="Max price">Μέγιστη τιμή</legend>
+          <div class="mb-3 flex items-baseline justify-between">
+            <span class="text-xs text-faint" data-en="Up to">Έως</span>
+            <strong data-pmax-label class="font-display text-2xl font-800 text-accent">€{f.priceCap}+</strong>
+          </div>
+          <input type="range" name="pmax" min={f.priceMin} max={f.priceCap} value={f.priceCap} class="price-range w-full" />
+          <div class="mt-1.5 flex justify-between text-[11px] text-faint">
+            <span>€{f.priceMin}</span>
+            <span>€{f.priceCap}+</span>
+          </div>
+        </fieldset>
+
+        <!-- In stock -->
+        <label class="flex cursor-pointer items-center gap-2.5 py-5 text-sm text-muted hover:text-ink">
+          <input type="checkbox" name="instock" class="h-4 w-4 rounded border-line-strong bg-transparent accent-[var(--color-accent)]" />
+          <span data-en="In stock only">Μόνο διαθέσιμα</span>
+        </label>
+
+        <button type="reset" data-filters-reset class="text-sm text-accent-soft hover:underline" data-en="Clear all filters">Καθαρισμός φίλτρων</button>
+
+        <button type="button" data-filters-apply class="btn btn-fill mt-6 w-full lg:hidden" data-en="Show results">Εμφάνιση αποτελεσμάτων</button>
+      </div>
+    </form>
+
+    <!-- ============ RESULTS ============ -->
+    <!-- min-w-0: let this grid column shrink to the container width; otherwise the
+         full-bleed sort bar's negative margins force it ~13px too wide, pushing the
+         product grid off-centre (right card touching the edge) on mobile. -->
+    <div class="min-w-0">
+      <div class="sticky top-[60px] z-30 -mx-5 mb-5 flex items-center justify-between gap-3 border-b border-line bg-base/85 px-5 py-3 backdrop-blur-md md:top-[72px]">
+        <button type="button" data-filters-open class="flex items-center gap-2 rounded-full border border-line-strong px-3.5 py-2 text-sm lg:hidden">
+          <Icon name="sliders" size={16} /> <span data-en="Filters">Φίλτρα</span>
+        </button>
+        <div class="hidden lg:block"></div>
+
+        <!-- Custom tiffany sort dropdown (hidden native <select> keeps the value/logic) -->
+        <div class="relative flex items-center gap-2" data-sortdd>
+          <label class="hidden text-xs text-faint sm:block" data-en="Sort">Ταξινόμηση</label>
+          <button
+            type="button"
+            data-sortdd-btn
+            class="flex items-center gap-2 rounded-full border border-line-strong bg-card px-3.5 py-2 text-sm text-ink transition-colors hover:border-accent"
+            aria-haspopup="listbox"
+          >
+            <span data-sortdd-label data-en="Featured">Προτεινόμενα</span>
+            <Icon name="chevron" size={14} class="text-muted" />
+          </button>
+          <ul
+            data-sortdd-menu
+            class="invisible absolute right-0 top-full z-50 mt-2 w-56 origin-top-right scale-95 overflow-hidden rounded-xl border border-line bg-card opacity-0 shadow-2xl transition-all duration-200"
+            role="listbox"
+          >
+            {[
+              { v: 'featured', en: 'Featured', el: 'Προτεινόμενα' },
+              { v: 'newest', en: 'Newest', el: 'Νεότερα' },
+              { v: 'price-asc', en: 'Price: Low to High', el: 'Τιμή: Αύξουσα' },
+              { v: 'price-desc', en: 'Price: High to Low', el: 'Τιμή: Φθίνουσα' },
+              { v: 'rating', en: 'Top rated', el: 'Κορυφαία βαθμολογία' },
+            ].map((o) => (
+              <li>
+                <button
+                  type="button"
+                  data-sortdd-opt={o.v}
+                  class="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-muted transition-colors hover:bg-accent/12 hover:text-ink"
+                  role="option"
+                >
+                  <span data-en={o.en}>{o.el}</span>
+                  <svg data-check viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" class="hidden text-accent"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <select name="sort" data-sort class="sr-only" tabindex="-1" aria-hidden="true">
+            <option value="featured">Featured</option>
+            <option value="newest">Newest</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Top rated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- active search chip -->
+      <div data-search-chip class="mb-4 hidden">
+        <span class="inline-flex items-center gap-2 rounded-full border border-line-strong px-3 py-1.5 text-sm">
+          <span data-en="Search:">Αναζήτηση:</span> <strong data-search-term></strong>
+          <button type="button" data-search-clear class="text-faint hover:text-ink">&times;</button>
+        </span>
+      </div>
+
+      <div id="grid" class="grid grid-cols-2 gap-x-4 gap-y-9 md:grid-cols-3 xl:grid-cols-4">
+        {
+          ordered.map((p, i) => (
+            <div
+              class="product-cell"
+              data-card
+              data-brand={p.brand}
+              data-cats={catData(p)}
+              data-sizes={p.sizes.join(' ')}
+              data-price={p.price}
+              data-instock={p.inStock ? '1' : '0'}
+              data-rating={p.rating ?? 0}
+              data-date={ts(p)}
+              data-reviews={p.reviews}
+              data-featured={p.featured ? '1' : '0'}
+              data-name={(p.name + ' ' + p.brand).toLowerCase()}
+            >
+              <ProductCard product={p} swap={true} eager={i < 8} />
+            </div>
+          ))
+        }
+      </div>
+
+      <div data-empty class="hidden py-24 text-center">
+        <p class="font-display text-2xl font-800" data-en="No matches">Κανένα αποτέλεσμα</p>
+        <p class="mt-2 text-sm text-muted" data-en="Try removing a filter or widening your price range.">Δοκιμάστε να αφαιρέσετε ένα φίλτρο ή να διευρύνετε το εύρος τιμής.</p>
+        <button type="button" data-filters-reset class="btn btn-ghost mt-6" data-en="Clear filters">Καθαρισμός φίλτρων</button>
+      </div>
+
+      <!-- Pagination (12 per page) -->
+      <nav data-pagination aria-label="pagination" class="mt-12 hidden w-full items-center justify-center gap-1.5"></nav>
+    </div>
+  </div>
+  </EtherealShadow>
+</BaseLayout>
+
+<style>
+  /* Show only the first page (12) until the pagination JS takes over. This is
+     what the server renders, so the first paint is already the correct, centred
+     12-card grid — no flash of all 311 cards resizing/re-centring on load. */
+  #grid:not(.js-paginated) > .product-cell:nth-child(n + 13) {
+    display: none;
+  }
+
+  /* Tiffany-themed size tiles */
+  .size-tile {
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+    background: rgba(255, 255, 255, 0.015);
+    transition:
+      border-color 0.2s var(--ease-lux),
+      background 0.2s var(--ease-lux),
+      color 0.2s var(--ease-lux),
+      transform 0.2s var(--ease-lux);
+  }
+  .size-tile:hover {
+    border-color: rgba(0, 192, 182, 0.5);
+    color: var(--color-accent-soft);
+    background: rgba(0, 192, 182, 0.08);
+    transform: translateY(-1px);
+  }
+  input:checked + .size-tile {
+    border-color: var(--color-accent);
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    color: var(--color-on-accent);
+    font-weight: 700;
+    box-shadow: 0 6px 16px -8px rgba(0, 192, 182, 0.7);
+  }
+
+  /* Tiffany range slider */
+  .price-range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-accent-soft), var(--color-accent), var(--color-accent-deep));
+    outline: none;
+    cursor: pointer;
+  }
+  .price-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 999px;
+    background: #fff;
+    border: 3px solid var(--color-accent);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(0, 192, 182, 0.18);
+    transition: transform 0.15s var(--ease-lux), box-shadow 0.15s;
+  }
+  .price-range::-webkit-slider-thumb:hover,
+  .price-range:active::-webkit-slider-thumb {
+    transform: scale(1.18);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55), 0 0 0 6px rgba(0, 192, 182, 0.28);
+  }
+  .price-range::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 999px;
+    background: #fff;
+    border: 3px solid var(--color-accent);
+    cursor: pointer;
+  }
+  .price-range::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-accent-soft), var(--color-accent-deep));
+  }
+</style>
+
+<script>
+  const form = document.getElementById('filters') as HTMLFormElement;
+  const grid = document.getElementById('grid')!;
+  // JS now controls per-card visibility via inline display → release the CSS gate.
+  grid.classList.add('js-paginated');
+  const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-card]'));
+  const countEl = document.querySelector('[data-count]'); // optional (count UI removed)
+  const emptyEl = document.querySelector('[data-empty]') as HTMLElement;
+  const sortEl = document.querySelector('[data-sort]') as HTMLSelectElement;
+  const pmaxLabel = document.querySelector('[data-pmax-label]')!;
+  let searchTerm = '';
+  const PER = 12;
+  let page = 1;
+  let matched: HTMLElement[] = [];
+  const pagEl = document.querySelector('[data-pagination]') as HTMLElement;
+
+  const getChecked = (name: string) =>
+    Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]:checked`)).map((i) => i.value);
+
+  function computeMatched() {
+    const cat = (form.querySelector('input[name="category"]:checked') as HTMLInputElement)?.value || '';
+    const brands = getChecked('brand');
+    const sizes = getChecked('size');
+    const pmaxEl = form.querySelector('input[name="pmax"]') as HTMLInputElement;
+    const pmax = Number(pmaxEl.value);
+    const pcap = Number(pmaxEl.max);
+    const atMax = pmax >= pcap; // at the ceiling → no upper price limit (incl. the grails)
+    const instock = (form.querySelector('input[name="instock"]') as HTMLInputElement).checked;
+    pmaxLabel.textContent = atMax ? `€${pcap}+` : `€${pmax}`;
+    const list = cards.filter((card) => {
+      const d = card.dataset;
+      if (cat && !d.cats!.split(' ').includes(cat)) return false;
+      if (brands.length && !brands.includes(d.brand!)) return false;
+      if (sizes.length && !sizes.some((s) => d.sizes!.split(' ').includes(s))) return false;
+      if (!atMax && Number(d.price) > pmax) return false;
+      if (instock && d.instock !== '1') return false;
+      if (searchTerm && !d.name!.includes(searchTerm)) return false;
+      return true;
+    });
+    const key = sortEl.value;
+    list.sort((a, b) => {
+      const da = a.dataset, db = b.dataset;
+      switch (key) {
+        case 'price-asc': return +da.price! - +db.price!;
+        case 'price-desc': return +db.price! - +da.price!;
+        case 'newest': return +db.date! - +da.date!;
+        case 'rating': return +db.rating! - +da.rating!;
+        default: return +db.featured! - +da.featured! || +db.reviews! - +da.reviews!;
+      }
+    });
+    return { list, cat, brands, sizes, pmax, instock };
+  }
+
+  function renderPage() {
+    const total = matched.length;
+    const pages = Math.max(1, Math.ceil(total / PER));
+    page = Math.min(Math.max(1, page), pages);
+    cards.forEach((c) => (c.style.display = 'none'));
+    const start = (page - 1) * PER;
+    matched.slice(start, start + PER).forEach((c) => {
+      c.style.display = '';
+      grid.appendChild(c);
+    });
+    if (countEl) countEl.textContent = String(total);
+    emptyEl.style.display = total ? 'none' : 'block';
+    grid.style.display = total ? '' : 'none';
+    renderPagination(pages);
+  }
+
+  function renderPagination(pages: number) {
+    if (pages <= 1) { pagEl.classList.add('hidden'); pagEl.classList.remove('flex'); pagEl.innerHTML = ''; return; }
+    pagEl.classList.remove('hidden');
+    pagEl.classList.add('flex');
+    const nums: (number | null)[] = [1];
+    const from = Math.max(2, page - 1), to = Math.min(pages - 1, page + 1);
+    if (from > 2) nums.push(null);
+    for (let i = from; i <= to; i++) nums.push(i);
+    if (to < pages - 1) nums.push(null);
+    if (pages > 1) nums.push(pages);
+    const base = 'flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-sm transition-colors';
+    const cell = (label: string, p: number | null, o: { active?: boolean; disabled?: boolean } = {}) => {
+      if (p === null) return `<span class="flex h-9 min-w-9 items-center justify-center text-faint">…</span>`;
+      const cls = o.active ? 'border-accent bg-accent text-on-accent font-700'
+        : 'border-line text-muted hover:border-accent hover:text-accent-soft';
+      const dis = o.disabled ? 'pointer-events-none opacity-35' : '';
+      return `<button type="button" data-page-go="${p}" class="${base} ${cls} ${dis}">${label}</button>`;
+    };
+    let html = cell('‹', page === 1 ? null : page - 1, { disabled: page === 1 });
+    if (page === 1) html = `<span class="${base} border-line text-faint opacity-35">‹</span>`;
+    nums.forEach((n) => (html += n === null ? cell('…', null) : cell(String(n), n, { active: n === page })));
+    html += page === pages ? `<span class="${base} border-line text-faint opacity-35">›</span>` : cell('›', page + 1);
+    pagEl.innerHTML = html;
+    pagEl.querySelectorAll<HTMLElement>('[data-page-go]').forEach((b) =>
+      b.addEventListener('click', () => {
+        page = Number(b.dataset.pageGo);
+        renderPage();
+        // Jump back to the top of the results (clearing the sticky header) so a
+        // new page always starts from the first product, not mid-page.
+        const y = grid.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }),
+    );
+  }
+
+  function apply(push = true) {
+    const { list, cat, brands, sizes, pmax, instock } = computeMatched();
+    matched = list;
+    renderPage();
+    if (push) syncUrl(cat, brands, sizes, pmax, instock);
+  }
+
+  function syncUrl(cat: string, brands: string[], sizes: string[], pmax: number, instock: boolean) {
+    const p = new URLSearchParams();
+    if (cat) p.set('category', cat);
+    brands.forEach((b) => p.append('brand', b));
+    sizes.forEach((s) => p.append('size', s));
+    if (instock) p.set('instock', '1');
+    if (sortEl.value !== 'featured') p.set('sort', sortEl.value);
+    if (searchTerm) p.set('q', searchTerm);
+    const qs = p.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  function initFromUrl() {
+    const p = new URLSearchParams(location.search);
+    const cat = p.get('category');
+    if (cat) {
+      const el = form.querySelector<HTMLInputElement>(`input[name="category"][value="${cat}"]`);
+      if (el) el.checked = true;
+    }
+    p.getAll('brand').forEach((b) => {
+      const el = form.querySelector<HTMLInputElement>(`input[name="brand"][value="${b}"]`);
+      if (el) el.checked = true;
+    });
+    p.getAll('size').forEach((s) => {
+      const el = form.querySelector<HTMLInputElement>(`input[name="size"][value="${s}"]`);
+      if (el) el.checked = true;
+    });
+    if (p.get('instock')) (form.querySelector('input[name="instock"]') as HTMLInputElement).checked = true;
+    if (p.get('sort')) sortEl.value = p.get('sort')!;
+    if (p.get('q')) setSearch(p.get('q')!);
+  }
+
+  function setSearch(term: string) {
+    searchTerm = term.trim().toLowerCase();
+    const chip = document.querySelector('[data-search-chip]') as HTMLElement;
+    if (searchTerm) {
+      chip.classList.remove('hidden');
+      document.querySelector('[data-search-term]')!.textContent = `“${term}”`;
+    } else {
+      chip.classList.add('hidden');
+    }
+  }
+
+  form.addEventListener('change', () => { page = 1; apply(); });
+  sortEl.addEventListener('change', () => { page = 1; apply(); });
+
+  // Live price slider: update the readout + re-filter as the user drags,
+  // without spamming the URL (that syncs on the final 'change').
+  const pmaxInput = form.querySelector('input[name="pmax"]') as HTMLInputElement;
+  pmaxInput?.addEventListener('input', () => {
+    const cap = Number(pmaxInput.max);
+    pmaxLabel.textContent = Number(pmaxInput.value) >= cap ? `€${cap}+` : `€${pmaxInput.value}`;
+    page = 1;
+    apply(false);
+  });
+  document.querySelector('[data-search-clear]')?.addEventListener('click', () => {
+    setSearch('');
+    page = 1;
+    apply();
+  });
+  form.addEventListener('reset', () => {
+    setSearch('');
+    page = 1;
+    setTimeout(() => apply(), 0);
+  });
+
+  // Mobile filter sheet
+  const openF = () => {
+    form.classList.remove('invisible', 'opacity-0');
+    document.body.style.overflow = 'hidden';
+  };
+  const closeF = () => {
+    form.classList.add('opacity-0');
+    setTimeout(() => form.classList.add('invisible'), 300);
+    document.body.style.overflow = '';
+  };
+  document.querySelector('[data-filters-open]')?.addEventListener('click', openF);
+  document.querySelectorAll('[data-filters-close],[data-filters-apply]').forEach((b) => b.addEventListener('click', closeF));
+
+  initFromUrl();
+
+  // Custom tiffany sort dropdown — drives the hidden <select>, so the sort logic
+  // above is unchanged; this just replaces the native (un-styleable) menu.
+  const dd = document.querySelector('[data-sortdd]');
+  if (dd) {
+    const ddBtn = dd.querySelector('[data-sortdd-btn]') as HTMLElement;
+    const ddMenu = dd.querySelector('[data-sortdd-menu]') as HTMLElement;
+    const ddLabel = dd.querySelector('[data-sortdd-label]') as HTMLElement;
+    const ddOpts = Array.from(dd.querySelectorAll<HTMLElement>('[data-sortdd-opt]'));
+    let ddOpen = false;
+    const showDD = () => { ddMenu.classList.remove('invisible', 'opacity-0', 'scale-95'); ddOpen = true; };
+    const hideDD = () => { ddMenu.classList.add('invisible', 'opacity-0', 'scale-95'); ddOpen = false; };
+    ddBtn.addEventListener('click', (e) => { e.stopPropagation(); ddOpen ? hideDD() : showDD(); });
+    ddMenu.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', () => { if (ddOpen) hideDD(); });
+    const syncSort = (val: string) => {
+      const opt = ddOpts.find((o) => o.getAttribute('data-sortdd-opt') === val);
+      const span = opt?.querySelector('[data-en]') as HTMLElement | undefined;
+      if (span && ddLabel) {
+        ddLabel.textContent = span.textContent;
+        if (span.dataset.en) ddLabel.dataset.en = span.dataset.en;
+        if (span.dataset.el) ddLabel.dataset.el = span.dataset.el;
+      }
+      ddOpts.forEach((o) => {
+        const on = o.getAttribute('data-sortdd-opt') === val;
+        o.querySelector('[data-check]')?.classList.toggle('hidden', !on);
+        o.classList.toggle('text-ink', on);
+        o.classList.toggle('text-muted', !on);
+      });
+    };
+    ddOpts.forEach((o) => o.addEventListener('click', () => {
+      const val = o.getAttribute('data-sortdd-opt')!;
+      sortEl.value = val;
+      syncSort(val);
+      hideDD();
+      page = 1;
+      apply();
+    }));
+    syncSort(sortEl.value || 'featured');
+  }
+
+  apply(false);
+</script>

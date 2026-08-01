@@ -1,0 +1,253 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminNav from '@/components/admin/AdminNav.astro';
+import { supabaseServer } from '@/lib/supabase';
+import { supabaseAdmin, adminReady } from '@/lib/supabase-admin';
+import { loadCatalog } from '@/lib/catalog';
+import { bySlug } from '@/lib/products';
+import { money } from '@/lib/money';
+
+export const prerender = false;
+
+// Admin-only sales analytics dashboard.
+// ── auth + admin gate (same pattern as /admin) ───────────────────────────────
+const supabase = supabaseServer(Astro.cookies, Astro.request);
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) return Astro.redirect('/login?next=/admin/analytics');
+const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
+const isAdmin = !!profile?.is_admin;
+
+// ── pull the data (service role) ─────────────────────────────────────────────
+const PAID = new Set(['paid', 'fulfilled']);
+let paidOrders: any[] = [];
+let items: any[] = [];
+let low: any[] = [];
+
+if (isAdmin && adminReady()) {
+  await loadCatalog();
+  const { data: orders } = await supabaseAdmin
+    .from('orders')
+    .select('id,status,total_cents,created_at')
+    .order('created_at', { ascending: true });
+  paidOrders = (orders ?? []).filter((o) => PAID.has(o.status));
+
+  const paidIds = paidOrders.map((o) => o.id);
+  if (paidIds.length) {
+    const { data } = await supabaseAdmin
+      .from('order_items')
+      .select('product_slug,name,brand,quantity,unit_price_cents,order_id')
+      .in('order_id', paidIds);
+    items = data ?? [];
+  }
+
+  const { data: lowData } = await supabaseAdmin
+    .from('inventory')
+    .select('product_slug,size,quantity')
+    .lte('quantity', 2)
+    .order('quantity', { ascending: true })
+    .limit(40);
+  low = lowData ?? [];
+}
+
+// ── KPIs ─────────────────────────────────────────────────────────────────────
+const totalRevenue = paidOrders.reduce((s, o) => s + (o.total_cents ?? 0), 0); // cents
+const totalOrders = paidOrders.length;
+const aov = totalOrders ? totalRevenue / totalOrders : 0;
+const unitsSold = items.reduce((s, it) => s + (it.quantity ?? 0), 0);
+
+// ── monthly revenue, last 12 months ──────────────────────────────────────────
+const now = new Date();
+type M = { key: string; label: string; year: number; revenue: number; orders: number };
+const months: M[] = [];
+for (let i = 11; i >= 0; i--) {
+  const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+  months.push({
+    key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+    label: d.toLocaleDateString('en', { month: 'short' }),
+    year: d.getFullYear(),
+    revenue: 0,
+    orders: 0,
+  });
+}
+const mIndex = new Map(months.map((m, i) => [m.key, i]));
+for (const o of paidOrders) {
+  const d = new Date(o.created_at);
+  const idx = mIndex.get(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+  if (idx != null) { months[idx].revenue += o.total_cents ?? 0; months[idx].orders += 1; }
+}
+const thisMonth = months[11];
+const lastMonth = months[10];
+const momPct = lastMonth.revenue
+  ? Math.round(((thisMonth.revenue - lastMonth.revenue) / lastMonth.revenue) * 100)
+  : thisMonth.revenue ? 100 : 0;
+
+// ── top sellers (by revenue) ──────────────────────────────────────────────────
+const byProduct = new Map<string, { name: string; brand: string; units: number; revenue: number }>();
+for (const it of items) {
+  const cur = byProduct.get(it.product_slug) ?? { name: it.name, brand: it.brand, units: 0, revenue: 0 };
+  cur.units += it.quantity ?? 0;
+  cur.revenue += (it.unit_price_cents ?? 0) * (it.quantity ?? 0);
+  byProduct.set(it.product_slug, cur);
+}
+const topSellers = [...byProduct.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
+// ── low stock (name from catalog) ─────────────────────────────────────────────
+const lowStock = low.map((r) => ({
+  name: bySlug(r.product_slug)?.name ?? r.product_slug,
+  slug: r.product_slug,
+  size: r.size,
+  qty: r.quantity,
+}));
+
+// ── chart geometry ────────────────────────────────────────────────────────────
+const W = 760, H = 280, padL = 6, padR = 6, padT = 24, padB = 34;
+const chartW = W - padL - padR;
+const chartH = H - padT - padB;
+const gap = 12;
+const n = months.length;
+const barW = (chartW - gap * (n - 1)) / n;
+const maxRev = Math.max(...months.map((m) => m.revenue), 1);
+const bars = months.map((m, i) => {
+  const h = m.revenue > 0 ? Math.max(3, (m.revenue / maxRev) * chartH) : 0;
+  return { ...m, x: padL + i * (barW + gap), y: padT + chartH - h, h };
+});
+const gridLines = [0.25, 0.5, 0.75, 1].map((f) => ({
+  y: padT + chartH - f * chartH,
+  v: maxRev * f,
+}));
+const compact = (cents: number) => {
+  const e = cents / 100;
+  if (e >= 1000) return '€' + (e / 1000).toFixed(e >= 10000 ? 0 : 1) + 'k';
+  return '€' + Math.round(e);
+};
+---
+
+<BaseLayout title="Admin · Analytics · ACME" noindex>
+  <AdminNav active="analytics" email={user.email} />
+  <section class="wrap py-10">
+    <h1 class="font-display text-2xl font-900 tracking-tight text-ink">Analytics</h1>
+
+    {!isAdmin && (
+      <div class="mt-8 rounded-2xl border border-line p-10 text-center">
+        <p class="text-muted">You don't have admin access.</p>
+      </div>
+    )}
+
+    {isAdmin && (
+      <>
+        <!-- KPI cards -->
+        <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div class="rounded-2xl border border-line p-5">
+            <p class="text-xs text-faint">Total revenue</p>
+            <p class="mt-1 font-display text-2xl font-800 text-ink">{money(totalRevenue / 100)}</p>
+          </div>
+          <div class="rounded-2xl border border-line p-5">
+            <p class="text-xs text-faint">Paid orders</p>
+            <p class="mt-1 font-display text-2xl font-800 text-ink">{totalOrders}</p>
+          </div>
+          <div class="rounded-2xl border border-line p-5">
+            <p class="text-xs text-faint">Avg order value</p>
+            <p class="mt-1 font-display text-2xl font-800 text-ink">{money(aov / 100)}</p>
+          </div>
+          <div class="rounded-2xl border border-line p-5">
+            <p class="text-xs text-faint">Units sold</p>
+            <p class="mt-1 font-display text-2xl font-800 text-ink">{unitsSold}</p>
+          </div>
+        </div>
+
+        <!-- Monthly revenue chart -->
+        <div class="mt-8 rounded-2xl border border-line p-5 sm:p-6">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="font-display text-lg font-800 text-ink">Revenue · last 12 months</h2>
+            <p class="text-sm text-muted">
+              This month <span class="font-700 text-ink">{money(thisMonth.revenue / 100)}</span>
+              <span class={momPct >= 0 ? 'text-accent-soft' : 'text-sale'}>
+                {momPct >= 0 ? '▲' : '▼'} {Math.abs(momPct)}%
+              </span>
+              <span class="text-faint">vs last month</span>
+            </p>
+          </div>
+
+          <svg viewBox={`0 0 ${W} ${H}`} class="mt-4 w-full" role="img" aria-label="Monthly revenue bar chart">
+            <defs>
+              <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#57e1d6" />
+                <stop offset="100%" stop-color="#00c0b6" />
+              </linearGradient>
+            </defs>
+
+            <!-- gridlines + y labels -->
+            {gridLines.map((g) => (
+              <>
+                <line x1={padL} y1={g.y} x2={W - padR} y2={g.y} stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+                <text x={W - padR} y={g.y - 3} text-anchor="end" fill="rgba(255,255,255,0.30)" font-size="10">{compact(g.v)}</text>
+              </>
+            ))}
+
+            <!-- bars -->
+            {bars.map((b) => (
+              <>
+                {b.revenue > 0 && (
+                  <text x={b.x + barW / 2} y={b.y - 6} text-anchor="middle" fill="#9fb0ad" font-size="10" font-weight="600">{compact(b.revenue)}</text>
+                )}
+                <rect x={b.x} y={b.y} width={barW} height={b.h} rx="4" fill="url(#barGrad)">
+                  <title>{`${b.label} ${b.year}: ${money(b.revenue / 100)} · ${b.orders} orders`}</title>
+                </rect>
+                <text x={b.x + barW / 2} y={H - 12} text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="11">{b.label}</text>
+              </>
+            ))}
+          </svg>
+
+          {totalOrders === 0 && (
+            <p class="mt-3 text-center text-sm text-faint">No paid sales yet — the chart fills in automatically as orders come through.</p>
+          )}
+        </div>
+
+        <!-- Top sellers + Low stock -->
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-2xl border border-line p-5">
+            <h2 class="font-display text-lg font-800 text-ink">Top sellers</h2>
+            {topSellers.length === 0 ? (
+              <p class="mt-4 text-sm text-faint">No sales recorded yet.</p>
+            ) : (
+              <ol class="mt-4 space-y-3">
+                {topSellers.map((p, i) => (
+                  <li class="flex items-center gap-3">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-700 text-accent-soft">{i + 1}</span>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-600 text-ink">{p.name}</p>
+                      <p class="text-xs text-faint">{p.brand} · {p.units} sold</p>
+                    </div>
+                    <span class="font-700 text-ink">{money(p.revenue / 100)}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          <div class="rounded-2xl border border-line p-5">
+            <div class="flex items-center justify-between">
+              <h2 class="font-display text-lg font-800 text-ink">Low stock</h2>
+              <span class="text-xs text-faint">≤ 2 left</span>
+            </div>
+            {lowStock.length === 0 ? (
+              <p class="mt-4 text-sm text-faint">Nothing low — every tracked size has 3+ in stock.</p>
+            ) : (
+              <div class="mt-4 max-h-80 space-y-2 overflow-y-auto pr-1">
+                {lowStock.map((r) => (
+                  <div class="flex items-center justify-between gap-3 border-b border-line pb-2 last:border-0">
+                    <a href={`/admin/products/${r.slug}`} class="min-w-0 flex-1 truncate text-sm text-muted hover:text-ink">{r.name}</a>
+                    <span class="shrink-0 text-xs text-faint">EU {r.size}</span>
+                    <span class={`shrink-0 rounded-full px-2 py-0.5 text-xs font-700 ${r.qty === 0 ? 'bg-sale/15 text-sale' : 'bg-accent/15 text-accent-soft'}`}>
+                      {r.qty === 0 ? 'Sold out' : `${r.qty} left`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    )}
+  </section>
+</BaseLayout>

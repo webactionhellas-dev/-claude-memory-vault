@@ -1,0 +1,19 @@
+<svg width="160" height="160" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Web Action mark">
+  <defs>
+    <linearGradient id="waGrad" x1="10" y1="50" x2="54" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="0.55" stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#4F7BFF"/>
+    </linearGradient>
+  </defs>
+  <!-- rising W that fires into an arrowhead: web + forward action -->
+  <path d="M12 27 L22 45 L32 31 L42 49 L52 21"
+        stroke="url(#waGrad)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M41 30.5 L52 21 L54.5 34.5"
+        stroke="url(#waGrad)" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- network nodes at the joints -->
+  <circle cx="22" cy="45" r="2.7" fill="#0A0E17"/>
+  <circle cx="22" cy="45" r="2.7" fill="#22D3EE" fill-opacity="0.0"/>
+  <circle cx="22" cy="45" r="2.2" fill="#22D3EE"/>
+  <circle cx="42" cy="49" r="2.2" fill="#4F7BFF"/>
+</svg>

@@ -1,0 +1,56 @@
+---
+/**
+ * Vivid animated gradient backdrop — Astro/CSS adaptation of the React +
+ * framer-motion `GradientBackground`, themed to tiffany blue / white / lime green.
+ * Pure CSS keyframes, no deps; kept low-opacity so content stays readable on the
+ * dark base, and respects prefers-reduced-motion.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['gv-wrap relative isolate', className]}>
+  <div class="gv-bg" aria-hidden="true"></div>
+  <slot />
+</div>
+
+<style>
+  .gv-wrap {
+    position: relative;
+  }
+  .gv-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+      radial-gradient(40% 36% at 14% 10%, rgba(0, 192, 182, 0.16), transparent 70%),
+      radial-gradient(44% 40% at 86% 24%, rgba(163, 230, 53, 0.12), transparent 72%),
+      radial-gradient(46% 42% at 72% 88%, rgba(255, 255, 255, 0.07), transparent 72%),
+      radial-gradient(52% 46% at 28% 100%, rgba(0, 192, 182, 0.1), transparent 72%),
+      radial-gradient(40% 38% at 50% 50%, rgba(163, 230, 53, 0.06), transparent 70%),
+      var(--color-base);
+    background-size: 200% 200%, 220% 220%, 210% 210%, 240% 240%, 200% 200%, 100% 100%;
+    background-repeat: no-repeat;
+    animation: gv-drift 24s ease-in-out infinite alternate;
+  }
+  @keyframes gv-drift {
+    0% {
+      background-position: 0% 0%, 100% 0%, 60% 100%, 20% 100%, 50% 50%, 0 0;
+    }
+    50% {
+      background-position: 26% 18%, 72% 24%, 42% 74%, 52% 70%, 40% 60%, 0 0;
+    }
+    100% {
+      background-position: 8% 30%, 92% 42%, 72% 92%, 8% 92%, 60% 40%, 0 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gv-bg {
+      animation: none;
+    }
+  }
+</style>

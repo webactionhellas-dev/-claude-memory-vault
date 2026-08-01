@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>About - Vellum sandbox</title>
+  <style>
+    body{margin:0;font-family:Georgia,serif;background:#faf8f4;color:#1c1a17;line-height:1.55}
+    .wrap{max-width:720px;margin:0 auto;padding:56px 24px}
+    a{color:#3a4fd0}
+    h1{font-weight:400;font-size:38px;margin:0 0 14px}
+    p{color:#5d574d;font-size:17px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a href="/EXAMPLE.html">&larr; Back home</a></p>
+    <h1 data-content="about.title">Our story</h1>
+    <p data-content="about.body">A second page in the sandbox: the armed session persists across real navigation, so the editor re-mounts here on its own.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/vellum.config.js"></script>
+  <script src="/vellum-content.js" defer></script>
+  <script>try{if(sessionStorage.getItem('vlm-armed')==='1'){
+    var l=document.createElement('link');l.rel='stylesheet';l.href='/vellum-edit-mode.css';document.head.appendChild(l);
+    var s=document.createElement('script');s.src='/vellum-edit-mode.js';s.defer=true;document.body.appendChild(s);
+  }}catch(e){}</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "brands": [
+    {
+      "name": "Acme",
+      "slug": "acme",
+      "count": 3
+    },
+    {
+      "name": "Northwind",
+      "slug": "northwind",
+      "count": 2
+    },
+    {
+      "name": "Contoso",
+      "slug": "contoso",
+      "count": 1
+    }
+  ],
+  "categories": [
+    {
+      "name": "Footwear",
+      "slug": "footwear",
+      "count": 2,
+      "tagline": "Step into it",
+      "image": ""
+    },
+    {
+      "name": "Apparel",
+      "slug": "apparel",
+      "count": 2,
+      "tagline": "Wear it well",
+      "image": ""
+    },
+    {
+      "name": "Accessories",
+      "slug": "accessories",
+      "count": 2,
+      "tagline": "Finish the look",
+      "image": ""
+    }
+  ]
+}

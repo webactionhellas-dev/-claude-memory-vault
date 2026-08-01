@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<BaseLayout title="Privacy Policy" description="How this store handles your data." noindex={true}>
+  <section class="mx-auto max-w-3xl px-6 py-20 space-y-6 text-[0.95rem] leading-relaxed">
+    <h1 class="text-3xl font-bold">Privacy Policy</h1>
+    <p class="rounded-lg border border-yellow-500/40 bg-yellow-500/10 p-3 text-sm">
+      <strong>TODO before launch:</strong> Replace this placeholder with your reviewed policy. The GDPR
+      requires the data-controller identity and contact, the lawful basis, data retention periods, and the
+      user rights below. Localize to Greek if Greek is your default market.
+    </p>
+
+    <h2 class="text-xl font-semibold">What we collect</h2>
+    <p>Order details (name, email, shipping address) to fulfil purchases; essential cookies for your bag and
+      sign-in; optional analytics only with your consent.</p>
+
+    <h2 class="text-xl font-semibold">Payments</h2>
+    <p>Payments are processed by Stripe. We never see or store your full card number.</p>
+
+    <h2 class="text-xl font-semibold">Cookies</h2>
+    <p>Essential cookies run the store. Analytics or marketing cookies load only after you accept the cookie
+      banner; you can change your choice by clearing site data.</p>
+
+    <h2 class="text-xl font-semibold">Your rights</h2>
+    <p>Under the GDPR you can request access, correction, deletion, or portability of your data. Contact
+      <a class="underline" href="mailto:privacy@example.com">privacy@example.com</a>.</p>
+  </section>
+</BaseLayout>
