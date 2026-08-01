@@ -1,22 +1,22 @@
 ---
 name: cloudskin-deploy-setup
-description: "How to deploy CloudSkin to production now — the agent can do it AUTOMATICALLY via one command; the canonical folder, and the npx/vercel-login/PowerShell prereqs that caused a long ordeal on 2026-07-24"
+description: "How to deploy CloudSkin to production now — the agent can do it AUTOMATICALLY via one command; the canonical folder (CHECK THIS EVERY SESSION, it keeps moving), and the npx/vercel-login/PowerShell prereqs that caused a long ordeal on 2026-07-24"
 metadata: 
   node_type: memory
   type: project
   originSessionId: d267c573-c8a4-4c8c-b679-a6247a2e102f
-  modified: 2026-07-24T15:36:53.627Z
+  modified: 2026-08-01T16:52:03.277Z
 ---
 
-CloudSkin production deploys are now AUTOMATIC from the agent. Canonical source folder is `C:\Users\mikef\cloudskin-v56` (Corky's mirror; holds the current source + fixes). The one deploy command:
+CloudSkin production deploys are now AUTOMATIC from the agent. **The canonical source folder keeps changing (v52 -> v54 -> v55 -> v56 -> v67 so far) — do NOT trust this file's folder name blindly.** Before touching anything, verify with `ls /c/Users/mikef/ | grep -i cloudskin-v` and check `git log -1 --format=%cI` in each candidate to find the one with the most recent commit — that's the live one. As of 2026-08-01 the canonical folder is `C:\Users\mikef\cloudskin-v67` (v56 is DEPRECATED — Mike explicitly said to forget it; an agent mistakenly edited v56 once on 2026-08-01 and had to be stopped/reverted and redirected to v67). The one deploy command (update the folder name to whatever you just confirmed is current):
 
-`node C:\Users\mikef\cloudskin-v56\scripts\deploy.mjs`
+`node C:\Users\mikef\cloudskin-v67\scripts\deploy.mjs`
 
 (ROOT resolves from the script's own path via `import.meta.url`, so it runs from any cwd.) It re-bakes `js/content-snapshot.js` from live Supabase first (prevents the old-photo flash), then `vercel deploy --prod --scope webactionhellascom`, then verifies the served snapshot deep-equals live. Rollback: `vercel promote <prev dpl_...> --scope webactionhellascom`.
 
 **The agent can run it itself now — Mike wants this fast automatic flow (no terminal/clicks from him).** He added to `C:\Users\mikef\.claude\settings.json`:
 `"permissions": { "allow": ["Bash(node /c/Users/mikef/cloudskin-v56/scripts/deploy.mjs)"] }`
-so the auto-mode classifier no longer blocks THIS deploy. Just run the exact command via Bash and it ships, no prompts.
+so the auto-mode classifier no longer blocks THIS deploy. **NOTE: that allow-rule string is hardcoded to the OLD v56 path and has NOT been updated for v67** — running the v67 deploy command may prompt for permission again until Mike (or an update-config pass) adds a matching allow rule for the v67 path. Don't assume it's silent until verified.
 
 **Prereqs that caused a long ordeal on 2026-07-24 (all now sorted):**
 - vercel CLI is NOT globally installed on this machine, so `deploy.mjs` was patched to call `npx --yes vercel ...` (fetches vercel on the fly). Keep it as npx.
