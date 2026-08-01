@@ -2,8 +2,8 @@
   "commitMessage": "Auto memory sync: {{date}}",
   "autoSaveInterval": 10,
   "autoPushInterval": 10,
-  "autoPullInterval": 10,
-  "autoPullOnBoot": true,
-  "pullBeforePush": true,
+  "autoPullInterval": 0,
+  "autoPullOnBoot": false,
+  "pullBeforePush": false,
   "disablePush": false
 }
