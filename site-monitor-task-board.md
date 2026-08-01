@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 70f1bde9-a5a3-4cb5-ac72-971762bb76e7
-  modified: 2026-08-01T22:50:39.933Z
+  modified: 2026-08-01T23:13:47.393Z
 ---
 
 `C:\Users\mikef\site-monitor` — a zero-dep Node tool (same house style as [[x-tracker]]) with two parts on one dashboard:
@@ -19,6 +19,10 @@ metadata:
 node C:\Users\mikef\site-monitor\scripts\add-task.mjs "Task title" --assignee=asteris --project=cloudskin
 ```
 This writes the task file directly (works whether or not the dashboard server happens to be running) - don't just tell Mike to type it into the web form himself, that defeats the point of asking for this.
+
+**Same standing behavior for sites to watch** - when Mike mentions a new live site to track, add it immediately via `node C:\Users\mikef\site-monitor\scripts\add-site.mjs "Name" "https://url"` (verifies the URL is actually reachable first) rather than hand-editing config.json or telling him to. `remove-site.mjs "Name"` to stop watching one. **Before adding ANY client-project domain, verify it's actually Mike's rebuild and not the client's pre-existing original site** - checked page `<title>` against what's known per-project 2026-08-01 before adding, a raw HTTP 200 is not enough evidence (most in-progress client rebuilds still 200 with the OLD site since the real domain hasn't been cut over yet).
+
+**Business-model context (Mike, 2026-08-01): most of the non-CloudSkin projects (Drip Jewels, Drip Barbershop, Drip sneaker store, etc) are being built to be SOLD as going-concern businesses, domain included - they intentionally run on a Vercel staging subdomain until a sale happens, not because a domain purchase is merely pending.** Only CloudSkin and webactionhellas.com (his own agency site) are on real permanent domains today. When one of these sells, the monitored URL will need updating to whatever domain the buyer/Mike puts it on - don't be surprised these URLs are inherently temporary. Currently watching: CloudSkin, Trattoria Capanna, Drip Barbershop, Drip Astro v2, Mykonos Prestige, Web Action.
 
 **Placement decision (Mike asked "should this be inside Obsidian?", 2026-08-01): keep the web dashboard as the primary interface, do NOT rebuild this as an Obsidian plugin/Kanban-plugin setup.** Reasoning given: the task files already live inside the vault and are plain markdown with YAML frontmatter, so Obsidian can already open/browse them as normal notes with zero plugin install - Mike/Asteris get that view for free. Rebuilding the board itself as an Obsidian community plugin (e.g. the Kanban plugin) would require a different, more rigid file format, a manual one-time plugin install on every machine that wants the visual board, and gets no functional upside over the already-working, already-auto-syncing web dashboard. If this decision ever needs revisiting, that's the tradeoff to re-litigate.
 
