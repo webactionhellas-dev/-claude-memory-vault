@@ -842,22 +842,28 @@ body.asteris-density-spacious { --heading-spacing: 2.4em; }
    5. SIMPLIFY  ·  opt-in chrome removal
    ========================================================================== */
 
-/* hide the left ribbon, optionally revealing it on hover ------------------ */
+/* Hide the left ribbon, optionally revealing it on hover.
+   The ribbon is a flex child carrying `flex: 0 0 var(--ribbon-width)`, so
+   flex-basis decides its size and plain `width` is ignored. Set both. */
 body.asteris-hide-ribbon .workspace-ribbon.mod-left {
   width: 0;
   min-width: 0;
+  flex-basis: 0;
   padding: 0;
   overflow: hidden;
   border: none;
 }
 body.asteris-hide-ribbon.asteris-ribbon-hover .workspace-ribbon.mod-left {
-  width: 5px;
-  min-width: 5px;
-  transition: width var(--as-t) var(--as-ease);
+  width: 6px;
+  min-width: 6px;
+  flex-basis: 6px;
+  transition: flex-basis var(--as-t) var(--as-ease),
+              width var(--as-t) var(--as-ease);
 }
 body.asteris-hide-ribbon.asteris-ribbon-hover .workspace-ribbon.mod-left:hover {
   width: var(--ribbon-width, 44px);
   min-width: var(--ribbon-width, 44px);
+  flex-basis: var(--ribbon-width, 44px);
 }
 
 /* hide the vault name / switcher ------------------------------------------ */

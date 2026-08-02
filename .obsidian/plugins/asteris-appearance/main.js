@@ -97,8 +97,17 @@ function hexToHsl(hex) {
 
 class AsterisAppearance extends obsidian.Plugin {
   async onload() {
-    this.settings = Object.assign({}, DEFAULTS, await this.loadData());
+    const saved = await this.loadData();
+    this.settings = Object.assign({}, DEFAULTS, saved);
     this.settings.zen = false; // never persist zen across restarts
+
+    // First install: adopt the vault's current text size instead of jumping it.
+    if (!saved) {
+      try {
+        const base = this.app.vault.getConfig('baseFontSize');
+        if (typeof base === 'number' && base >= 13 && base <= 24) this.settings.fontSize = base;
+      } catch (e) { /* private API, keep the default */ }
+    }
 
     this.addSettingTab(new AsterisSettingTab(this.app, this));
 
@@ -163,7 +172,8 @@ class AsterisAppearance extends obsidian.Plugin {
     this.clearBodyClasses();
     const s = document.body.style;
     ['--as-font-size', '--as-line-height', '--as-line-width', '--as-dur-scale',
-      '--as-accent-h', '--as-accent-s', '--as-accent-l'].forEach((v) => s.removeProperty(v));
+      '--as-accent-h', '--as-accent-s', '--as-accent-l', '--font-text-size']
+      .forEach((v) => s.removeProperty(v));
   }
 
   /* -------------------------------------------------------------- helpers */
@@ -271,6 +281,19 @@ class AsterisAppearance extends obsidian.Plugin {
     const st = body.style;
     st.setProperty('--as-font-size', s.fontSize + 'px');
     st.setProperty('--as-line-height', String(s.lineHeight));
+
+    // Obsidian writes --font-text-size as an inline body style, which outranks
+    // any stylesheet mapping. Go through its own config so the value sticks and
+    // the built-in font-size control stays in agreement with ours.
+    try {
+      if (this.app.vault.getConfig('baseFontSize') !== s.fontSize) {
+        this.app.vault.setConfig('baseFontSize', s.fontSize);
+        this.app.workspace.trigger('css-change');
+      }
+    } catch (e) {
+      st.setProperty('--font-text-size', s.fontSize + 'px');
+    }
+
     st.setProperty('--as-line-width', s.lineWidth + 'rem');
     st.setProperty('--as-dur-scale', String(s.animSpeed));
 
