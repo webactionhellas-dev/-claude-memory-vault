@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: user
   originSessionId: 1a0debd0-7bdf-45ac-b42d-966c016d9330
+  modified: 2026-08-02T22:02:22.356Z
 ---
 
 Mike (Michael; agency **Web Action / webactionhellas**, Greek market) runs a boutique web-design agency and is deliberately building an **autonomous AI-agent fleet to run it** rather than just asking for one-off sites. Almost every session is either a real business site (Greek local brands — hotels, villas, restaurants, groomers, tattoo/beauty, shops, cafes) or a move to make the fleet itself smarter. He interacts largely by **voice-to-text**, so business names arrive garbled (this is why the `brief` skill exists). Windows 10, Mini-ITX PC, wants local AI; single LG monitor where he **cannot distinguish dark/black tones** (see [[mike-dark-tone-visibility]]) — design and verify with that in mind.
@@ -13,7 +14,7 @@ Mike (Michael; agency **Web Action / webactionhellas**, Greek market) runs a bou
 
 **His non-negotiables (learned from what he rejects, not just what he says):**
 - **Real data only, business-relevance-first** — real logo/photos/reviews/copy sourced first; every visual, 3D, animation, section must be ABOUT what the business sells. He kills stock photos and abstract orbs/particles as "useless / generic." This is his single most-repeated correction. See [[business-relevance-first]].
-- **World-class or nothing** — expensive-feeling, editorial, award-site bar; named bespoke design system per business; distinctive foundry-level type (never Inter/Roboto as the brand face); GSAP+Lenis house motion. Zero AI-slop.
+- **World-class or nothing** — expensive-feeling, editorial, award-site bar; named bespoke design system per business; distinctive foundry-level type (never Inter/Roboto as the brand face); GSAP+Lenis house motion. Zero AI-slop. **This bar applies to his own internal/agency tooling too, not just client sites** — he judges his own tools (e.g. the site-monitor dashboard) as a direct reflection of his agency's design competence and identifies as a designer first ("I'm not a nerd... I'm a designer"); confirmed 2026-08-03 when he pushed back mid-build wanting a "10 out of 10," not merely "acceptable," on an internal tool most agencies would leave utilitarian.
 - **No em-dashes anywhere.** **Native professional Greek** (Greek default, bilingual EL/EN, never translationese).
 - **Security is top priority** — no site hackable, no data leaked (security gate is his stated #1).
 - **Deploy is gated** — house default "not deployed"; production only on an explicit go.
