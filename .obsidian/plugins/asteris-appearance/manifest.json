@@ -1,0 +1,10 @@
+{
+  "id": "asteris-appearance",
+  "name": "Asteris Appearance",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Advanced appearance control for the Asteris theme: colour presets, typography, UI simplification and animation options.",
+  "author": "Atlas fleet",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}

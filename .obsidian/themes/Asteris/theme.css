@@ -1,0 +1,1078 @@
+/* ============================================================================
+   ASTERIS  ·  a calm, high-contrast theme for Obsidian
+   ----------------------------------------------------------------------------
+   Architecture
+     1. Source tokens   (--as-*)  one small palette per preset
+     2. Mapping         (--as-*)  ->  Obsidian's own variables
+     3. Structure       layout, nav, tabs, editor, callouts, tables, code
+     4. Simplify        opt-in chrome removal  (body.asteris-hide-*)
+     5. Motion          opt-in animation layers (body.asteris-anim-*)
+
+   Presets and toggles are driven by the "Asteris Appearance" plugin, which
+   writes body classes and a few CSS variables. The theme is fully usable
+   without the plugin: it falls back to Deep (dark) and Daylight (light).
+   ========================================================================= */
+
+
+/* ==========================================================================
+   1. SOURCE TOKENS
+   ========================================================================== */
+
+/* ---- fallbacks when the plugin is not installed ------------------------- */
+
+.theme-dark {
+  --as-bg-1: #14161c;
+  --as-bg-2: #101217;
+  --as-bg-3: #0c0e12;
+  --as-bg-raised: #191c23;
+  --as-hover: rgba(255, 255, 255, 0.055);
+  --as-active: rgba(255, 255, 255, 0.085);
+  --as-border: #242833;
+  --as-border-strong: #333949;
+  --as-text: #dfe3ec;
+  --as-text-muted: #9aa2b4;
+  --as-text-faint: #646c7e;
+  --as-code-bg: #1a1d25;
+  --as-accent-h: 258;
+  --as-accent-s: 82%;
+  --as-accent-l: 68%;
+  --as-shadow: rgba(0, 0, 0, 0.5);
+}
+
+.theme-light {
+  --as-bg-1: #ffffff;
+  --as-bg-2: #f4f6f9;
+  --as-bg-3: #eaedf2;
+  --as-bg-raised: #f7f8fa;
+  --as-hover: rgba(0, 0, 0, 0.045);
+  --as-active: rgba(0, 0, 0, 0.07);
+  --as-border: #e0e4ea;
+  --as-border-strong: #c8cfd9;
+  --as-text: #1d2129;
+  --as-text-muted: #5c6472;
+  --as-text-faint: #98a0ae;
+  --as-code-bg: #f2f4f7;
+  --as-accent-h: 215;
+  --as-accent-s: 85%;
+  --as-accent-l: 52%;
+  --as-shadow: rgba(16, 24, 40, 0.14);
+}
+
+/* ---- dark presets ------------------------------------------------------- */
+
+body.asteris-preset-deep {
+  --as-bg-1: #14161c;
+  --as-bg-2: #101217;
+  --as-bg-3: #0c0e12;
+  --as-bg-raised: #191c23;
+  --as-hover: rgba(255, 255, 255, 0.055);
+  --as-active: rgba(255, 255, 255, 0.085);
+  --as-border: #242833;
+  --as-border-strong: #333949;
+  --as-text: #dfe3ec;
+  --as-text-muted: #9aa2b4;
+  --as-text-faint: #646c7e;
+  --as-code-bg: #1a1d25;
+  --as-accent-h: 258;
+  --as-accent-s: 82%;
+  --as-accent-l: 68%;
+  --as-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body.asteris-preset-midnight {
+  --as-bg-1: #0f1724;
+  --as-bg-2: #0b111b;
+  --as-bg-3: #080d15;
+  --as-bg-raised: #141d2c;
+  --as-hover: rgba(140, 200, 255, 0.07);
+  --as-active: rgba(140, 200, 255, 0.11);
+  --as-border: #1e2b3d;
+  --as-border-strong: #2c3d54;
+  --as-text: #dde7f5;
+  --as-text-muted: #93a3ba;
+  --as-text-faint: #5c6b81;
+  --as-code-bg: #131c2a;
+  --as-accent-h: 190;
+  --as-accent-s: 88%;
+  --as-accent-l: 58%;
+  --as-shadow: rgba(0, 0, 0, 0.55);
+}
+
+body.asteris-preset-graphite {
+  --as-bg-1: #1a1917;
+  --as-bg-2: #151412;
+  --as-bg-3: #100f0e;
+  --as-bg-raised: #201f1c;
+  --as-hover: rgba(255, 240, 220, 0.055);
+  --as-active: rgba(255, 240, 220, 0.09);
+  --as-border: #2b2924;
+  --as-border-strong: #3d3a33;
+  --as-text: #e8e3d9;
+  --as-text-muted: #a89f92;
+  --as-text-faint: #6f675c;
+  --as-code-bg: #211f1c;
+  --as-accent-h: 35;
+  --as-accent-s: 92%;
+  --as-accent-l: 60%;
+  --as-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body.asteris-preset-nocturne {
+  --as-bg-1: #111815;
+  --as-bg-2: #0d1310;
+  --as-bg-3: #090d0b;
+  --as-bg-raised: #161e1a;
+  --as-hover: rgba(180, 255, 220, 0.055);
+  --as-active: rgba(180, 255, 220, 0.09);
+  --as-border: #1e2925;
+  --as-border-strong: #2c3b34;
+  --as-text: #dbe7e0;
+  --as-text-muted: #8fa79b;
+  --as-text-faint: #5c7268;
+  --as-code-bg: #151d19;
+  --as-accent-h: 158;
+  --as-accent-s: 68%;
+  --as-accent-l: 55%;
+  --as-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body.asteris-preset-plum {
+  --as-bg-1: #17131d;
+  --as-bg-2: #120f17;
+  --as-bg-3: #0d0b11;
+  --as-bg-raised: #1d1824;
+  --as-hover: rgba(240, 210, 255, 0.06);
+  --as-active: rgba(240, 210, 255, 0.1);
+  --as-border: #292234;
+  --as-border-strong: #3a3049;
+  --as-text: #e6dfec;
+  --as-text-muted: #a396b0;
+  --as-text-faint: #6d6178;
+  --as-code-bg: #1c1724;
+  --as-accent-h: 330;
+  --as-accent-s: 78%;
+  --as-accent-l: 68%;
+  --as-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body.asteris-preset-void {
+  --as-bg-1: #000000;
+  --as-bg-2: #050505;
+  --as-bg-3: #000000;
+  --as-bg-raised: #0b0b0b;
+  --as-hover: rgba(255, 255, 255, 0.06);
+  --as-active: rgba(255, 255, 255, 0.1);
+  --as-border: #1b1b1b;
+  --as-border-strong: #2c2c2c;
+  --as-text: #e8e8e8;
+  --as-text-muted: #909090;
+  --as-text-faint: #5a5a5a;
+  --as-code-bg: #0d0d0d;
+  --as-accent-h: 210;
+  --as-accent-s: 100%;
+  --as-accent-l: 64%;
+  --as-shadow: rgba(0, 0, 0, 0.8);
+}
+
+/* ---- light presets ------------------------------------------------------ */
+
+body.asteris-preset-daylight {
+  --as-bg-1: #ffffff;
+  --as-bg-2: #f4f6f9;
+  --as-bg-3: #eaedf2;
+  --as-bg-raised: #f7f8fa;
+  --as-hover: rgba(0, 0, 0, 0.045);
+  --as-active: rgba(0, 0, 0, 0.07);
+  --as-border: #e0e4ea;
+  --as-border-strong: #c8cfd9;
+  --as-text: #1d2129;
+  --as-text-muted: #5c6472;
+  --as-text-faint: #98a0ae;
+  --as-code-bg: #f2f4f7;
+  --as-accent-h: 215;
+  --as-accent-s: 85%;
+  --as-accent-l: 52%;
+  --as-shadow: rgba(16, 24, 40, 0.14);
+}
+
+body.asteris-preset-parchment {
+  --as-bg-1: #faf7f0;
+  --as-bg-2: #f2ede2;
+  --as-bg-3: #e9e3d6;
+  --as-bg-raised: #f5f1e8;
+  --as-hover: rgba(80, 60, 30, 0.055);
+  --as-active: rgba(80, 60, 30, 0.09);
+  --as-border: #e2dacb;
+  --as-border-strong: #cec3ae;
+  --as-text: #2c2924;
+  --as-text-muted: #6b6559;
+  --as-text-faint: #9a9386;
+  --as-code-bg: #f1ece0;
+  --as-accent-h: 24;
+  --as-accent-s: 62%;
+  --as-accent-l: 44%;
+  --as-shadow: rgba(70, 55, 30, 0.16);
+}
+
+
+/* ==========================================================================
+   2. MAPPING  ·  --as-* into Obsidian's variable API
+   ========================================================================== */
+
+body {
+  /* accent -------------------------------------------------------------- */
+  --accent-h: var(--as-accent-h);
+  --accent-s: var(--as-accent-s);
+  --accent-l: var(--as-accent-l);
+
+  /* surfaces ------------------------------------------------------------ */
+  --background-primary: var(--as-bg-1);
+  --background-primary-alt: var(--as-bg-raised);
+  --background-secondary: var(--as-bg-2);
+  --background-secondary-alt: var(--as-bg-3);
+
+  --background-modifier-hover: var(--as-hover);
+  --background-modifier-active-hover: var(--as-active);
+  --background-modifier-border: var(--as-border);
+  --background-modifier-border-hover: var(--as-border-strong);
+  --background-modifier-border-focus: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --background-modifier-form-field: var(--as-bg-2);
+  --divider-color: var(--as-border);
+  --divider-color-hover: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+
+  /* text ---------------------------------------------------------------- */
+  --text-normal: var(--as-text);
+  --text-muted: var(--as-text-muted);
+  --text-faint: var(--as-text-faint);
+  --text-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --text-accent-hover: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 8%));
+  --text-selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.22);
+  --text-highlight-bg: hsla(var(--accent-h), 90%, 55%, 0.28);
+  --text-error: #ef6b6b;
+  --text-success: #4bb98a;
+
+  /* interactive --------------------------------------------------------- */
+  --interactive-normal: var(--as-bg-raised);
+  --interactive-hover: var(--as-active);
+  --interactive-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --interactive-accent-hover: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 6%));
+
+  /* shape --------------------------------------------------------------- */
+  --radius-s: var(--as-radius-s, 5px);
+  --radius-m: var(--as-radius-m, 9px);
+  --radius-l: var(--as-radius-l, 14px);
+  --radius-xl: var(--as-radius-xl, 20px);
+  --input-radius: var(--as-radius-m, 9px);
+  --modal-radius: var(--as-radius-l, 14px);
+  --checkbox-radius: var(--as-radius-s, 5px);
+  --tab-radius-active: var(--as-radius-m, 9px);
+
+  /* elevation ----------------------------------------------------------- */
+  --shadow-s: 0 1px 2px var(--as-shadow);
+  --shadow-l: 0 12px 32px -8px var(--as-shadow), 0 2px 8px -2px var(--as-shadow);
+  --input-shadow: none;
+  --input-shadow-hover: none;
+
+  /* typography ---------------------------------------------------------- */
+  --font-interface-theme: var(--as-font-ui);
+  --font-text-theme: var(--as-font-text);
+  --font-monospace-theme: var(--as-font-mono);
+  --font-text-size: var(--as-font-size, 17px);
+  --line-height-normal: var(--as-line-height, 1.62);
+  --file-line-width: var(--as-line-width, 46rem);
+
+  /* motion -------------------------------------------------------------- */
+  --as-dur-scale: 1;
+  --as-t-fast: calc(110ms * var(--as-dur-scale));
+  --as-t: calc(180ms * var(--as-dur-scale));
+  --as-t-slow: calc(280ms * var(--as-dur-scale));
+  --as-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --as-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* font stacks --------------------------------------------------------- */
+  --as-font-ui: Inter, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+    "Helvetica Neue", Arial, sans-serif;
+  --as-font-sans: Inter, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+    "Helvetica Neue", Arial, sans-serif;
+  --as-font-serif: "Source Serif 4", "Iowan Old Style", Constantia, Cambria, Georgia,
+    "Times New Roman", serif;
+  --as-font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas,
+    "SF Mono", "Roboto Mono", monospace;
+  --as-font-text: var(--as-font-sans);
+}
+
+body.asteris-font-serif { --as-font-text: var(--as-font-serif); }
+body.asteris-font-mono  { --as-font-text: var(--as-font-mono); }
+body.asteris-font-sans  { --as-font-text: var(--as-font-sans); }
+
+/* roundness ---------------------------------------------------------------- */
+body.asteris-round-sharp {
+  --as-radius-s: 2px; --as-radius-m: 3px; --as-radius-l: 4px; --as-radius-xl: 6px;
+}
+body.asteris-round-medium {
+  --as-radius-s: 5px; --as-radius-m: 9px; --as-radius-l: 14px; --as-radius-xl: 20px;
+}
+body.asteris-round-soft {
+  --as-radius-s: 8px; --as-radius-m: 14px; --as-radius-l: 20px; --as-radius-xl: 28px;
+}
+
+
+/* ==========================================================================
+   3. STRUCTURE
+   ========================================================================== */
+
+/* ---- window chrome ------------------------------------------------------ */
+
+.workspace,
+.titlebar {
+  background-color: var(--as-bg-3);
+}
+
+.workspace-split.mod-root {
+  background-color: var(--as-bg-3);
+  padding: 0 6px 6px 0;
+}
+
+.workspace-split.mod-root .workspace-leaf {
+  border-radius: var(--radius-l);
+  overflow: hidden;
+}
+
+.workspace-tab-header-container {
+  background-color: var(--as-bg-3);
+  border-bottom: none;
+  padding-left: 4px;
+}
+
+/* ---- tabs --------------------------------------------------------------- */
+
+.workspace-tab-header {
+  padding: 0 2px;
+}
+
+.workspace-tab-header-inner {
+  border-radius: var(--radius-m);
+  padding: 0 10px;
+}
+
+.workspace-tab-header:not(.is-active) .workspace-tab-header-inner-title {
+  color: var(--text-faint);
+}
+
+.workspace-tab-header:hover:not(.is-active) .workspace-tab-header-inner {
+  background-color: var(--as-hover);
+}
+
+.workspace-tab-header.is-active .workspace-tab-header-inner {
+  background-color: var(--as-bg-1);
+  box-shadow: none;
+}
+
+.workspace-tab-header.is-active .workspace-tab-header-inner-title {
+  color: var(--text-normal);
+  font-weight: 550;
+}
+
+/* accent underline on the active tab */
+.workspace-tab-header.is-active .workspace-tab-header-inner::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  opacity: 0.9;
+}
+
+.workspace-tab-header-inner-close-button {
+  opacity: 0;
+}
+.workspace-tab-header:hover .workspace-tab-header-inner-close-button,
+.workspace-tab-header.is-active .workspace-tab-header-inner-close-button {
+  opacity: 0.65;
+}
+
+/* ---- sidebars ----------------------------------------------------------- */
+
+.workspace-ribbon {
+  background-color: var(--as-bg-3);
+  border-right: none;
+}
+
+.workspace-ribbon::before { display: none; }
+
+.side-dock-ribbon-action {
+  border-radius: var(--radius-m);
+  color: var(--text-faint);
+}
+.side-dock-ribbon-action:hover {
+  color: var(--text-normal);
+  background-color: var(--as-hover);
+}
+
+.workspace-split.mod-left-split > .workspace-leaf-resize-handle,
+.workspace-split.mod-right-split > .workspace-leaf-resize-handle {
+  background-color: transparent;
+}
+
+.workspace-split.mod-left-split,
+.workspace-split.mod-right-split {
+  background-color: var(--as-bg-2);
+  box-shadow: none;
+  border: none;
+}
+
+.workspace-split.mod-left-split .workspace-tabs .workspace-leaf,
+.workspace-split.mod-right-split .workspace-tabs .workspace-leaf {
+  background-color: var(--as-bg-2);
+}
+
+.nav-header {
+  padding: 6px 8px 2px;
+}
+
+.nav-buttons-container {
+  gap: 2px;
+}
+
+/* ---- file explorer ------------------------------------------------------ */
+
+.nav-file-title,
+.nav-folder-title {
+  border-radius: var(--radius-m);
+  padding: 4px 8px;
+  font-size: 0.92em;
+  color: var(--text-muted);
+}
+
+.nav-file-title:hover,
+.nav-folder-title:hover {
+  color: var(--text-normal);
+  background-color: var(--as-hover);
+}
+
+.nav-file-title.is-active,
+.tree-item-self.is-active {
+  background-color: var(--as-active) !important;
+  color: var(--text-normal);
+  font-weight: 550;
+}
+
+.nav-file-title.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
+.nav-folder-title-content {
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.nav-files-container {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+/* indentation guides, quieter */
+.nav-folder-children .tree-item-children {
+  --nav-indentation-guide-width: 1px;
+}
+body { --indentation-guide-color: var(--as-border); }
+
+/* ---- editor surface ----------------------------------------------------- */
+
+.view-content,
+.markdown-source-view,
+.markdown-preview-view,
+.markdown-reading-view {
+  background-color: var(--as-bg-1);
+}
+
+.view-header {
+  background-color: var(--as-bg-1);
+  border-bottom: none;
+  height: 38px;
+}
+
+.view-header-title {
+  font-weight: 550;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.inline-title {
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.35em;
+}
+
+/* ---- headings ----------------------------------------------------------- */
+
+body {
+  --h1-size: 2.05em;
+  --h2-size: 1.55em;
+  --h3-size: 1.26em;
+  --h4-size: 1.08em;
+  --h5-size: 0.97em;
+  --h6-size: 0.9em;
+  --h1-weight: 700;
+  --h2-weight: 660;
+  --h3-weight: 640;
+  --h4-weight: 620;
+  --h5-weight: 620;
+  --h6-weight: 620;
+  --h1-color: var(--text-normal);
+  --h2-color: var(--text-normal);
+  --h3-color: var(--text-normal);
+  --h4-color: var(--text-normal);
+  --h5-color: var(--text-muted);
+  --h6-color: var(--text-muted);
+  --heading-spacing: 1.9em;
+}
+
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered h3,
+.HyperMD-header {
+  letter-spacing: -0.018em;
+}
+
+/* heading style: accent bars */
+body.asteris-heading-accentbars .markdown-rendered h1,
+body.asteris-heading-accentbars .markdown-rendered h2 {
+  padding-left: 0.55em;
+  border-left: 3px solid hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+body.asteris-heading-accentbars .markdown-rendered h1 {
+  border-left-width: 4px;
+}
+
+/* heading style: classic (serif headings on any body font) */
+body.asteris-heading-classic .markdown-rendered h1,
+body.asteris-heading-classic .markdown-rendered h2,
+body.asteris-heading-classic .markdown-rendered h3,
+body.asteris-heading-classic .inline-title,
+body.asteris-heading-classic .HyperMD-header {
+  font-family: var(--as-font-serif);
+  letter-spacing: -0.005em;
+}
+
+/* heading style: modern is the default, no extra rules needed */
+
+/* ---- body text ---------------------------------------------------------- */
+
+.markdown-rendered p,
+.markdown-source-view.mod-cm6 .cm-line {
+  letter-spacing: -0.002em;
+}
+
+.markdown-rendered strong { color: var(--text-normal); font-weight: 660; }
+.markdown-rendered em { color: var(--text-normal); }
+
+.markdown-rendered a,
+.cm-s-obsidian .cm-link,
+.cm-s-obsidian .cm-hmd-internal-link {
+  text-decoration: none;
+  border-bottom: 1px solid hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.35);
+}
+.markdown-rendered a:hover {
+  border-bottom-color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
+hr, .markdown-rendered hr {
+  border: none;
+  border-top: 1px solid var(--as-border);
+  margin: 2.2em 0;
+}
+
+/* ---- blockquote --------------------------------------------------------- */
+
+.markdown-rendered blockquote {
+  border-left: 2px solid hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.55);
+  background-color: var(--as-hover);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  padding: 0.6em 1em;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+/* ---- code --------------------------------------------------------------- */
+
+body {
+  --code-background: var(--as-code-bg);
+  --code-normal: var(--text-normal);
+  --code-size: 0.88em;
+}
+
+.markdown-rendered code {
+  border-radius: var(--radius-s);
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--as-border);
+}
+
+.markdown-rendered pre,
+.cm-s-obsidian .HyperMD-codeblock-bg {
+  background-color: var(--as-code-bg);
+  border: 1px solid var(--as-border);
+  border-radius: var(--radius-m);
+}
+
+.markdown-rendered pre code {
+  border: none;
+  padding: 0;
+}
+
+/* ---- tables ------------------------------------------------------------- */
+
+body {
+  --table-header-background: var(--as-bg-2);
+  --table-row-alt-background: var(--as-hover);
+  --table-border-color: var(--as-border);
+}
+
+.markdown-rendered table {
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  border: 1px solid var(--as-border);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.markdown-rendered th {
+  font-weight: 620;
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ---- callouts ----------------------------------------------------------- */
+
+.callout {
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(var(--callout-color), 0.25);
+  background-color: rgba(var(--callout-color), 0.08);
+  mix-blend-mode: normal;
+  padding: 0.8em 1em;
+}
+
+.callout-title {
+  font-weight: 620;
+  padding: 0;
+}
+
+/* ---- tags --------------------------------------------------------------- */
+
+body { --tag-radius: 999px; }
+
+.markdown-rendered a.tag,
+.cm-s-obsidian .cm-hashtag {
+  background-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.13);
+  color: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 6%));
+  border: none;
+  font-size: 0.82em;
+  font-weight: 550;
+  padding: 0.15em 0.65em;
+}
+
+/* ---- checkboxes --------------------------------------------------------- */
+
+input[type="checkbox"] {
+  border: 1.5px solid var(--as-border-strong);
+}
+input[type="checkbox"]:checked {
+  border-color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
+/* ---- modals, popovers, command palette ---------------------------------- */
+
+.modal,
+.suggestion-container,
+.menu,
+.popover.hover-popover {
+  background-color: var(--as-bg-raised);
+  border: 1px solid var(--as-border);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+}
+
+.modal-bg { backdrop-filter: blur(3px); }
+
+.prompt {
+  border-radius: var(--radius-l);
+  border: 1px solid var(--as-border);
+  box-shadow: var(--shadow-l);
+  background-color: var(--as-bg-raised);
+}
+
+.prompt-input {
+  font-size: 1.02em;
+}
+
+.suggestion-item.is-selected {
+  background-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.16);
+  border-radius: var(--radius-s);
+}
+
+.menu-item:hover:not(.is-disabled) {
+  background-color: var(--as-hover);
+  border-radius: var(--radius-s);
+}
+
+/* ---- inputs and buttons ------------------------------------------------- */
+
+input[type="text"],
+input[type="search"],
+input[type="number"],
+textarea,
+select,
+.dropdown {
+  background-color: var(--as-bg-2);
+  border: 1px solid var(--as-border);
+  border-radius: var(--input-radius);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  box-shadow: 0 0 0 3px hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.18);
+}
+
+button:not(.clickable-icon) {
+  border-radius: var(--radius-m);
+  border: 1px solid var(--as-border);
+  background-color: var(--as-bg-raised);
+  font-weight: 550;
+}
+button:not(.clickable-icon):hover {
+  background-color: var(--as-active);
+  border-color: var(--as-border-strong);
+}
+button.mod-cta {
+  background-color: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  border-color: transparent;
+}
+
+.clickable-icon {
+  border-radius: var(--radius-s);
+  color: var(--text-faint);
+}
+.clickable-icon:hover {
+  color: var(--text-normal);
+  background-color: var(--as-hover);
+}
+
+/* ---- status bar --------------------------------------------------------- */
+
+.status-bar {
+  background-color: var(--as-bg-3);
+  border-top: none;
+  color: var(--text-faint);
+  font-size: 0.78em;
+}
+
+/* ---- scrollbars --------------------------------------------------------- */
+
+body {
+  --scrollbar-bg: transparent;
+  --scrollbar-thumb-bg: var(--as-border-strong);
+  --scrollbar-active-thumb-bg: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+/* ---- graph view --------------------------------------------------------- */
+
+body {
+  --graph-line: var(--as-border-strong);
+  --graph-node: var(--text-muted);
+  --graph-node-focused: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+  --graph-node-tag: hsl(var(--accent-h), 70%, 60%);
+  --graph-node-attachment: var(--text-faint);
+}
+
+/* ---- properties panel --------------------------------------------------- */
+
+.metadata-container {
+  background-color: var(--as-hover);
+  border: 1px solid var(--as-border);
+  border-radius: var(--radius-m);
+  padding: 8px 10px;
+}
+.metadata-property-key {
+  color: var(--text-faint);
+  font-size: 0.85em;
+}
+
+
+/* ==========================================================================
+   4. DENSITY
+   ========================================================================== */
+
+body.asteris-density-compact {
+  --nav-item-size: 0.88em;
+}
+body.asteris-density-compact .nav-file-title,
+body.asteris-density-compact .nav-folder-title { padding: 2px 8px; }
+body.asteris-density-compact .markdown-rendered p { margin: 0.5em 0; }
+body.asteris-density-compact { --heading-spacing: 1.3em; }
+
+body.asteris-density-spacious .nav-file-title,
+body.asteris-density-spacious .nav-folder-title { padding: 7px 10px; }
+body.asteris-density-spacious .markdown-rendered p { margin: 1.05em 0; }
+body.asteris-density-spacious { --heading-spacing: 2.4em; }
+
+
+/* ==========================================================================
+   5. SIMPLIFY  ·  opt-in chrome removal
+   ========================================================================== */
+
+/* hide the left ribbon, optionally revealing it on hover ------------------ */
+body.asteris-hide-ribbon .workspace-ribbon.mod-left {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+}
+body.asteris-hide-ribbon.asteris-ribbon-hover .workspace-ribbon.mod-left {
+  width: 5px;
+  min-width: 5px;
+  transition: width var(--as-t) var(--as-ease);
+}
+body.asteris-hide-ribbon.asteris-ribbon-hover .workspace-ribbon.mod-left:hover {
+  width: var(--ribbon-width, 44px);
+  min-width: var(--ribbon-width, 44px);
+}
+
+/* hide the vault name / switcher ------------------------------------------ */
+body.asteris-hide-vault .workspace-sidedock-vault-profile,
+body.asteris-hide-vault .workspace-drawer-vault-switcher {
+  display: none;
+}
+
+/* hide the status bar, optionally revealing it on hover ------------------- */
+body.asteris-hide-status .status-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+body.asteris-hide-status.asteris-status-hover .status-bar {
+  transition: opacity var(--as-t) var(--as-ease);
+}
+body.asteris-hide-status.asteris-status-hover .status-bar:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* fade the tab chip when a pane holds only one tab.
+   The container stays in place so the window controls survive. ------------ */
+body.asteris-hide-tabbar-single
+  .workspace-tab-header-container-inner:has(> .workspace-tab-header:only-child) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--as-t) var(--as-ease);
+}
+body.asteris-hide-tabbar-single
+  .workspace-tab-header-container:hover .workspace-tab-header-container-inner {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* quiet the file-explorer header buttons until the pane is hovered -------- */
+body.asteris-clean-nav .nav-buttons-container {
+  opacity: 0;
+  transition: opacity var(--as-t) var(--as-ease);
+}
+body.asteris-clean-nav .workspace-leaf-content:hover .nav-buttons-container,
+body.asteris-clean-nav .nav-header:focus-within .nav-buttons-container {
+  opacity: 1;
+}
+
+/* scrollbars appear only while their container is hovered ---------------- */
+body.asteris-hide-scrollbars ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  transition: background-color var(--as-t) var(--as-ease);
+}
+body.asteris-hide-scrollbars *:hover::-webkit-scrollbar-thumb {
+  background-color: var(--as-border-strong);
+}
+
+/* dim every pane except the one being edited ----------------------------- */
+body.asteris-dim-panes .workspace-split.mod-root .workspace-leaf:not(.mod-active) {
+  opacity: 0.62;
+  transition: opacity var(--as-t-slow) var(--as-ease);
+}
+
+/* focus mode: fade every line except the one under the cursor ------------ */
+body.asteris-focus .markdown-source-view.mod-cm6 .cm-line {
+  opacity: 0.42;
+  transition: opacity var(--as-t) var(--as-ease);
+}
+body.asteris-focus .markdown-source-view.mod-cm6 .cm-line.cm-active,
+body.asteris-focus .markdown-source-view.mod-cm6 .cm-line:hover {
+  opacity: 1;
+}
+
+/* hide the view header (note title bar above the editor) ----------------- */
+body.asteris-hide-viewheader .workspace-split.mod-root .view-header {
+  display: none;
+}
+
+/* remove the dividers between panes -------------------------------------- */
+body.asteris-no-dividers .workspace-leaf-resize-handle {
+  background-color: transparent !important;
+}
+
+
+/* ==========================================================================
+   6. MOTION  ·  opt-in animation layers
+   ========================================================================== */
+
+/* speed control comes from the plugin as --as-dur-scale */
+
+/* --- hover motion -------------------------------------------------------- */
+body.asteris-anim.asteris-anim-hover .nav-file-title,
+body.asteris-anim.asteris-anim-hover .nav-folder-title {
+  transition: background-color var(--as-t) var(--as-ease),
+              color var(--as-t) var(--as-ease),
+              transform var(--as-t) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-hover .nav-file-title:hover,
+body.asteris-anim.asteris-anim-hover .nav-folder-title:hover {
+  transform: translateX(3px);
+}
+
+body.asteris-anim.asteris-anim-hover .side-dock-ribbon-action,
+body.asteris-anim.asteris-anim-hover .clickable-icon {
+  transition: background-color var(--as-t) var(--as-ease),
+              color var(--as-t) var(--as-ease),
+              transform var(--as-t-fast) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-hover .side-dock-ribbon-action:hover {
+  transform: scale(1.07);
+}
+
+body.asteris-anim.asteris-anim-hover .callout {
+  transition: border-color var(--as-t) var(--as-ease),
+              background-color var(--as-t) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-hover .callout:hover {
+  border-color: rgba(var(--callout-color), 0.45);
+}
+
+body.asteris-anim.asteris-anim-hover .markdown-rendered a {
+  transition: border-bottom-color var(--as-t) var(--as-ease),
+              color var(--as-t) var(--as-ease);
+}
+
+/* --- tab and pane motion ------------------------------------------------- */
+@keyframes asteris-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+body.asteris-anim.asteris-anim-tabs .workspace-leaf.mod-active .view-content {
+  animation: asteris-fade-up var(--as-t-slow) var(--as-ease-out);
+}
+
+body.asteris-anim.asteris-anim-tabs .workspace-tab-header-inner {
+  transition: background-color var(--as-t) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-tabs .workspace-tab-header.is-active .workspace-tab-header-inner::after {
+  animation: asteris-tab-underline var(--as-t-slow) var(--as-ease-out);
+}
+@keyframes asteris-tab-underline {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 0.9; }
+}
+
+/* --- modal, menu and popover motion -------------------------------------- */
+@keyframes asteris-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes asteris-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+body.asteris-anim.asteris-anim-modals .modal,
+body.asteris-anim.asteris-anim-modals .prompt,
+body.asteris-anim.asteris-anim-modals .menu,
+body.asteris-anim.asteris-anim-modals .suggestion-container,
+body.asteris-anim.asteris-anim-modals .popover.hover-popover {
+  animation: asteris-pop-in var(--as-t-slow) var(--as-ease-out);
+}
+body.asteris-anim.asteris-anim-modals .modal-bg {
+  animation: asteris-fade-in var(--as-t) linear;
+}
+
+/* --- micro interactions -------------------------------------------------- */
+body.asteris-anim.asteris-anim-micro button:not(.clickable-icon) {
+  transition: background-color var(--as-t) var(--as-ease),
+              border-color var(--as-t) var(--as-ease),
+              transform var(--as-t-fast) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-micro button:not(.clickable-icon):active {
+  transform: scale(0.97);
+}
+
+body.asteris-anim.asteris-anim-micro input[type="checkbox"] {
+  transition: background-color var(--as-t-fast) var(--as-ease),
+              border-color var(--as-t-fast) var(--as-ease),
+              transform var(--as-t-fast) var(--as-ease);
+}
+body.asteris-anim.asteris-anim-micro input[type="checkbox"]:checked {
+  animation: asteris-check-pop calc(260ms * var(--as-dur-scale)) var(--as-ease-out);
+}
+@keyframes asteris-check-pop {
+  0%   { transform: scale(0.8); }
+  55%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+
+body.asteris-anim.asteris-anim-micro .suggestion-item,
+body.asteris-anim.asteris-anim-micro .menu-item {
+  transition: background-color var(--as-t-fast) var(--as-ease);
+}
+
+/* --- sidebar reveal ------------------------------------------------------ */
+body.asteris-anim.asteris-anim-sidebar .workspace-split.mod-left-split,
+body.asteris-anim.asteris-anim-sidebar .workspace-split.mod-right-split {
+  transition: width var(--as-t-slow) var(--as-ease-out);
+}
+
+/* --- accessibility ------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  body.asteris-respect-rm *,
+  body.asteris-respect-rm *::before,
+  body.asteris-respect-rm *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* master off switch: nothing animates when the layer class is absent, and
+   this hard stop covers Obsidian's own built-in transitions too. */
+body.asteris-anim-off *,
+body.asteris-anim-off *::before,
+body.asteris-anim-off *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}

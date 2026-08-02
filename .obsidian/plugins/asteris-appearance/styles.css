@@ -1,0 +1,102 @@
+/* Asteris Appearance — quick panel only. All theme rules live in the theme. */
+
+.asteris-quick-modal {
+  width: min(560px, 88vw);
+}
+
+.asteris-qp-title {
+  margin: 0 0 14px;
+  font-size: 1.05em;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+}
+
+.asteris-qp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.asteris-qp-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 8px;
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.asteris-qp-card:hover {
+  border-color: var(--background-modifier-border-hover);
+  transform: translateY(-2px);
+}
+
+.asteris-qp-card.is-active {
+  border-color: var(--interactive-accent);
+  background-color: var(--background-modifier-hover);
+}
+
+.asteris-qp-swatch {
+  position: relative;
+  height: 46px;
+  border-radius: calc(var(--radius-m) - 3px);
+  border: 1px solid var(--background-modifier-border);
+  margin-bottom: 7px;
+}
+
+.asteris-qp-dot {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+
+.asteris-qp-name {
+  font-weight: 600;
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
+.asteris-qp-hint {
+  font-size: 0.74em;
+  color: var(--text-faint);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.asteris-qp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.asteris-qp-chip {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.82em;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.asteris-qp-chip:hover {
+  border-color: var(--background-modifier-border-hover);
+  color: var(--text-normal);
+}
+
+.asteris-qp-chip.is-on {
+  background-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.16);
+  border-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.5);
+  color: var(--text-normal);
+}
+
+.asteris-qp-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
