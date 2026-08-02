@@ -1,3 +1,11 @@
+---
+name: cloudskin-blog-journal
+description: "CloudSkin's headless-WordPress Journal (blog) — built + verified in cloudskin-v67-blog, NOT yet integrated into canonical v67 and NOT deployed; also holds the EasyWP DNS-hijack outage trap"
+metadata:
+  node_type: memory
+  type: project
+---
+
 # cloudskin-blog-journal
 
 CloudSkin headless-WordPress Journal (blog) FINISHED + verified in the isolated copy `C:\Users\mikef\cloudskin-v67-blog` (built from pristine v67 so it can't collide with the other v67 agent). Integrate the diffs into canonical `C:\Users\mikef\cloudskin-v67`. Purpose = SEO + brand; quality bar = Alo Yoga blog, rendered in CloudSkin's own design language. Deploy GATED (not deployed).
