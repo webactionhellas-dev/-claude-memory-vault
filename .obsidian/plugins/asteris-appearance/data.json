@@ -1,7 +1,7 @@
 {
-  "preset": "deep",
+  "preset": "nocturne",
   "accentOverride": false,
-  "accentColor": "#936bf0",
+  "accentColor": "#3edaa1",
   "syncBaseScheme": true,
   "roundness": "medium",
   "editorFont": "sans",
