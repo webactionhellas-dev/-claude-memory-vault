@@ -1,12 +1,32 @@
 ---
 name: site-monitor-task-board
-description: "The site-monitor dashboard (localhost:8788) + task board: what it is, where it lives, the 'Bench' design system, the full CRUD actions and theme customization added 2026-08-02, and how to add tasks/sites from a conversation"
+description: "The site-monitor dashboard (localhost:8788) + task board: what it is, where it lives, the 'Bench'/'TRACE' design history, the asar-persistence trap fixed 2026-08-03, and how to add tasks/sites from a conversation"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 70f1bde9-a5a3-4cb5-ac72-971762bb76e7
-  modified: 2026-08-02T21:54:50.278Z
+  modified: 2026-08-03T16:00:00.000Z
 ---
+
+## LATEST-13 (2026-08-03, office machine "nospa"): source now ALSO synced via the vault; real asar-persistence bug found and fixed
+
+Mike sent a packaged Electron build (`win-unpacked` + `app.asar`, no source) from his home setup to work on at the office. Extracted real source out of `app.asar` with `npx asar extract` (this app has no build step, so the asar contains literal editable `src/*.js`, not bundled/minified output) - this is the move any time only a packaged build is available and the source is known to be a plain zero-dep app.
+
+**Real bug found, not just a fresh-install artifact**: every check was silently failing to persist - `state.js`/`settings.js`/`lib.js`'s `loadConfig/saveConfig` all built their path from `ROOT` (`path.dirname(path.dirname(import.meta.url))`), which for a PACKAGED build resolves to `.../resources/app.asar` itself - a single-file read-only archive. `fs.mkdirSync`/`writeFileSync` into a path "inside" it throws `ENOTDIR` every time (confirmed directly with a plain `node -e` repro, no Electron needed). This meant history reset to empty on every single app restart, silently (the HTTP request only logs a 500, the client ignores it) - almost certainly the real reason the 90-day strip/history always looked broken/empty, on this machine AND presumably at home too, not just "needs more runtime." Fixed via a new `WRITABLE_ROOT` export in `src/lib.js` (`path.dirname(ROOT)` when `ROOT` ends in `app.asar`, else `ROOT` unchanged - a no-op in dev/CLI mode) - `state.js`, `settings.js`, `electron-main.js`'s window-bounds path, and `lib.js`'s own `config.json` read/write all redirect through it, with `loadConfig()` falling back to the bundled seed copy on a fresh install with no writable copy yet. Verified live: killed + relaunched the packaged exe, check counts actually carried over (4, 3, 2, 3...) instead of resetting to 0. **If this app is ever repackaged again, re-verify writes still land outside the asar** - this class of bug is invisible until you specifically test a restart.
+
+**Design changes this session** (on top of the round-3 "TRACE" dark reskin already in place, which is newer than the "Bench" light system LATEST-12 below describes - Mike's home build had already moved past Bench to TRACE before this session started):
+- Fixed two real overlap bugs (undersized grid columns: Sites page metacell/rowactions, Tasks page project-tag pushing icons off the card) - same root cause both times, columns sized to theoretical content width with zero margin.
+- Status colors reverted from TRACE's deliberate "healthy = no colour" theory back to a real green/amber/red traffic light, per Mike's explicit ask - `--ok`/`--warn`/`--down` in `dashboard.js`'s `:root`.
+- Icon buttons given real depth (subtle bg + hover lift) instead of flat gray-outline-on-black.
+- **The 90-day strip replaced with a live per-check sparkline** (`sparklineSvg()` in `dashboard.js`, built from `s.history` not `s.days`): real SVG polyline of recent raw checks, colored by current status, plus a continuously-pulsing ring on the latest point so the row visibly breathes between checks. The old 90-day rollup strip is honest but reads as completely dead for the first few weeks of a fresh install - Mike's actual ask ("moving like a real animation") needed a per-check view, not a per-day one. Hover-for-detail was preserved by adapting the existing day-cell hover handler to also recognize the new `.spark-pt` hit-targets.
+
+**Source now lives in TWO places, keep them straight**:
+1. `C:\Users\mikef\site-monitor` (original, per LATEST-12 below - unclear if home build has since diverged from this path).
+2. **`obsidian-vault/projects/site-monitor/`** (new, this session) - pushed straight to the vault git repo (`webactionhellas-dev/-claude-memory-vault`, commit `feed9c6`) specifically so Mike can pull the fixed version down at home via the normal vault sync, not a manual zip transfer. Has its own `.gitignore` (`data/`, `.env`, `*.log`) matching the pattern of the vault's other synced projects (`x-tracker`, `cloudskin-v67`, etc.) - runtime state must never get committed. **Next session: check which of these two paths is actually the one Mike is running from before assuming either is stale.**
+
+Packaged-build gotcha for next time: overwriting a running app's `app.asar` requires killing the process first (Windows locks the file) - `npx asar pack <src-dir> resources/app.asar` after `taskkill //F //IM "Site Monitor.exe"` is the repack-in-place loop used all session, no electron-builder/rebuild needed since only the asar contents changed, not the Electron runtime itself.
+
+## Earlier history
 
 `C:\Users\mikef\site-monitor` — a zero-dep Node tool (same house style as [[x-tracker]]) with two parts on one dashboard:
 1. **Site health**: checks CloudSkin, Trattoria Capanna, Drip Barbershop, Drip Astro v2, Mykonos Prestige, Web Action every 10 minutes (uptime, broken images, slow pages, missing security headers), Telegram alert on any ok<->trouble transition (blank until `.env` is filled in, same var names as x-tracker), unless the site is muted.
