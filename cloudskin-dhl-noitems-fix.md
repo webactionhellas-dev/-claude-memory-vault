@@ -1,12 +1,16 @@
 ---
 name: cloudskin-dhl-noitems-fix
-description: "ACTIVE URGENT 2026-07-31 - CloudSkin orders reach DHL app with \"No Items\"; confirmed NOT a checkout-code bug, it is a Shopify-variant customs/weight data or DHL-app config gap; full handoff to resume"
+description: "UPDATED 2026-08-03 - root cause CONFIRMED (not just hypothesis): 29/79 Shopify variants exhaustively verified missing BOTH harmonized_system_code + country_code_of_origin; needs real customs data from Larissa/compliance, do not invent codes"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 4bc079d7-c87e-48c0-8d5c-f2ba92a4efc5
-  modified: 2026-07-31T11:35:05.898Z
+  modified: 2026-08-03T14:27:39.187Z
 ---
+
+**STATUS UPDATE 2026-08-03: the hypothesis below (missing weight/HS/origin) is now CONFIRMED for HS code + country of origin specifically, via an exhaustive Admin API audit of all 79 variants (not the earlier 5-item spot-check that misleadingly looked clean).** Full detail in [[cloudskin-studio-live-and-pending]] LATEST-14. Summary: weight is now fine (78/79 variants have real `grams`, only the fake Test Product is 0 — being wired into the shipping calc). HS code + country_code_of_origin are BOTH null on **29 of 79 variants**: Ace Dress (S,M), Flow Dress (L,XL), Form Bra (all 4), Performance Shorts (all 4), Performance Tank (all 8), Performance Tee (all 8). The 50 complete variants all use `origin:"CN"`, HS code varies by garment type (`611030` tops/zips, `610453` skirts) — a real pattern to infer likely values from, but get Larissa/compliance to confirm before writing anything; wrong HS codes are a real customs risk. **NEXT STEP: either get the correct HS codes from Larissa for these 6 products, or propose the inferred values (matching an already-correct sibling product's code) for her to confirm, then backfill via the Admin API** (`inventory_items` PUT, `harmonized_system_code` + `country_code_of_origin` fields) — same idempotent-script approach step 3 below already described.
+
+**ORIGINAL 2026-07-31 handoff below, still accurate context:**
 
 **STATUS: ACTIVE / URGENT, in progress 2026-07-31. Handoff so a fresh session (Mike switched Claude accounts on the same PC at the 5h limit) can resume.**
 
