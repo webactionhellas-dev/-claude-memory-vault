@@ -1,16 +1,23 @@
 ---
 name: cloudskin-studio-live-and-pending
-description: "HANDOFF (2026-08-03) — 5 frontend flash/shade bugs fixed+deployed to prod; DHL zone shipping + custom Stripe checkout + PayPal rail all DEPLOYED+LIVE+VERIFIED end-to-end (checkout also works fine via Shopify's own hosted checkout regardless); STORE_BASE_CURRENCY stale-secret bug found+fixed; full status for Mike's Larissa meeting"
+description: "HANDOFF (2026-08-03) — DHL 'No Items' ROOT CAUSE FOUND (Shopify app DHL Express Commerce silently stopped processing orders after #1001, not a code bug); LATEST-14's frontend/backend fixes reconfirmed live; STORE_BASE_CURRENCY stale-secret bug found+fixed; full status for Mike's Larissa meeting"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 75ea6c2d-9aa2-4169-ad82-275f54c1b095
-  modified: 2026-08-03T15:15:47.209Z
+  modified: 2026-08-03T15:53:56.760Z
 ---
 
 Continuation handoff for CloudSkin (see [[cloudskin-site]], [[cloudskin-gate-vs-storefront]], [[cloudskin-studio-colours]], [[cloudskin-image-transform-gotchas]], [[verify-visual-bugs-with-evidence]]).
 
-## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-14 — 2026-08-03 (pre-launch payment/DHL audit; hosted Stripe checkout now DEFAULT; real security hole found+closed; FRESH SESSIONS START HERE, supersedes LATEST-13.)
+## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-15 — 2026-08-03 (DHL "No Items" root cause FOUND, not a CloudSkin bug. FRESH SESSIONS START HERE, supersedes LATEST-14.)
+- **Full detail lives in [[cloudskin-dhl-noitems-fix]] (updated in place, read that file first for this topic).** Short version: live-verified via Shopify's own order-event timeline that the installed Shopify app **"DHL Express Commerce"** worked correctly on order #1001 (2026-07-27, auto-fulfilled + real DHL tracking), then silently stopped processing every order since (#1002 onward, 2026-07-30+). Order #1004 (the stuck Kim Thomson/Australia order from LATEST-14) and the original "7788469551403" complaint order are THE SAME ORDER, confirmed directly.
+- **This is not fixable from this machine.** CloudSkin's own Shopify custom-app token only has orders/products/inventory scopes (hit real `403 requires merchant approval` probing locations/fulfillments/shipping today) — DHL Express Commerce is a separate app installation with its own auth that only Larissa's Shopify Admin login can inspect. Real next step is Larissa/Panos checking Shopify Admin → Apps → DHL Express Commerce for a re-authorization/billing banner, and the app's own sync log for its last-processed-order timestamp (expect it to point to ~2026-07-27/28).
+- **Verified again before this investigation started (2026-08-03, this same session, before delegating to Echo):** the LATEST-14 fixes (hosted-Stripe-default, weight-based DHL shipping, the 4 neutralized security endpoints, the blog 404 fix) are confirmed LIVE in production right now via direct curl against cloudskin.com and the Supabase edge functions with the site's own real anon key — not just re-stated from memory. Nothing in LATEST-14 needed redoing.
+- **Housekeeping noted, not done:** several already-410'd temp diagnostic edge functions still show as "ACTIVE" shells in the Supabase dashboard (harmless, just clutter) — worth a bulk hard-delete next time someone's in there manually; no remote delete-function tool was available.
+- **MEMORY-SYNC INCIDENT (2026-08-03, mid this session):** the live memory-folder copy of this exact file reverted to a stale 2026-07-17 version mid-session (158 lines vs the correct 212), matching a DIFFERENT stale duplicate found living at `obsidian-vault\projects\webaction-hub\claude-memory\cloudskin-studio-live-and-pending.md` — a second, out-of-place copy of this file inside the vault itself, not just a memory-folder/vault mismatch. The vault ROOT copy was correct/current throughout (git HEAD `c32faca`, matches this content). Restored by copying the vault root file back over the memory-folder copy. **Root cause of the duplicate-subfolder file itself not yet investigated** — flagging for whoever next looks at `sync-vault.ps1`/the scheduled task, since [[memory-vault-sync-incident]] and LATEST-13's own sync warning describe the same "stale copy wins" failure mode; this may be a second contributing source of it (a stray duplicate file somewhere the sync script scans).
+
+## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-14 — 2026-08-03 (pre-launch payment/DHL audit; hosted Stripe checkout now DEFAULT; real security hole found+closed; supersedes LATEST-13.)
 **Trigger:** Larissa launching soon; Mike wanted "everything end to end" covered. Delegated the heavy fix/deploy work to the **corky** agent across several rounds (background agent, resumed via SendMessage each time), with every claim independently re-verified directly by the main session before being reported to Mike — do that same verify-don't-trust pattern next time, it caught real gaps.
 
 - **Payment bug #1, FIXED+verified:** `create-checkout-elements` (embedded Stripe rail) 502'd on every call — `_shared/stripe.ts` pinned `STRIPE_API_VERSION='2025-01-27.acacia'`, too old for `ui_mode:'elements'` (Stripe's own error named the min as `2026-03-25.dahlia`). Bumped, redeployed, verified via curl (real `clientSecret` returned, 200).
