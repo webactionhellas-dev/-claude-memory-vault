@@ -97,3 +97,4 @@
 - [office-desktop-mirror](office-desktop-mirror.md) — how to run the same fleet on Mike's office desktop: the ~/.claude brain syncs via OneDrive (`SETUP-OFFICE.ps1`), memory syncs via the vault repo; auth is NEVER copied, always re-authed
 - [session-handoff-2026-07-31](session-handoff-2026-07-31.md) — dated snapshot of open threads at the 2026-07-31 account switch; carries a 2026-08-02 status refresh saying which items have since closed
 - [hero-video-av1-reencode](hero-video-av1-reencode.md) — cutting heavy autoplay heroes with ffmpeg SVT-AV1 (found via the new perf_probe.mjs real-runtime probe); NOTE iOS 17+ won't autoplay AV1, so ship H.264 for heroes that must autoplay on iPhone
+- [memory-vault-sync-repair](memory-vault-sync-repair.md) — why the aster vault silently fell 76 commits behind and forked into two stores; sync-vault.ps1 now prefers ~/.claude/memory, logs failures, and union-merges MEMORY.md
