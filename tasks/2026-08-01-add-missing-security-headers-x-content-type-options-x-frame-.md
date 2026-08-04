@@ -6,7 +6,7 @@ project: trattoria-capanna
 priority: 
 createdBy: 
 created: 2026-08-01T22:44:00.887Z
-updated: 2026-08-04T23:37:32.394Z
+updated: 2026-08-04T23:41:57.227Z
 ---
 
 
