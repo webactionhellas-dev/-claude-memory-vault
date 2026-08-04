@@ -1,7 +1,13 @@
 $ErrorActionPreference = "SilentlyContinue"
 $vault = "C:\Users\$env:USERNAME\obsidian-vault"
 $log   = Join-Path $vault ".sync-log.txt"
-function Log($m) { "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')  $m" | Add-Content $log -Encoding UTF8 }
+# Append BOM-free. PowerShell 5.1's `Add-Content -Encoding UTF8` writes a BOM on
+# file creation, which is the same trap that silently reset Obsidian's config JSON.
+function Log($m) {
+    [System.IO.File]::AppendAllText($log,
+        "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')  $m`r`n",
+        (New-Object System.Text.UTF8Encoding($false)))
+}
 
 # --- resolve the live memory folder ------------------------------------------
 # Current Claude Code keeps memory at ~/.claude/memory. Older machines kept it
