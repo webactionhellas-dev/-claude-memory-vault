@@ -8,6 +8,8 @@ metadata:
   modified: 2026-07-31T11:35:45.528Z
 ---
 
+> **STATUS REFRESH 2026-08-02 (consolidation pass).** This is a dated snapshot, not the current state. Since it was written: item 1 (DHL) advanced but is **still open** — a 2026-08-01 session re-confirmed CloudSkin's own order pipeline is not the cause and narrowed it to DHL's own Shopify connection, with the DHL portal investigation blocked on Panos's 2FA (see [[cloudskin-studio-live-and-pending]] LATEST-11). Items 3 (deploy automation) and 4 (Obsidian) are **done** — and the vault has since moved out of the memory folder entirely, see [[obsidian-vault-and-scheduled-audits]]. Item 2 (drip hero iPhone test) has no recorded result, so treat it as still unconfirmed. The canonical CloudSkin folder is now **cloudskin-v67** and v56 has been deleted.
+
 Handoff at 2026-07-31 (Mike hit the 5h limit and switched to his other Claude account on the same PC; memory dir is the same Windows-user path so this should load). Open threads, most urgent first:
 
 1. **DHL "No Items" on CloudSkin (URGENT, ACTIVE)** -> [[cloudskin-dhl-noitems-fix]]. Confirmed NOT a checkout bug (orders reach Shopify with items); it is a Shopify-variant customs/weight/SKU gap or DHL-app config. backend-integrator (Echo) was launched with the full brief but likely did not finish before the switch. RESUME: re-launch backend-integrator with that brief, or inspect Shopify order 7788469551403 directly. Larissa awaits an update (draft a WhatsApp reply only with Mike's OK).

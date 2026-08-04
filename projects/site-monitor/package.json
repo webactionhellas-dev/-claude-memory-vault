@@ -1,0 +1,11 @@
+{
+  "name": "site-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Watches every live client site (uptime, broken images, slow pages, security-header drift) and pushes a Telegram alert the moment something breaks. Read-only, no auto-fixing.",
+  "main": "electron-main.js",
+  "engines": {
+    "node": ">=18"
+  }
+}

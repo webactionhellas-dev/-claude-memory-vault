@@ -7,6 +7,8 @@ metadata:
   originSessionId: 951ae556-b9fe-4dcf-8ca3-b3e3a4c77bf9
 ---
 
+> **STALE-PATH CORRECTION (2026-08-02).** Every `cloudskin-v56` path below is OUT OF DATE. v56 has been DELETED from this machine; the canonical CloudSkin folder is now `C:Usersmikefcloudskin-v67` (it rotates version-forward, so resolve it dynamically per [[cloudskin-canonical-folder-check]] before acting). VELLUM itself is no longer "NOT deployed" or "pending promotion" — it is LIVE on production at cloudskin.com/creator, self-gated. Read the v56 references below as historical build notes, not as instructions.
+
 **Mike's vision (2026-07-18, during the CloudSkin GDPR/deploy session):** the separate `/studio` admin panel works, but he wants the next level: **edit the live site IN PLACE** — the owner clicks any text, image, section, link, or block on the *actual rendered site* and edits it right there (WYSIWYG / on-canvas), instead of filling a form in a back-office panel. His words: "more easy for the client, more options, everything live on the side." And the strategic part: make this a **product the agency sells** — "we have this business, we need to make money... if we make this tool for websites, we're gonna sell it more." Think big ("crazy, crazy"). This is a differentiator + revenue driver, not a feature for one site.
 
 **Why it is very buildable (the house architecture is already ~80% there):**

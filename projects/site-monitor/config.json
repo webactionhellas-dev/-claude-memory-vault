@@ -1,0 +1,42 @@
+{
+  "sites": [
+    {
+      "name": "CloudSkin",
+      "url": "https://cloudskin.com",
+      "muted": false
+    },
+    {
+      "name": "Trattoria Capanna",
+      "url": "https://trattoria-capanna-optimized.vercel.app"
+    },
+    {
+      "name": "Drip Barbershop",
+      "url": "https://drip-barbershop-vercel.vercel.app",
+      "muted": false
+    },
+    {
+      "name": "Drip Astro v2",
+      "url": "https://drip-store-orpin.vercel.app"
+    },
+    {
+      "name": "Mykonos Prestige",
+      "url": "https://mykonosprestigevillas.gr"
+    },
+    {
+      "name": "Web Action",
+      "url": "https://webactionhellas.com"
+    }
+  ],
+  "intervalMinutes": 10,
+  "thresholds": {
+    "slowMs": 3000,
+    "criticalMs": 6000,
+    "maxImagesChecked": 20,
+    "historyWindow": 144
+  },
+  "expectedHeaders": [
+    "strict-transport-security",
+    "x-content-type-options",
+    "x-frame-options"
+  ]
+}

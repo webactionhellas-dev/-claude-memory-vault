@@ -1,12 +1,73 @@
 ---
 name: cloudskin-dhl-noitems-fix
-description: "ACTIVE URGENT 2026-07-31 - CloudSkin orders reach DHL app with \"No Items\"; confirmed NOT a checkout-code bug, it is a Shopify-variant customs/weight data or DHL-app config gap; full handoff to resume"
+description: "CORRECTED 2026-08-04 (by Corky): the 2026-08-03 '#1001 app-cutoff' theory below is DISPROVEN - live evidence is order #1003 (between #1001 and #1004) shows correctly in DHL's dashboard. Real confirmed mechanism: a MANUALLY CANCELLED Shopify fulfillment (staff's own recovery workaround) strips an order's item data from DHL Express Commerce, not an app-wide outage and not a CloudSkin code bug. Process fix + a tested-but-not-yet-deployed watchdog extension proposed, gated on Mike's go. See the top section for the real evidence."
 metadata: 
   node_type: memory
   type: project
   originSessionId: 4bc079d7-c87e-48c0-8d5c-f2ba92a4efc5
-  modified: 2026-07-31T11:35:05.898Z
+  modified: 2026-08-04T09:17:13.352Z
 ---
+
+## CORRECTED 2026-08-04 (Corky investigation, real mechanism confirmed with live API evidence, supersedes the "#1001 app-cutoff" theory below)
+
+**The 2026-08-03 theory ("DHL Express Commerce silently stopped processing every order after #1001") is DISPROVEN.** Mike pulled live evidence directly from the DHL app dashboard: order #1004 (Kim Thomson, 7788469551403) shows "No records available" / 0 items, but its near-identical sibling **#1003 (Kimberley Thomson, 7779666886955, SAME address 16 Allden Avenue Labrador QLD 4215, SAME two products/SKUs)** shows full correct items with real weights/SKUs/prices in the same dashboard. #1003 was created BEFORE #1004 (2026-07-30 vs 2026-07-31) and both used the identical Stripe-checkout order-creation path (tags `cloudskin-stripe, source:stripe-checkout` on both) — so the app cannot have "stopped after #1001," and the order-creation code cannot be the differentiator either, since it is byte-identical for both orders.
+
+**Real mechanism, confirmed via live Shopify Admin API (REST `orders/{id}.json` + GraphQL) same-session, both orders pulled side by side:**
+| | #1003 (7779666886955, DHL shows items OK) | #1004 (7788469551403, DHL shows 0 items) |
+|---|---|---|
+| `financial_status` | refunded (full refund 2026-07-31, unrelated to the DHL issue) | paid |
+| `fulfillment_status` | `fulfilled` | `null` |
+| `fulfillments[]` | one, `status:"success"`, created 2026-07-30T17:43:51, **never cancelled** | one, `status:"cancelled"` (created 2026-07-31T18:13:26, cancelled ~85min later at 19:38:36) |
+| line item `fulfillableQuantity` | 0/0 (fulfilled) | 1/1 (back to fully open, as if never touched) |
+
+**The ONE structural difference between the working order and the broken one is fulfillment history: #1003's fulfillment was created and left alone; #1004's fulfillment was created then manually CANCELLED in Shopify Admin (Larissa's known stuck-DHL-import workaround) ~85 minutes later.** Both orders otherwise have real, complete, identical-shape data (same SKUs FE-20-L/FE-12-XL, same `requires_shipping:true`, same `fulfillment_service:"manual"`).
+
+**Ruled out CloudSkin's own code as the cause:** pulled the LIVE deployed `_shared/shopify.ts` `createShopifyOrder()` + `_shared/fulfillment.ts` `fulfillPaidOrder()` via `get_edge_function` on `stripe-webhook` (v16, current). The Admin API order payload is provider-agnostic and identical for every order: no `location_id` set on line items, no explicit `fulfillment_service`/`requires_shipping` override (both default to Shopify's normal "manual"/"true"), no divergence from what a native Shopify checkout order would look like. Confirmed live: Shopify assigned `fulfillment_service:"manual"` to every line item on BOTH orders, byte-identical. **This is mechanism (a) — a Shopify-platform/DHL-app-integration behavior triggered by a human recovery action, not mechanism (b), a CloudSkin order-creation bug.** No code fix needed on the order-creation path.
+
+**Could not directly confirm the literal "fulfillmentOrders count" via API** (same known scope gap already documented below): both the GraphQL `fulfillmentOrders` connection and the REST `/orders/{id}/fulfillment_orders.json` endpoint returned `403`/`ACCESS_DENIED` ("The api_client does not have the required permission(s)") for BOTH orders equally with `SHOPIFY_ADMIN_TOKEN` — this token still lacks `read_fulfillments`/merchant-approval-gated scopes. The order-level `fulfillment_status`/`fulfillableQuantity`/`fulfillments[]` fields (which ARE readable) provide the equivalent real signal instead. A prior session's claim that `fulfillment_orders` for #1004 "returned empty (`[]`)" could not be re-verified either way with this token and should be treated as unconfirmed, not re-cited as fact.
+
+**Process fix (this is fundamentally a process problem, not a code problem):**
+1. **Never cancel a Shopify fulfillment as a recovery step for a DHL-import "No Items" failure.** Real evidence above shows cancelling is what leaves an order in the state DHL's dashboard can't read.
+2. **Correct immediate recovery = the workaround already in use for #1004 itself: add the item(s) manually inside DHL Express Commerce's own dashboard** so the label can still print. Do not touch the Shopify fulfillment.
+3. **Untested, worth trying on a FUTURE order (never on #1004, which Mike is handling separately):** re-fulfilling in Shopify creates a fresh `fulfillments/create` event; if DHL Express Commerce's import listens to that webhook (typical for carrier apps), a new fulfillment might repopulate the DHL row with items. Flag this to Larissa as a real recovery method to test next time this happens, not a guaranteed fix — could not be verified from this session without touching a real order.
+4. **Real permanent fix already in flight:** the direct DHL API integration (`create-dhl-shipment` edge function, `DHL_DIRECT_SHIP_ENABLED`, built 2026-08-03 per LATEST-16 in [[cloudskin-studio-live-and-pending]]) bypasses DHL Express Commerce's import entirely once DHL's own API access is approved (pending as of 2026-08-03/04). This ends the whole failure class permanently, not just this one order.
+
+**Safety net status:** `dhl-stuck-order-watchdog` (live, cron 4h, de-duped since the 2026-08-03 spam fix) **already caught #1004** via its existing generic "paid + `fulfillment_status===null` + stale" filter — confirmed live: `dhl_watchdog_notifications` table has exactly 1 row, this order, alerted 2026-08-03 13:41:57 UTC. **A broadened detection condition was written and dry-run tested against live data (not deployed, gated on Mike's go):** also flag an order whose `fulfillments[]` contains a `cancelled` entry with no `success`/`open`/`pending` entry alongside it, even if Shopify's own `fulfillment_status` rollup is not cleanly `null` (covers a future partial-fulfillment-then-cancel edge case the current filter would miss). Verified via a real dry run against the store's 3 current live paid orders (#1001, #1002 fulfilled/success — correctly NOT flagged either way; #1004 — flagged by both old and new logic identically) — zero behavior change on current data, pure coverage broadening. Reuses the exact same `dhl_watchdog_notifications` de-dup table/logic, no new table.
+
+---
+
+## ROOT CAUSE FOUND 2026-08-03 (Echo/backend-integrator investigation, launched after Mike asked to chase this down) — SUPERSEDED, see correction above
+
+**Order #1004 and Shopify order 7788469551403 (the order that first surfaced this complaint) are THE SAME ORDER** - Kim Thomson, kimba.rob16@bigpond.com, AED 651, Labrador QLD Australia. Confirmed via `GET /admin/orders/7788469551403.json` -> `"name":"#1004"`.
+
+**Confirmed a THIRD time this is not a CloudSkin/Shopify data bug:** the order's own Shopify data is complete - 2 real line items (Performance Shorts SKU FE-20-L, Performance Tee SKU FE-12-XL), real weights (100g/150g), `requires_shipping:true`, correct `fulfillable_quantity`. Matches what the corrected audit already established about the catalog (see below in this same file).
+
+**The real evidence: Shopify's own order-event/audit timeline for all 4 real paid orders this store has ever had.**
+
+| Order | Destination | Who fulfilled it | Tracking |
+|---|---|---|---|
+| #1001 (7757871022379) | Greece | **"DHL Express Commerce"** (installed Shopify app, api_client_id 3816751) - automatically | Real DHL tracking, `shipment_status:delivered` |
+| #1002 (7779301523755) | UAE | "Larissa Admin" (human) manually | None |
+| #1003 (7779666886955) | Australia | "Larissa Admin" manually | None |
+| #1004 (7788469551403) | Australia | "Larissa Admin" manually, fulfillment CANCELLED 85 min later | None |
+
+Raw #1004 event excerpt: `"Larissa Admin marked 2 items as fulfilled from Dubai Warehouse."` -> `"Larissa Admin sent a shipping confirmation email..."` (no tracking) -> `"This order was archived."` -> `"Larissa Admin unarchived this order."` -> `"Larissa Admin canceled fulfillment via Manual for 2 items."` **No app - DHL or otherwise - appears anywhere in #1004's timeline**, unlike #1001 where "DHL Express Commerce" is the literal actor that fulfilled it, attached real tracking, and sent its own confirmation email hands-off.
+
+**Conclusion: DHL Express Commerce is a real, correctly-installed Shopify app that WORKED on order #1001 (2026-07-27), then silently stopped processing any order from #1002 onward (2026-07-30+).** What Larissa sees as "header present, No Items" in the DHL dashboard is that app's own broken sync surfacing stale/partial data, not a CloudSkin order or a Shopify catalog problem. Her manual fulfill-then-cancel on #1004 is the symptom of working around the broken automation, not the cause.
+
+**Why this can't be fixed further from this machine:** CloudSkin's own Shopify custom-app token (`SHOPIFY_ADMIN_TOKEN`) only has `read/write_orders`+`read/write_products`+`read/write_inventory` scopes - got explicit `403 requires merchant approval` when probing `read_locations`/`read_fulfillments`/`read_shipping`. DHL Express Commerce is a SEPARATE Shopify app installation with its OWN credentials/scopes - only Larissa's Shopify Admin login can see its authorization state, sync logs, or billing status.
+
+**What Larissa/Panos need to check (real next step, not code):** (1) Shopify Admin -> Settings -> Apps and sales channels -> DHL Express Commerce - look for a "needs re-authorization"/"update permissions"/billing-error banner (leading hypothesis, since CloudSkin's own token hit merchant-approval blocks on the exact same scope category today). (2) Inside the app's own dashboard, check for a sync log / "last order processed" timestamp - should point to ~2026-07-27/28. (3) Check its subscription/billing/quota is current. (4) If not a simple reauthorize, this needs DHL Express Commerce's own support (a DHL product), not a CloudSkin code change.
+
+**Housekeeping noted, not yet done:** a pile of already-410-stubbed `temp-*`/one-off diagnostic edge functions (dhl-order-inspect, reprice-aed, test-bump-price, etc.) still show as "ACTIVE" shells in the Supabase dashboard (inert - 410, no secret access - but cluttered). Worth a bulk hard-delete next time someone's in the Supabase dashboard; no delete-function tool was available to do it remotely.
+
+---
+
+**CORRECTION 2026-08-03: the "29/79 missing" finding directly below was WRONG — a bug in my own audit script, not a real Shopify data gap.** The audit's `inventory_items.json?ids=...` batch call requested 100 IDs per batch but never checked whether Shopify's response actually returned 100 back — Shopify silently caps that endpoint's response at 50, so the first batch quietly dropped ~29 variants, and "not returned" got misread as "missing data." Re-ran with 50-per-batch + explicit requested-vs-returned count checks: **all 79 variants are fetched, 78 real ones have complete `harmonized_system_code` + `country_code_of_origin` + weight (only the fake Test Product has nothing, as expected).** Verified further with direct single-item GETs showing real data with `updated_at` timestamps from **2026-07-31** — this data was already correct DAYS before either audit ran; nothing needed fixing. A backfill script was written and run based on the false "29 missing" premise, but its own idempotency check (only write if truly still null) correctly found everything already complete and made ZERO writes — confirmed via direct GET afterward. **No bad data was written. The false claim was caught and corrected before being sent to anyone (Larissa's message never included an HS-code ask, only the weight/rate-card asks, which remain valid).** All temp diagnostic functions from this investigation are tombstoned (410). **Net effect: the data-gap theory for the ORIGINAL "No Items" complaint below is now DISPROVEN, not confirmed — that root cause is genuinely still open/unknown.** If revisiting this, the more likely remaining explanations are the DHL-app's own import/config on the dashboard side (Larissa's access, still blocked on 2FA per the original note), or something not yet investigated. **LESSON: always check requested-count vs returned-count on every paginated/batched Admin API call — a silently truncated response looks identical to "field is null."**
+
+**Superseded false claim, kept for the record (do not treat as current): "root cause CONFIRMED... 29/79 Shopify variants exhaustively verified missing BOTH harmonized_system_code + country_code_of_origin" — this was wrong, see correction above.**
+
+**ORIGINAL 2026-07-31 handoff below, still accurate context:**
 
 **STATUS: ACTIVE / URGENT, in progress 2026-07-31. Handoff so a fresh session (Mike switched Claude accounts on the same PC at the 5h limit) can resume.**
 
