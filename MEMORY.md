@@ -37,8 +37,6 @@
 - [cloudskin-live-edit-reconstruction](cloudskin-live-edit-reconstruction.md) — v67 source on nospa machine; do durable work in source, deploy via `node scripts/deploy.mjs` (zero-flash); mirror-code deploys revert on next source deploy
 - [cloudskin-gate-vs-storefront](cloudskin-gate-vs-storefront.md) — CloudSkin has a gate (index.html at /) AND a separate storefront homepage (home.html at /home); curl / returns the GATE; serving the gate at /home causes an infinite redirect loop
 - [cloudskin-studio-colours](cloudskin-studio-colours.md) — /studio per-colour photo sections come from products.js colors and match live Shopify variants exactly; never add a phantom colour (breaks checkout)
-- [cloudskin-download-means-zip-preview](cloudskin-download-means-zip-preview.md) — "Download cloudskin" = zip the working preview folder to Downloads, NOT scrape the live site
-- [cloudskin-launching-page](cloudskin-launching-page.md) — cinematic "coming soon" page design; single file cloudskin-launching.html; glowing wordmark over real amber sky
 - [cloudskin-health](cloudskin-health.md) — health-check history for cloudskin.com; healthy but still gated+noindex while Stripe is live; anon-key false positive dismissed twice
 - [web-action-health](web-action-health.md) — health history for webactionhellas.com; Greek H2 invisible under reduced-motion, only HSTS header, 2.1MB single-document payload
 - [drip-store-health](drip-store-health.md) — health history for drip-store-orpin.vercel.app; product names overlap prices at 390px, 4.9MB hero video dominates the 6.9MB homepage
@@ -48,7 +46,6 @@
 - [greencleaners-site](greencleaners-site.md) — premium bilingual Next.js 15 rebuild of greencleaners.gr; "Atelier Vert" eco-luxury; content in lib/data.ts + i18n.ts; launch "greencleaners" port 3010
 - [unicorn-tattoo-site](unicorn-tattoo-site.md) — dark-editorial Next.js 15 rebuild of unicorntattoo.gr; "mono + accent pop", GFS Didot/Inter, el default + en; launch "unicorn-tattoo" port 3020
 - [unicorn-tattoo-accent-teal](unicorn-tattoo-accent-teal.md) — that site's "violet" token is actually petrol-teal #2E96B0; no violet-vs-blue clash exists (retint the Zeus lightning glow toward teal)
-- [electro-stripe-effect](electro-stripe-effect.md) — DEPRECATED 2026-07-11: Mike rejected the "electro stripe" lightning effect (baked black bg = fake transparency, low-res); kept only as a cautionary reference, do not reuse as-is
 - [crisp-transparent-assets](crisp-transparent-assets.md) — Mike's bar: every logo/cutout/effect must be genuinely transparent (real alpha, no baked/black bg, no blend-mode fakery) AND high-resolution/crisp; verify effects over a non-black surface
 - [text-readability-no-collisions](text-readability-no-collisions.md) — text always readable + perfectly sized, nothing overlaps/clips/overflows (esp. mobile); mechanized in design_audit.mjs (390/360/320, WARN-level)
 - [mykonos-prestige-site](mykonos-prestige-site.md) — Aman-level cinematic rebuild of mykonosprestigevillas.gr; "Cycladic Nocturne" navy/gold, Playfair/Inter; real hero video, IG Graph API + fallback feed; launch "mykonos-prestige" port 3030
@@ -60,7 +57,6 @@
 - [drip-store-site](drip-store-site.md) — earlier DRIP sneaker storefront in C:\Users\mikef\drip-store-site; template's webpack data-module 3245 holds all products; scraper/build.mjs pipeline
 - [drip-astro-v2-site](drip-astro-v2-site.md) — DRIP Astro+Supabase+Stripe storefront, canonical folder C:\Users\mikef\drip-astro-test; headless-Shopify sync + admin; deployed to Vercel staging drip-store-orpin.vercel.app; drip.store domain cutover pending/gated
 - [drip-store-orientation-flips](drip-store-orientation-flips.md) — DRIP faces all product-card photos toe-LEFT via orientation-flips.json + shouldFlip; the orient-all.mjs heuristic misfires on slides/slippers; regenerate after any catalog re-sync
-- [drip-jewels-hero](drip-jewels-hero.md) — PAUSED 2026-07-21: replacing the drip-jewels hero <video> with an animated WebP to beat the iOS Low Power Mode play button; scroll lag was the header backdrop-filter blur(24px); hard constraints + dead ends
 - [drip-eshop-singlefile](drip-eshop-singlefile.md) — standalone 18MB HTML sneaker store in Downloads (drip-store-eshop.html); NOT the Next.js drip-store
 - [drip-astro-store](drip-astro-store.md) — production Astro 5 + Tailwind v4 rebuild (311 products, real e-commerce), claude projects/drip-astro
 - [drip-orpin-live](drip-orpin-live.md) — drip-store-orpin.vercel.app, source _previews/drip-astro, LIVE Supabase backend; StockX repricing done 2026-07-08
@@ -91,6 +87,10 @@
 - [office-desktop-mirror](office-desktop-mirror.md) — how to run the same fleet on Mike's office desktop: the ~/.claude brain syncs via OneDrive (`SETUP-OFFICE.ps1`), memory syncs via the vault repo; auth is NEVER copied, always re-authed
 - [hero-video-av1-reencode](hero-video-av1-reencode.md) — cutting heavy autoplay heroes with ffmpeg SVT-AV1 (found via the new perf_probe.mjs real-runtime probe); NOTE iOS 17+ won't autoplay AV1, so ship H.264 for heroes that must autoplay on iPhone
 - [memory-vault-sync-repair](memory-vault-sync-repair.md) — why the aster vault silently fell 76 commits behind and forked into two stores; sync-vault.ps1 now prefers ~/.claude/memory, logs failures, and union-merges MEMORY.md
+- [cloudskin-download-means-zip-preview](cloudskin-download-means-zip-preview.md) — "Download cloudskin" = zip the working preview folder to Downloads, NOT scrape the live site
+- [cloudskin-launching-page](cloudskin-launching-page.md) — cinematic "coming soon" page design; single file cloudskin-launching.html; glowing wordmark over real amber sky
+- [electro-stripe-effect](electro-stripe-effect.md) — DEPRECATED 2026-07-11: Mike rejected the "electro stripe" lightning effect (baked black bg = fake transparency, low-res); kept only as a cautionary reference, do not reuse as-is
+- [drip-jewels-hero](drip-jewels-hero.md) — PAUSED 2026-07-21: replacing the drip-jewels hero <video> with an animated WebP to beat the iOS Low Power Mode play button; scroll lag was the header backdrop-filter blur(24px); hard constraints + dead ends
 - [cloudskin-stripe-checkout-prebuild](cloudskin-stripe-checkout-prebuild.md) — build record: custom multi-currency + DDP Stripe checkout, adversarially reviewed (5 bugs fixed)
 - [cloudskin-vercel-deploy](cloudskin-vercel-deploy.md) — early superseded preview deploy, cloudskin-preview.vercel.app; see [[cloudskin-site]] for current prod
 - [cloudskin-shopify-integration](cloudskin-shopify-integration.md) — early superseded headless-Shopify state (PayPal-only); see [[cloudskin-stripe-golive]] for current
