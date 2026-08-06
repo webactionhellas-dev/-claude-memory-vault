@@ -1,69 +1,60 @@
 ---
 name: stripe-webhook-secret-drift-lesson
-description: "Reusable house lesson (any Stripe-integrated project, not just CloudSkin): a Stripe webhook signing secret can silently drift from what's stored in your backend with ZERO warning, permanently 400ing every real webhook so paid orders never fulfill — Stripe never re-exposes a secret after creation, so it's undetectable until something breaks. Standing rule from Mike (2026-08-06): every future edge-function bundle touching payments/fulfillment must ship the CURRENT shared fulfillment code, and every payment rail needs an automated reconciler that can self-heal without a human noticing first."
+description: "House lesson (2026-08-06, CloudSkin): a Stripe webhook signing secret silently drifted from what Supabase had stored, 400ing every real payment webhook for ~3.6 days with nobody noticing until a customer's order got stuck. Reusable pattern for any house project using Stripe webhooks + Supabase Edge Functions."
 metadata:
   node_type: memory
   type: feedback
   originSessionId: 05f8ccf6-9d93-4373-8068-ecf7f961d3e2
-  modified: 2026-08-06T14:15:55.456Z
+  modified: 2026-08-06T14:42:56.735Z
 ---
 
-## The incident (CloudSkin, 2026-08-06)
-Larissa completed a real payment; it never showed up in DHL Express Commerce. Diagnosis (do this exact
-sequence for any "payment succeeded but nothing downstream happened" report):
-1. Read the actual webhook handler source — don't guess from logs/timestamps. In CloudSkin's
-   `stripe-webhook/index.ts` the ONLY 400-causing path is the `constructEvent()` signature-verification
-   catch block.
-2. List the real webhook endpoints via the Stripe API directly (not the dashboard, not memory) and check
-   each session's real `payment_status`.
-3. Found: every real delivery was 400ing on signature mismatch. The locally-stored `STRIPE_WEBHOOK_SECRET`
-   (in `app_secrets`) no longer matched what Stripe was actually signing with.
+Found and fixed on [[cloudskin-office-session-20260806]] / [[cloudskin-studio-live-and-pending]] LATEST-26. Keeping this as its own file because the pattern applies to any house project on Stripe + Supabase, not just CloudSkin.
 
-**Why this is dangerous and easy to miss:** Stripe shows you a webhook signing secret exactly ONCE, at
-endpoint-creation time. It is never re-displayed anywhere in the dashboard. If your stored copy ever diverges
-from Stripe's live value (endpoint recreated, secret rotated, config drift, a bad copy-paste months ago) there
-is no error, no alert, no dashboard warning — Stripe just keeps sending webhooks, your backend just keeps
-400ing them, and NOTHING downstream (Shopify order creation, DHL fulfillment, confirmation emails) ever fires,
-silently, until a real customer notices their order never shipped.
+## What happened
+`stripe-webhook`'s stored `STRIPE_WEBHOOK_SECRET` (a Supabase Edge Function secret) no longer matched what Stripe was actually signing deliveries with. Stripe **never re-exposes a secret after endpoint creation** — there is no API call that returns it — so this class of drift is structurally invisible until something downstream breaks. Every real webhook delivery was 400ing on signature verification. Effect: Stripe payments succeeded, but the order never flipped to `paid` in Supabase and never synced to Shopify/DHL. A real customer (Kimberley Thomson, Australia) had a genuinely-paid order stuck at `pending` for this reason — found by cross-checking a stuck DB row directly against Stripe's own PaymentIntent record, then confirming via Edge Function logs that `stripe-webhook` had been returning repeated 400s for ~3.6 days.
 
-**The fix (standard Stripe remediation, do this whenever this bug is suspected):**
-1. Create a NEW Stripe webhook endpoint (same URL, same event list). Its creation response is the ONLY time
-   the new secret is ever shown — capture and persist it immediately.
-2. Disable (don't delete) the old endpoint, for audit trail.
-3. Manually reconcile any orders that got stuck during the outage window: for each, replicate the exact
-   fulfillment logic the webhook would have run (atomic paid-flip + `fulfillPaidOrder()`), don't hand-write a
-   one-off version — use the real shared function so behavior matches production exactly.
-4. Build (or confirm you already have) an automated reconciler as a permanent safety net — see below.
+## How it was fixed
+1. Deployed a tiny **read-only** diagnostic function that lists Stripe's registered webhook endpoints via Stripe's own API (metadata only — Stripe's API never returns the actual secret, so nothing sensitive was exposed by this).
+2. Confirmed the endpoint itself was fine (correct URL, correct events, `status: enabled`) — only the locally-stored secret was wrong.
+3. Created a **replacement** webhook endpoint, captured its freshly-generated secret immediately (the only moment Stripe ever shows it), persisted to Supabase. Old endpoint disabled, not deleted (reversible).
+4. Manually reconciled the one stuck real order → pushed to Shopify → confirmed live in DHL Express Commerce's "New" queue as order #1009.
+5. Checked the other 7 stuck-looking orders — all genuinely abandoned carts, not hidden instances of the same bug.
 
-## Standing rule from Mike (2026-08-06), applies to ALL future work, any project
-> "I don't want any webhooks to miss like the stripe which caused the issue with dhl. we fixed that so it has
-> always to be included in any future bundles."
+## The permanent safety net (the actual fix, not just the patch)
+Built `stripe-pending-reconciler` — a new Edge Function, deployed, on a **cron job every 15 minutes** (`*/15 * * * *`, confirmed active in `cron.job`). It cross-checks every `pending` order **directly against Stripe's own records** (not against our own webhook having fired), auto-heals any mismatch it finds, and emails Mike the moment it has to intervene. This means a future recurrence of this exact bug class gets caught and self-healed within 15 minutes instead of being discovered by an angry customer or Larissa.
 
-**How to apply:** whenever you redeploy ANY payment-adjacent Supabase edge function (webhook handlers, capture
-endpoints, reconcilers — anything that calls into a shared fulfillment/order module), you MUST:
-- Bundle the CURRENT version of every shared file it depends on (`_shared/fulfillment.ts` etc.) — diff it
-  against the other call-sites that use the same shared code first if there's any doubt they're in sync.
-  This exact bug bit CloudSkin twice in one incident: the webhook's `STRIPE_WEBHOOK_SECRET` had drifted, AND
-  separately its bundled `fulfillment.ts` was 3.6 days staler than `capture-paypal-order`'s copy of the same
-  file. Both are the same root problem (silent per-function drift in code that's supposed to be identical
-  everywhere) and both must be checked, every time.
-- Never treat "the webhook used to work" as evidence it still works. Verify live: real endpoint list from the
-  provider's API, a real recent event's actual delivery status, not just "the code looks right."
-- Confirm an automated reconciler exists and is scheduled for EVERY payment rail in use, not just the one
-  that just broke. CloudSkin's `stripe-pending-reconciler` (cron every 15 min) cross-checks pending Stripe
-  sessions against Stripe's real API and self-heals; PayPal's rail was confirmed to not need one (see below).
+## Second bug found in the same pass: shared-code drift across functions
+While fixing the secret, found `stripe-webhook` was also running a **3.6-day-stale copy** of the shared `fulfillment.ts` — older than `capture-paypal-order`'s copy, missing a (currently dormant, harmless) direct-DHL-shipment trigger added since. **Supabase Edge Functions each bundle their own copy of shared files at deploy time — deploying one function does NOT propagate a shared-file change to any other function that also bundles it.** Redeployed `stripe-webhook` and the new `stripe-pending-reconciler` with the current canonical `fulfillment.ts` so every fulfillment call-site is byte-identical again. PayPal's rail (`paypal-webhook`) was checked and is NOT at risk of this class of bug — it verifies signatures live against PayPal's own API every time, no locally-cached secret to drift.
 
-## Which payment rails are structurally immune vs. at-risk
-- **At risk (locally-cached secret pattern): Stripe webhooks.** The signing secret is a static value your
-  backend stores and compares against — it can drift with zero live signal. Needs a reconciler.
-- **NOT at risk: PayPal.** `verifyPayPalWebhookSignature` calls PayPal's OWN
-  `/v1/notifications/verify-webhook-signature` API live, on every single request — there is no locally-cached
-  secret to drift. Confirmed current and correct 2026-08-06, no reconciler needed for this rail specifically,
-  but still worth having one if a second payment provider is ever added that uses the local-secret pattern.
-- **General principle:** any verification/auth scheme where you store a copy of a value the provider
-  generated is a drift risk by construction, no matter how unlikely rotation seems. If the provider only shows
-  the value once and never re-displays it, that's the strongest signal you need an independent reconciler,
-  not just correct code at write-time.
+## The generalizable rule — apply to every house project on this stack
+1. **Any secret that is set-once-and-never-re-readable (webhook signing secrets, some OAuth client secrets) is a silent-drift risk by construction.** Don't rely on "the webhook will error loudly if it's wrong" — it won't surface anywhere a human is watching by default. Build a reconciler that cross-checks the source-of-truth API directly, the way `stripe-pending-reconciler` does, for any payment-critical webhook.
+2. **When a shared file used by multiple Edge Functions changes, redeploy every function that bundles it — not just the one you were actively editing.** This was the literal cause of tonight's second bug, and separately caused a real preview-vs-real-charge mismatch during the duty/VAT build (see [[cloudskin-duty-vat-system]]) when only some of the 4 checkout functions got the updated shared file. Treat "which functions bundle this shared file" as a checklist, not a guess, before calling a shared-code change done.
+3. **Mike's explicit standing instruction from tonight: this bulletproofing (the reconciler + the "redeploy every function that shares this code" discipline) must always be part of any future deploy bundle for this class of change — never let it regress or get skipped in a future session's rush.**
 
-See [[cloudskin-office-session-20260806]] for the full incident timeline and the specific order reconciled
-(Kimberley Thomson, Australia, order #1009).
+## Loose end
+The temporary diagnostic function (`stripe-webhook-diag`) used to inspect Stripe's registered endpoints was NOT actually deleted — confirmed still present in `list_edge_functions` (slug `stripe-webhook-diag`, v5, `verify_jwt: true`) as of this check. The session said it was "locking it down," which appears to mean a redeploy with reduced scope rather than removal. Worth deleting outright next time someone's in the Supabase dashboard for CloudSkin, since it was built with broad Stripe API read access.
+
+## Rule #2 above is now MECHANIZED, not just written down (2026-08-06, later same session)
+Mike asked explicitly for this to never be lost track of again ("i dont want to lose any webhook or function
+in the future it is very important"). Built a real automated drift detector, not just a documented process:
+- `_shared/fulfillment.ts` exports `FULFILLMENT_VERSION` (a bump-on-every-change string, currently
+  `'2026-08-06a'`) and `reportBundleVersion(functionName)` — a fire-and-forget insert into a new
+  `fulfillment_bundle_log` table (function_name, version, reported_at).
+- All 4 payment-critical functions call `reportBundleVersion('<their-own-name>')` as the FIRST line inside
+  `Deno.serve()`, every single invocation: `stripe-webhook` (now v27), `capture-paypal-order` (v22),
+  `paypal-webhook` (v22), `stripe-pending-reconciler` (v3). Since the version constant lives INSIDE the shared
+  file itself, a function bundled with a stale copy automatically reports its OLD version — drift is
+  self-evident from the data, no separate manual check needed.
+- `stripe-pending-reconciler` (already running every 15 min) now ALSO reads each function's most recently
+  reported version and, if any two differ, emails an immediate alert via the same Resend pattern as the
+  payment-healing alert — "ALERT: bundle drift across payment functions", listing which function is on which
+  version.
+- Verified working live: manually invoked the reconciler right after deploying all 4 together —
+  `stripe-pending-reconciler` self-reported `2026-08-06a` (confirmed via direct DB read of
+  `fulfillment_bundle_log`), the other 3 correctly showed `null` (not yet invoked since redeploy — webhooks
+  only fire on real Stripe/PayPal events) and were correctly NOT flagged as drift (the check only compares
+  functions that have actually reported). The first real payment through each rail will populate its true
+  version; any mismatch from that point on alerts automatically.
+- **Standing rule for future deploys**: bump `FULFILLMENT_VERSION` before redeploying any function that
+  bundles `fulfillment.ts`. If forgotten, the detector catches it on the next real transaction anyway — this
+  is now a backstop, not the only line of defense.
