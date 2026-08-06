@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 05f8ccf6-9d93-4373-8068-ecf7f961d3e2
-  modified: 2026-08-06T14:15:26.039Z
+  modified: 2026-08-06T15:08:00.327Z
 ---
 
 Continuation of [[cloudskin-stripe-golive]] / [[cloudskin-office-session-20260729]]. Source repo now
@@ -103,6 +103,38 @@ file to max+1; `--check` mode reports drift with no write, used by `deploy.mjs -
 **mandatory step 0** in `scripts/deploy.mjs`, before the content-snapshot bake — the deploy now aborts if the
 bump fails. Live version is now v83 (was v80 at the start of tonight). This is now structurally impossible to
 forget on any future CloudSkin deploy.
+
+**8. "So in the future no function will be lost??" — Mike asked directly; real gaps found + closed.**
+The bundle-drift detector (item 3/4, see [[stripe-webhook-secret-drift-lesson]]) only catches code MISMATCHES
+among functions still running — it said nothing about a function being deleted, and PayPal had no reconciler
+at all (only Stripe did). Closed both, live and verified:
+- **New `paypal-pending-reconciler` function**: mirrors `stripe-pending-reconciler`, cross-checks any
+  `pending` PayPal order directly against PayPal's own status via `completePayPalOrder()` (the same function
+  `capture-paypal-order`/`paypal-webhook` already call — safe, idempotent). Scheduled `*/15 * * * *`. Also
+  self-reports to the drift check.
+- **New function-EXISTENCE check**, folded into `stripe-pending-reconciler`: pings 9 money-path functions
+  (deliberately excludes itself — see the bug below) and checks Supabase's gateway `sb-error-code: NOT_FOUND`
+  response header (confirmed live against a deliberately-nonexistent slug: this is the real signal a function
+  is gone, distinct from any error the function's own code might return). Scoped to the checkout/fulfilment/
+  webhook/watchdog path only, NOT every temp-*/diagnostic function in the project — said explicitly to Mike,
+  not oversold as blanket "every function" coverage.
+- **REAL BUG I introduced and then caught same session**: the first version of the existence check included
+  `stripe-pending-reconciler`'s own slug — a function calling its own public HTTPS URL from inside its own
+  execution hung indefinitely and blew Supabase's 150s idle timeout on the very first live test. Fixed:
+  removed self from the check list (redundant anyway — you're proof you exist) and added an 8s
+  AbortController timeout per fetch so nothing in this check can ever hang the whole reconciler again.
+  Redeployed (v5), retested: 2.5s, clean. Worth remembering: don't have a periodic self-check function ping
+  its own currently-executing URL.
+- **Alert emails fixed to go to Mike, not Larissa.** `dhl-stuck-order-watchdog`, `stripe-pending-reconciler`,
+  and the new `paypal-pending-reconciler` were all defaulting to `info@cloudskin.com` (the shop inbox).
+  Hardcoded fallback changed to `mikefalcos2004@gmail.com` in all 3, per his explicit ask — NOT independently
+  re-confirmed by him as the exact right ops-inbox beyond "not larissa but my email", worth a quick check.
+- **Final live verification** (after the self-call fix): all 5 fulfillment-bundling functions report the
+  SAME version (`2026-08-06a`), `driftDetected: false`, `missingFunctions: []` — clean.
+- **Honest scope given to Mike, do not overclaim beyond this later**: this closes the specific incident class
+  from tonight (shared-code drift + missing PayPal reconciler + real function deletion on the money path). It
+  is NOT an absolute guarantee against every possible future failure mode — a wholly new bug class, or a
+  function outside the 9-function existence list breaking, would not be caught.
 
 ## KEY GOTCHA FOR THE NEXT SESSION
 **Don't trust a first plausible-sounding theory on a data-mismatch bug — verify with the actual live DOM,
