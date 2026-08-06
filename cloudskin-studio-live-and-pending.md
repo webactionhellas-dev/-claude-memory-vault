@@ -1,14 +1,35 @@
 ---
 name: cloudskin-studio-live-and-pending
-description: "HANDOFF (2026-08-06) — DHL direct-ship API key approved (resolves LATEST-23's open item); shipping/pricing fully audited+closed (LATEST-24, 0 mismatches across 39 countries); real payments LIVE, full order pipeline independently proven end to end (LATEST-23). Site still behind the launch gate (Mike's call). See LATEST-25 (top)."
+description: "HANDOFF (2026-08-06) — START A FRESH SESSION HERE if context is full. THREE real open tasks queued for next session: (1) duty/VAT system (32 countries, live since today) needs the same real-source verification the shipping system got, zero countries independently checked yet; (2) reconcile the 30x30x8cm box used for volumetric weight against DHL's real recommended Box 3/4/5 dimensions from today's in-person meeting; (3) follow up on DHL's Rating-endpoint error 8003 specifically (separate from general API approval, which already landed). See LATEST-26 (top)."
 metadata: 
   node_type: memory
   type: project
   originSessionId: 75ea6c2d-9aa2-4169-ad82-275f54c1b095
-  modified: 2026-08-06T06:52:32.383Z
+  modified: 2026-08-06T15:41:35.486Z
 ---
 
-Continuation handoff for CloudSkin (see [[cloudskin-site]], [[cloudskin-gate-vs-storefront]], [[cloudskin-studio-colours]], [[cloudskin-image-transform-gotchas]], [[verify-visual-bugs-with-evidence]], [[cloudskin-canonical-folder-check]]).
+Continuation handoff for CloudSkin (see [[cloudskin-site]], [[cloudskin-gate-vs-storefront]], [[cloudskin-studio-colours]], [[cloudskin-image-transform-gotchas]], [[verify-visual-bugs-with-evidence]], [[cloudskin-canonical-folder-check]], [[cloudskin-office-session-20260806]], [[cloudskin-duty-vat-system]], [[stripe-webhook-secret-drift-lesson]]).
+
+## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-26 — 2026-08-06 (Fresh-session handoff: 3 real queued tasks, none started yet. Supersedes LATEST-25 as the action list; LATEST-25's own content still stands.)
+
+**Why this entry exists:** Mike read through tonight's Messenger self-chat + the latest DHL email + the vault directly with the main session, found real substance the office session (a separate, parallel session on the nospa/office machine) had already built and documented but that hadn't been independently verified or actioned yet. Asked for this to be queued cleanly for a fresh session since this one's context is full. Nothing below has been started — this is a task list, not a report of work done.
+
+**Mandatory first step, as always:** re-run [[cloudskin-canonical-folder-check]] fresh — the canonical folder differs BY MACHINE (`C:\Users\mikef\cloudskin-v67` on this machine, `C:\Users\nospa\cloudskin-v67` on the office machine per [[cloudskin-office-session-20260806]]) and folder names have moved before. Don't assume either path without checking `git log -1` across all `cloudskin-v*` candidates on whichever machine the fresh session is running on.
+
+### Task 1 — Audit the real duty/VAT system against real sources (not yet done, real gap)
+The office session built and deployed a real per-country duty+VAT system today (32 countries, live on all 4 checkout paths — full detail in [[cloudskin-duty-vat-system]], read that file's exact table and sourcing before touching `_shared/duty-rates.ts`). It was verified live for ONE country (France) with one real Stripe session. **Nobody has independently checked the other 31 countries' duty/VAT percentages against real government/customs sources**, the same rigor [[cloudskin-studio-live-and-pending]] LATEST-24 already applied to shipping (0 mismatches, every country checked, not sampled). Do the same here: for each of the 32 covered countries, verify the duty rate and VAT rate the code actually charges against a real official source (the country's customs authority, or a reputable trade-compliance reference), not just re-reading the code's own comments as if they were ground truth. Flag any country where the real rate has since changed (customs/VAT rates do get revised) or where the code's cited source doesn't hold up. Also independently re-verify: GCC treated as real-duty destinations (Mike's own call, recorded as deliberate, not a data gap), Turkey included despite a flagged volatility risk (also his call), and that US/Canada/Lebanon are still correctly and deliberately excluded (structural reason given: one honest number isn't possible for those, not a guess-avoidance shortcut) — confirm this reasoning still holds rather than assuming it does.
+
+### Task 2 — Reconcile the volumetric-weight box against DHL's real recommended boxes (not yet done)
+[[cloudskin-office-session-20260805]] built volumetric-weight billing off a 30×30×8cm box (from an earlier Dubai inventory checklist). Today, 2026-08-06 6:12pm, DHL's own rep (Patricia Jean) held an in-person meeting and sent real meeting minutes recommending three actual DHL box sizes for CloudSkin's shipments instead: **Box 3 (33.7×32.2×9.2cm), Box 4 (33.7×32.2×18cm), Box 5 (33.7×32.2×34.5cm)** — see the DHL thread "CS5855227 - CS5770849 - IT INTEGRATION FORM // CLOUD ENTERPRISE" in the `webactionhellas@gmail.com` inbox for the full email (multiple images attached showing box photos). These do not match the 30×30×8cm figure the volumetric-weight code currently uses. Needs: confirm with Larissa/Panos which of these 3 real boxes CloudSkin actually packs into (may vary by order size — a single small item vs. a multi-item order could use different boxes), then update `PACKAGE_LENGTH_CM`/`PACKAGE_WIDTH_CM`/`PACKAGE_HEIGHT_CM` in `dhl-rates.ts` (or make it size-tiered if multiple real boxes are genuinely in use) and re-verify the volumetric floor this changes for every zone, the same way today's audit did.
+
+### Task 3 — Follow up on the DHL Rating-endpoint block specifically (not yet done)
+The same-day email thread also contains, at 1:31pm today, an outgoing message from `webactionhellas@gmail.com` reporting that the MyDHL API app ("DHL Express - MyDHL API - CLOUD ENTERPRISE F.Z.E - AE", account `440253177`) returns **error 8003 "Account not allowed for this service"** specifically on the **Rating (rate quote) endpoint**, while Shipment creation was already approved. [[cloudskin-shipping-surcharge-fix-20260806]] separately records "Mike says the DHL key is approved today" — read together, this means general/Shipment-creation access landed, but the Rating service specifically is still blocked and needs its own follow-up with DHL, not assumed resolved by the general approval. Check whether DHL has replied to the 1:31pm request since; if not, a direct follow-up is warranted given it was already flagged urgent (rate quotes are wanted at checkout).
+
+### Standing context, still true, don't re-derive
+- Full order pipeline (checkout → Stripe → Shopify → Dubai routing → DHL visibility) independently proven end to end — LATEST-23, still holds.
+- Shipping/pricing fully audited, 0 mismatches across 39 countries — LATEST-24, still holds.
+- The bundle-drift/function-existence/reconciler protection system is real and built (see [[stripe-webhook-secret-drift-lesson]]) but its own stated scope is the specific incident class from that session (shared code drift, missing PayPal reconciler, function deletion on the 9-function money path) — not a blanket guarantee against every future bug. Don't overstate this to Mike beyond what the file itself claims.
+- Site is still behind the launch gate. That remains entirely Mike's call, not a technical blocker.
 
 ## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-25 — 2026-08-06 (office session: DHL direct-ship API key approved, per Mike; office-machine memory-vault mirror found broken, repaired. Supersedes LATEST-24.)
 
