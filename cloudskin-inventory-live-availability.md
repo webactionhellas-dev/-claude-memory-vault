@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 05f8ccf6-9d93-4373-8068-ecf7f961d3e2
-  modified: 2026-08-06T14:16:29.258Z
+  modified: 2026-08-06T14:23:56.660Z
 ---
 
 Larissa (via Mike) asked whether the frontend "tracks inventory correctly" — her example: the Ace Dress
@@ -73,6 +73,20 @@ live Shopify).
 whether any OTHER field in `CURATE` (category/gender/fabric/rating/etc.) carries the same "hand-authored,
 predates real sync, silently overwrites real data" risk. Those are genuinely merchandising-only fields with
 no real-data source to contradict, so lower risk than sizes was, but unaudited.
+
+## Purchase → inventory decrement, confirmed closing the loop (checked 2026-08-06, same session)
+Mike asked directly whether a real purchase automatically reduces Shopify stock, so the storefront's
+out-of-stock display stays accurate going forward without any manual step. Verified in
+`_shared/shopify.ts`'s `createShopifyOrder()` (called by `fulfillPaidOrder()` on every payment rail): the real
+Shopify order is created with `inventory_behaviour: 'decrement_obeying_policy'` explicitly set — this is NOT
+the Shopify Admin API default (an order created via the API does NOT decrement inventory unless this field is
+explicitly set to a decrementing value; the unset default is effectively a no-op on stock). "Obeying policy"
+means it also respects each variant's real `inventory_policy` (deny vs. continue) rather than blindly always
+decrementing. Full loop, verified end to end: purchase completes → `fulfillPaidOrder()` →
+`createShopifyOrder()` with real `line_items` (`variant_id` + `quantity`) → Shopify's real
+`inventory_quantity` decreases → the SAME Storefront API `availableForSale` the storefront already queries on
+every page load reflects the new lower stock → `syncAvailability()` (System 1 above) disables the button once
+truly out. No manual step, no separate sync required, works for every product automatically.
 
 See [[cloudskin-office-session-20260806]] for the full session and [[live-site-editor-product]] /
 [[Creator key contract]] for the unrelated-but-similarly-shaped "phantom edit" class of bug in the Vellum
