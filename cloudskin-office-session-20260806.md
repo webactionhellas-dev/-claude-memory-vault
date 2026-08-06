@@ -1,19 +1,27 @@
 ---
 name: cloudskin-office-session-20260806
-description: "CloudSkin session 2026-08-06 (launch night) — NEWEST STATE, start here: real per-country duty/VAT live on all 4 checkout functions (see [[cloudskin-duty-vat-system]]), Stripe webhook signing-secret silently drifted causing paid orders to never reach Shopify/DHL — found, fixed, and a permanent reconciler safety net built (see [[stripe-webhook-secret-drift-lesson]]), checkout page now displays duty as its own line so shown total matches actual charge, size-availability system audited and confirmed already working correctly (see [[cloudskin-inventory-live-availability]])"
+description: "CloudSkin session 2026-08-06 (launch night) — NEWEST STATE, start here: real per-country duty/VAT live on all 4 checkout functions (see [[cloudskin-duty-vat-system]]), Stripe webhook signing-secret silently drifted causing paid orders to never reach Shopify/DHL — found, fixed, permanent reconciler safety net built, and a standing 'never let a bundle miss a fulfillment file again' rule set (see [[stripe-webhook-secret-drift-lesson]]), checkout page now displays duty as its own line, and a curate.js phantom-size bug that put a non-existent Ace Dress 'L' live was found + fixed + the whole deploy pipeline hardened with automatic cache-bust versioning (see [[cloudskin-inventory-live-availability]])"
 metadata:
   node_type: memory
   type: project
   originSessionId: 05f8ccf6-9d93-4373-8068-ecf7f961d3e2
-  modified: 2026-08-06T13:50:11.884Z
+  modified: 2026-08-06T14:15:26.039Z
 ---
 
 Continuation of [[cloudskin-stripe-golive]] / [[cloudskin-office-session-20260729]]. Source repo now
 `C:\Users\nospa\cloudskin-v67` (this machine's canonical folder as of tonight — confirm this is still current
 in a fresh session, folder names have moved before, e.g. cloudskin-v56 → cloudskin-v67). Supabase project
-`ocszztflphqsaoyhlerx`. Deploy = `node scripts/deploy.mjs` from that folder for frontend/static changes;
-Supabase edge functions deploy separately via the Supabase MCP `deploy_edge_function` tool (see the pattern
-notes in [[stripe-webhook-secret-drift-lesson]] for the exact file-bundling gotchas).
+`ocszztflphqsaoyhlerx`. Deploy = `node scripts/deploy.mjs` from that folder for frontend/static changes (this
+script now ALSO auto-bumps the site's cache-bust version and aborts the deploy if that fails — see item 7
+below, non-negotiable per Mike). Supabase edge functions deploy separately via the Supabase MCP
+`deploy_edge_function` tool (see [[stripe-webhook-secret-drift-lesson]] for the mandatory file-bundling rule).
+
+**Mike's standing instruction from tonight, applies to ALL future work on this project, not just tonight's
+fixes:** every deploy/bundle must ship complete — no function, shared file, or key silently missing that can
+affect payment or DHL fulfillment (this is why item 7's version-bump automation and
+[[stripe-webhook-secret-drift-lesson]]'s bundling rule are now BUILT INTO the deploy tooling itself, not just
+documented — they cannot be skipped by forgetting). And: "I want everything in the bundle and in the memory
+to continue from home" — this file + its three linked sub-memories are that full record.
 
 ## DONE + VERIFIED + LIVE 2026-08-06
 
@@ -29,13 +37,13 @@ impossible to pin one honest number, not a guess-avoidance laziness call).
 
 **2. Checkout page duty display FIXED — this was a real, launch-night-discovered bug.** Before tonight,
 `js/checkout-page.js`'s on-page order summary added `subtotal + shipping` only — never the duty amount —
-even though the ACTUAL Stripe/PayPal charge always included it once (1) shipped. So for any of the 32 covered
+even though the ACTUAL Stripe/PayPal charge always included it once shipped. So for any of the 32 covered
 countries, the customer saw a lower total on `/checkout` than what they were actually charged at payment,
 directly contradicting `legal.js`'s own promise ("the amount charged is the amount shown at checkout"). FIXED:
 `refreshShipQuote()` now reads `data.dutyVatMajor` from the `shipping-quote` response, folds it into the
 displayed total, and shows a new `#coDutyRow` line ("Duties & taxes", i18n key `cart.dutiesTaxes`, added
-natively in all 11 languages) only when non-zero. Deployed, confirmed live via direct fetch of the deployed
-`js/checkout-page.js` (grep for `coDutyRow`/`dutyVatMajor` — present).
+natively in all 11 languages) only when non-zero. Deployed and re-shipped again in tonight's later version
+bumps (v81→v83), so it is live under the CURRENT asset version, not stranded behind a stale one (see item 7).
 
 **3. STRIPE WEBHOOK SIGNING-SECRET HAD SILENTLY DRIFTED — real incident, found + fixed + hardened.**
 Larissa reported a completed payment never showed up in DHL. Root cause: `stripe-webhook`'s stored
@@ -44,7 +52,8 @@ secret after creation, so this class of drift is invisible until something break
 touched tonight, pre-existing, timing unknown). Every real webhook delivery was 400ing on signature
 verification, so paid orders never flipped to 'paid' and never reached Shopify. Full incident detail, the
 exact fix, and the NEW permanent safety net (`stripe-pending-reconciler`, cron every 15 min) is in
-[[stripe-webhook-secret-drift-lesson]] — this is a reusable house lesson, not just a CloudSkin one-off.
+[[stripe-webhook-secret-drift-lesson]] — **that memory also encodes Mike's explicit standing rule that this
+class of miss must never recur in any future bundle.**
 **One real customer order was stuck**: Kimberley Thomson, Australia, order #1009 — reconciled manually,
 confirmed landing live in DHL Express Commerce's "New" queue (screenshot-verified by Mike).
 
@@ -63,37 +72,47 @@ The regex window between `"handle"` and `"colors"` was too narrow (50 chars) for
 (title + color fields sit in between) — fixed to 300 chars. ALSO scoped the script to **sizes only, deliberately
 NOT colors**: `js/shopify.js`'s `normColor()` has an intentional "White Mist" (display) → "White" (Shopify's
 real option value) rename, and the first script version proposed silently reverting that rename on every
-product using it — would have undone a deliberate design decision, not fixed a bug. Verified: 15/15 real
-products already in sync on sizes, 0 changes needed. Safe to re-run any time Larissa adds/removes a size
-OPTION in Shopify (not for ordinary restocking — see next item).
+product using it — would have undone a deliberate design decision, not fixed a bug. Re-run at the end of
+tonight's session too: **0 changes needed, products.js sizes are 100% in sync with real Shopify data right
+now.** Safe to re-run any time Larissa adds/removes a size OPTION in Shopify (not needed for ordinary
+restocking of an existing size — that is fully automatic, see item 6).
 
-**6. Size/inventory-availability system audited end-to-end, confirmed already working correctly.**
-Larissa asked whether the frontend "tracks inventory correctly" (used Ace Dress size L as her example — but
-Shopify currently has NO L variant at all for Ace Dress, only White/S and White/M, so her exact example
-wasn't reproducible; she likely hadn't created it yet, or was recalling the earlier Elevate Cropped Jacket
-XL sync-gap bug fixed earlier tonight). Full findings in [[cloudskin-inventory-live-availability]] — short
-version: the site ALREADY has a real, site-wide (every product, not just Ace Dress), automatic mechanism
-(`js/product.js`'s `syncAvailability()` + `js/shopify.js`'s `available()`) that greys out + strikes through
-any size at 0 real Shopify stock on every page load/color change, and re-enables it automatically once
-restocked — no developer action needed for ordinary restocking. Verified live against 2 real 0-stock
-variants in the catalog (Elevate Cropped Jacket Black/XL, Drift Cropped Jacket White/XL) via the actual
-public Storefront API — both correctly report `availableForSale: false`. Scanned all 80 variants store-wide:
-**zero** have Shopify's "continue selling when out of stock" enabled (the one setting that could silently
-break this mechanism) — so the mechanism is safe everywhere in the catalog right now, not just spot-checked.
-**Caught Mike's browser showing a phantom "L" on Ace Dress live** — traced to a stale local browser cache
-(confirmed by fetching the deployed `products.js` with a cache-busting query param: server truth is
-`["S","M"]`, no L). **This is the SAME house trap already documented in [[cloudskin-stripe-golive]]
-("bump ?v stamps uniformly or changes don't reach returning visitors") recurring** — worth checking whether
-`products.js` itself is referenced via a `?v=` stamp on the product page HTML; if not, it may need one added
-so future data corrections propagate to returning visitors without requiring a manual hard-refresh.
+**6. REAL BUG FOUND + FIXED: `js/curate.js` was silently overwriting real Shopify size data with a stale
+hardcoded list — this is what put a non-existent "L" live on the Ace Dress.** Full writeup in
+[[cloudskin-inventory-live-availability]]. Short version: my first read of this (Mike correctly rejected it,
+"STOP SAYING SLOP") wrongly blamed browser cache. The REAL cause: `js/curate.js` is a merchandising-enrichment
+overlay that runs after `products.js` and, for 5 specific handles (`the-performance-tank`, `the-performance-tee`,
+`the-flow-dress`, `the-ace-dress`, `the-performance-shorts`), had a hand-authored `sizes:` field left over from
+before the real Shopify sync existed ("Founders' Edit size guide" comment) — and its merge loop blindly
+overwrote `p.sizes` with that stale array for every one of those 5 products, clobbering the correct,
+Shopify-synced value every single page load. Ace Dress has NEVER had a Shopify "L" variant; the button was
+100% fake, always clickable, always addable to bag — a real, live, sale-blocking-question-worthy bug, not a
+caching artifact. **FIXED:** removed the `sizes:` field from all 5 CURATE entries and removed `"sizes"` from
+the generic override-merge key list, so `curate.js` can never again touch size truth — `products.js` (kept
+current by `sync-catalog-from-shopify.mjs`) is now the sole source for sizes, enforced structurally, not just
+by convention. Verified live post-fix: Ace Dress now renders S/M only; the other 4 previously-clobbered
+products now render their real synced sizes.
+
+**7. Deploy pipeline hardened: static-asset cache-bust version bump is now AUTOMATIC, every deploy, no
+exceptions.** While chasing the Ace Dress bug I found every HTML file references shared JS/CSS via one global
+`?v=NN` stamp (`js/products.js?v=80` etc., all 7-11 HTML files always on the same number) and NOTHING in
+`scripts/deploy.mjs` ever bumped it — a fully manual step that (separately from the curate.js bug) is exactly
+the kind of thing that silently strands a real fix behind a stale cached URL for returning visitors and for
+Vercel's own edge cache. Built `scripts/bump-asset-version.mjs` (finds the current max `?v=`, bumps every HTML
+file to max+1; `--check` mode reports drift with no write, used by `deploy.mjs --dry-run`) and wired it as a
+**mandatory step 0** in `scripts/deploy.mjs`, before the content-snapshot bake — the deploy now aborts if the
+bump fails. Live version is now v83 (was v80 at the start of tonight). This is now structurally impossible to
+forget on any future CloudSkin deploy.
 
 ## KEY GOTCHA FOR THE NEXT SESSION
-**Local repo (`C:\Users\nospa\cloudskin-v67`) vs. what's actually deployed can drift silently** — this bit
-us twice tonight in different subsystems (`stripe-webhook`'s stale `fulfillment.ts`, and the Ace Dress
-browser-cache confusion which turned out NOT to be a repo/deploy mismatch but looked like one at first).
-**Always verify against the LIVE deployed artifact** (curl the real URL with a cache-buster, or
-`get_edge_function` for Supabase functions) before trusting local file reads as ground truth, especially for
-anything money- or inventory-critical.
+**Don't trust a first plausible-sounding theory on a data-mismatch bug — verify with the actual live DOM,
+not just the fetched file.** Tonight's real lesson: `products.js` (the file) was correct the entire time; the
+bug was a SEPARATE script (`curate.js`) mutating the in-memory object after load. Confirming "the file is
+right" is not the same as confirming "what actually renders is right" — when they disagree, grep every script
+that runs on that page for writes to the field in question before concluding cache/environment weirdness.
+Also still true from earlier: **local repo vs. deployed can drift silently** (`stripe-webhook`'s stale
+`fulfillment.ts` this session) — always verify against the LIVE deployed artifact, not local file reads,
+for anything money- or inventory-critical.
 
 ## REMAINING / OPEN
 - Canada real per-province GST/HST duty coverage — offered to build (real province-collection UI + rate
@@ -101,7 +120,8 @@ anything money- or inventory-critical.
 - GCC de-minimis value thresholds (~USD 260-325 per country) are NOT modeled in the duty table — flat % is
   applied regardless of order value, so small GCC orders are conservatively over-charged duty rather than
   under-charged. Documented in the code, not fixed — revisit if GCC volume becomes material.
-- Whether `js/products.js` needs a `?v=` cache-bust stamp added (see gotcha above) — not yet investigated,
-  worth a quick check next session given the recurring house trap.
 - Larissa's actual current operating-country list (whether all 39/32 `SHIP_COUNTRIES` are real) — still
   unconfirmed from earlier in this same session, no action taken, needs her direct confirmation.
+- Worth a full CURATE-object audit next session for OTHER non-size fields that might carry the same
+  "hand-authored, predates real sync, silently overwrites real data" risk (category/gender/fabric/rating are
+  genuinely merchandising-only and safe, but this is worth a second look given what sizes turned out to be).
