@@ -4,7 +4,7 @@ description: "CloudSkin 2026-08-07 — NEWEST STATE: STRIPE_WEBHOOK_SECRET drift
 metadata: 
   node_type: memory
   type: project
-  modified: 2026-08-07T20:05:39.389Z
+  modified: 2026-08-07T20:22:40.113Z
   originSessionId: 628cab7d-e427-4e6b-aa64-f86536849b5b
 ---
 
@@ -35,6 +35,16 @@ Deployed a read-only diagnostic (`temp-webhook-secret-audit-20260807`) instead o
 
 ## Blog, shipped today (16:10-16:50 local)
 Real blog post generated and wired live: `blog/womens-padel-outfit-2026.html` via `scripts/gen-blog.mjs`, `js/blog.js`, `blog.html`/`blog-post.html` updated, `sitemap.xml` regenerated, asset-version bumped. A `temp-shopify-blog-check-20260807` diagnostic ran just before, consistent with this pipeline pulling from Shopify rather than (or alongside) the older headless-WordPress Journal path in [[cloudskin-blog-journal]] — worth confirming which is now canonical next session, didn't dig further since Mike only asked whether it saved (it did, fully synced).
+
+## The two flagged gaps — both closed same night, real order #1012 as live proof
+After the webhook fix, order #1012 (Tzeni Chaliou, Sculpt Bra) went Stripe→webhook→Shopify→DHL "New" queue in under a minute — Mike watched it happen live in the DHL dashboard. He then asked to close the two remaining flagged items ("boss mode"):
+
+**STRIPE_PUBLISHABLE_KEY drift — confirmed harmless, no action taken.** Deployed a diagnostic that calls the REAL `resolvePublishableKey()` from `_shared/stripe.ts` (not reimplemented logic): `secretKeyIsLive: true`, resolved key mode `live`, `modeMatches: true`. The function's existing self-correcting fallback (skip Deno.env if its prefix doesn't match live/test mode, fall through to app_secrets) is working exactly as designed. The stale Deno.env value is presumably a pk_test_ key that gets correctly skipped. Zero live impact, confirmed, not inferred.
+
+**cloudskin-order-webhook 401s — confirmed NOT a secret-drift bug, root cause is public-endpoint noise.** Same diagnostic checked `SHOPIFY_WEBHOOK_SECRET`: `envPresent: false`, only `app_secrets` has a value (`dbPresent: true`) — meaning there is only ONE possible source, no drift is even possible for this one. Cross-checked against `customer_orders`: tonight's real order (#1012) mirrored correctly 40 seconds after payment, and #1009/#1010/#1011 all show correct `financial_status`/`fulfillment_status`. Real Shopify-signed traffic works. The function is `verify_jwt: false` (fully public) and its entire job is rejecting anything without a valid Shopify HMAC — the 401s are it correctly doing that job against non-Shopify traffic (bots/scanners hitting a public Supabase functions URL), not a functional gap. No code touched, none needed.
+
+## Self-inflicted bug found and fixed same night: the new secret-drift alert had no throttle
+Mike got the "ALERT: 2 secret(s) drifted" email a SECOND time ~15 min after the first — not a new drift, the checkSecretDrift() feature shipped earlier tonight had zero de-dup and would have re-alerted every 15-min cron cycle forever on the same still-open (but harmless, self-correcting) PUBLISHABLE_KEY item. Exactly the "why do I keep getting this" pattern the whole night was about, self-inflicted this time. Fixed: new `secret_drift_notifications` table (migration `secret_drift_notifications`, mirrors the existing `dhl_watchdog_notifications` de-dup pattern) + `SECRET_DRIFT_RENOTIFY_HOURS = 24` — a given key only re-alerts once a day at most while still unresolved. Deployed as `stripe-pending-reconciler` v14, pre-seeded both known keys' `last_notified_at` so no further email fires tonight. Verified via manual invoke: `secretDrifts` still correctly shows both as drifted (accurate state) but `secretDriftAlertSent: false` / `secretDriftsAlertedNow: []`.
 
 ## Open for next session
 - Re-fix `STRIPE_WEBHOOK_SECRET` for real (see above) — this is the actual fix Mike needs, everything today was around it, not on it.
