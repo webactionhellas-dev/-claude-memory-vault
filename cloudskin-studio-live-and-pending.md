@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 75ea6c2d-9aa2-4169-ad82-275f54c1b095
-  modified: 2026-08-07T00:39:22.957Z
+  modified: 2026-08-07T06:48:37.832Z
 ---
 
 Continuation handoff for CloudSkin (see [[cloudskin-site]], [[cloudskin-gate-vs-storefront]], [[cloudskin-studio-colours]], [[cloudskin-image-transform-gotchas]], [[verify-visual-bugs-with-evidence]], [[cloudskin-canonical-folder-check]], [[cloudskin-office-session-20260806]], [[cloudskin-duty-vat-system]], [[stripe-webhook-secret-drift-lesson]]).
@@ -33,6 +33,9 @@ Mike's explicit request: show the customer DHL's real current rate (not the stat
 
 ### 4. Housekeeping confirmed clean, nothing broken
 Cross-line overselling fix (task #15, a background agent had died mid-fix) — verified both halves live: `_shared/pricing.ts`'s per-variant cumulative ceiling tracking (grepped live in all 3 payment functions) and `js/shell.js`'s cart-line dedup/self-heal (`itemKey`/`mergeDuplicates`, byte-diffed against the deployed frontend). Larissa's claimed Black Tank XL removal hadn't actually saved in Shopify when first checked (still showed 2 units) — Mike then removed it himself directly in Shopify, and the site correctly auto-reflected the change with no further action needed, proving the live-sync path genuinely works. Full test suite 158/158. All money-path functions (`create-checkout-session` v49, `create-checkout-elements` v37, `create-paypal-order` v40, `capture-paypal-order` v27, `stripe-webhook` v31, `paypal-webhook` v27, both pending-reconcilers) confirmed ACTIVE, untouched by tonight's changes (only `shipping-quote` and its new `_shared/dhl-live-rate*.ts` files were touched — contained blast radius, verified by grep that no money-path function imports the new live-rate files). Security advisories re-checked: all pre-existing/known (RLS-no-policy on service-role-only tables, `studio_*` SECURITY DEFINER functions, `pg_net` in public schema) — nothing new from tonight.
+
+### 5. `dhl-stuck-order-watchdog` confirmed live and working (routine check, not a new build)
+Mike got a real alert email from it (paid+unfulfilled >6h, emails mikefalcos2004@gmail.com directly, deduped so a single stuck order doesn't re-spam more than once/24h). Ran it live: flagged #1010 (Ron Aniceto — the same order fixed in item 2 above; it had simply not been fulfilled yet at that moment) and #1011 (Nikos Raftopoulos, Athens, 1,160 AED, real payment, complete/geocoded shipping address, nothing data-wise wrong with it — just awaiting Larissa's normal ship action). **Gotcha worth knowing for next time:** #1010 flipped to `fulfilled` in Shopify literally *while* it was being investigated — a watchdog alert can resolve itself between the email firing and someone checking it, so don't assume "still on the list" without a fresh live check. Mike independently confirmed via DHL Express Commerce's own dashboard that #1011 was the only order sitting in the queue, matching the API-level read exactly — the import pipeline is working correctly end to end.
 
 ### Not done tonight, still pending (not urgent, no deadline given)
 - Quick-add sold-out button styling (flagged early in the night, investigation started then interrupted for higher-priority DHL work — button still doesn't visually look sold-out in the quick-add view even though the "sorry, that size is sold out" message is correct).
