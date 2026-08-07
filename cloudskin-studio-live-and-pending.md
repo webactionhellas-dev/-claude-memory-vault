@@ -1,16 +1,16 @@
 ---
 name: cloudskin-studio-live-and-pending
-description: "HANDOFF (2026-08-07 overnight) — START A FRESH SESSION HERE if context is full. Overnight session built+proved the direct DHL shipment-creation integration (gated off, prod access pending) and the live DHL rate-quote override for pre-checkout preview (gated off, sandbox-proven with 2 real bugs found+fixed). Real gap flagged: live-rate override only wired into the preview endpoint, NOT into the 3 real charge functions -- must be added before ever flipping DHL_LIVE_RATES_ENABLED on for real, or the preview price and the actual charge will disagree. Also: cross-line overselling fix verified live, order #1010 root-caused+fixed, DHL duplicate order cleaned up. LATEST-26's 3 queued audit tasks (duty/VAT source-check, box-size reconciliation, DHL Rating-endpoint 8003 follow-up) are STILL untouched, not superseded. See LATEST-27 (top)."
+description: "HANDOFF (2026-08-07 overnight) — START A FRESH SESSION HERE if context is full. Overnight session built+proved the direct DHL shipment-creation integration (gated off, prod access pending) and the live DHL rate-quote override, wired into BOTH the pre-checkout preview AND all 3 real charge functions so they can never disagree (gated off together, sandbox-proven with 2 real bugs found+fixed). Also: cross-line overselling fix verified live, order #1010 root-caused+fixed, DHL duplicate order cleaned up. LATEST-26's 3 queued audit tasks (duty/VAT source-check, box-size reconciliation, DHL Rating-endpoint 8003 follow-up) are STILL untouched, not superseded. See LATEST-27 (top)."
 metadata: 
   node_type: memory
   type: project
   originSessionId: 75ea6c2d-9aa2-4169-ad82-275f54c1b095
-  modified: 2026-08-07T00:07:32.354Z
+  modified: 2026-08-07T00:38:54.173Z
 ---
 
 Continuation handoff for CloudSkin (see [[cloudskin-site]], [[cloudskin-gate-vs-storefront]], [[cloudskin-studio-colours]], [[cloudskin-image-transform-gotchas]], [[verify-visual-bugs-with-evidence]], [[cloudskin-canonical-folder-check]], [[cloudskin-office-session-20260806]], [[cloudskin-duty-vat-system]], [[stripe-webhook-secret-drift-lesson]]).
 
-## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-27 — 2026-08-07 overnight (Direct DHL shipment-creation built+gated; live DHL rate-quote override built, debugged, sandbox-proven, gated off; 2 real order/data bugs found+fixed. LATEST-26's 3 queued tasks NOT superseded, still open.)
+## ▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶▶ LATEST-27 — 2026-08-07 overnight (Direct DHL shipment-creation built+gated; live DHL rate-quote override built, debugged, sandbox-proven, wired into preview AND all 3 real charge functions, gated off together. LATEST-26's 3 queued tasks NOT superseded, still open.)
 
 **Mandatory first step, as always:** re-run [[cloudskin-canonical-folder-check]] fresh before touching anything — this session ran on `C:\Users\mikef\cloudskin-v67`, confirm that's still the canonical folder on whichever machine picks this up.
 
