@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 05f8ccf6-9d93-4373-8068-ecf7f961d3e2
-  modified: 2026-08-06T14:42:56.735Z
+  modified: 2026-08-07T19:40:43.385Z
 ---
 
 Found and fixed on [[cloudskin-office-session-20260806]] / [[cloudskin-studio-live-and-pending]] LATEST-26. Keeping this as its own file because the pattern applies to any house project on Stripe + Supabase, not just CloudSkin.
@@ -30,6 +30,9 @@ While fixing the secret, found `stripe-webhook` was also running a **3.6-day-sta
 1. **Any secret that is set-once-and-never-re-readable (webhook signing secrets, some OAuth client secrets) is a silent-drift risk by construction.** Don't rely on "the webhook will error loudly if it's wrong" — it won't surface anywhere a human is watching by default. Build a reconciler that cross-checks the source-of-truth API directly, the way `stripe-pending-reconciler` does, for any payment-critical webhook.
 2. **When a shared file used by multiple Edge Functions changes, redeploy every function that bundles it — not just the one you were actively editing.** This was the literal cause of tonight's second bug, and separately caused a real preview-vs-real-charge mismatch during the duty/VAT build (see [[cloudskin-duty-vat-system]]) when only some of the 4 checkout functions got the updated shared file. Treat "which functions bundle this shared file" as a checklist, not a guess, before calling a shared-code change done.
 3. **Mike's explicit standing instruction from tonight: this bulletproofing (the reconciler + the "redeploy every function that shares this code" discipline) must always be part of any future deploy bundle for this class of change — never let it regress or get skipped in a future session's rush.**
+
+## RECURRED 2026-08-07 — the reconciler caught it, but nobody re-fixed the secret itself
+Confirmed live via Supabase logs the evening of 2026-08-07: `stripe-webhook` is 400ing continuously again (same signature-verification failure), most likely `STRIPE_WEBHOOK_SECRET` drifting a second time. Bundle version check shows no code drift this time (all 5 payment functions still report `2026-08-06a`) — this is the secret itself, not a stale-shared-file repeat. The reconciler built after the first incident is doing exactly its job (healing every ~15min, no orders lost), which is precisely why this recurrence went unnoticed as anything other than routine "N order(s) auto-fixed" emails — worth remembering that **a working reconciler can fully mask a live root-cause outage** if nobody asks "why does the reconciler keep having something to fix." Full detail, evidence, and what's still open in [[cloudskin-session-20260807]].
 
 ## Loose end
 The temporary diagnostic function (`stripe-webhook-diag`) used to inspect Stripe's registered endpoints was NOT actually deleted — confirmed still present in `list_edge_functions` (slug `stripe-webhook-diag`, v5, `verify_jwt: true`) as of this check. The session said it was "locking it down," which appears to mean a redeploy with reduced scope rather than removal. Worth deleting outright next time someone's in the Supabase dashboard for CloudSkin, since it was built with broad Stripe API read access.
