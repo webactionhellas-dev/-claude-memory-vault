@@ -1,12 +1,12 @@
 ---
 title: Fix a missing security header on webaction
 assignee: unassigned
-status: done
+status: todo
 project: webaction
 priority: 
 createdBy: 
 created: 2026-08-03T12:47:15.451Z
-updated: 2026-08-04T23:41:55.555Z
+updated: 2026-08-07T02:40:39.948Z
 ---
 
 

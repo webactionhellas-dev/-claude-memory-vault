@@ -1,12 +1,12 @@
 ---
 title: Add missing security headers (x-content-type-options, x-frame-options)
 assignee: unassigned
-status: done
+status: todo
 project: trattoria-capanna
 priority: 
 createdBy: 
 created: 2026-08-01T22:44:00.887Z
-updated: 2026-08-04T23:41:57.227Z
+updated: 2026-08-07T02:40:33.331Z
 ---
 
 

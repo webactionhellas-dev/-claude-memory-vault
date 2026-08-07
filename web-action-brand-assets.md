@@ -5,10 +5,14 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 490937b7-f28e-48dc-959e-86f3ca95b6dd
-  modified: 2026-08-02T23:01:48.772Z
+  modified: 2026-08-07T01:44:29.100Z
 ---
 
-**Web Action (W&A) has a full real logo set on this machine. Never build a Web Action surface with a typographic placeholder wordmark, and never claim no logo exists without checking these two places first.**
+**On the ASTER machine (2026-08-07): the paths below are `mikef` and do NOT exist here.** The reliable source on aster is the live site itself: `webactionhellas.com` is a single ~2.1MB document with every asset inlined as a base64 data URI, so `curl` the page and decode them. Doing that yields the real lockup at **1103x524 with genuine alpha, the blue neon halo, and the electric-blue A of ACTION** — extracted and saved to `C:\Users\aster\site-monitor\public\brand\wa-lockup-hi.webp`.
+
+**Trap found doing this:** the `wa-mark.webp` bundled in site-monitor (959x325) is a crop of that lockup with the halo stripped and the wordmark removed. It looks like the logo and is not — it renders soft and off-brand. Prefer the extracted lockup for any surface bigger than a toolbar.
+
+**Web Action (W&A) has a full real logo set on Mike's machine. Never build a Web Action surface with a typographic placeholder wordmark, and never claim no logo exists without checking these two places first.**
 
 - `C:\Users\mikef\webaction-hub\web-action-logo\` - SVG set: `logo-mark.svg`, `logo-lockup.svg`, `logo-lockup-reversed.svg`, `emblem.svg`, `emblem-lockup.svg`, `favicon.svg`, `emblem-favicon.svg`, `v2-arrow-mark.svg`, `v2-lockup.svg`, `logo-mark-tile.svg`, plus `index.html`/`emblem.html` previews. Scalable, offline-safe, right choice for a desktop app or any high-DPI surface.
 - `C:\Users\mikef\Downloads\` - raster: `wa-logo-transparent.png`, `wa-logo-onblack.png`, `WA.PNG`, `newlogowebaction.logo.jpg`, `webaction logo.PNG`, `WebAction_BusinessCard_clean.png`, `CARD - BACK SIDE FINAL WA.png`, `webaction-favicon-update.zip`.
